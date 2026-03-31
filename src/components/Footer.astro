@@ -1,67 +1,63 @@
 ---
 ---
-<footer style="
-  background: linear-gradient(160deg, #030d18 0%, #061a2e 100%);
-  color: white; padding: 80px 40px 36px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-">
+<footer style="background: #0d2d52; color: white; padding: 72px 40px 32px;">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 64px; margin-bottom: 64px;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 56px; margin-bottom: 56px;">
 
       <!-- Brand -->
       <div>
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-          <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 40px; height: 40px; object-fit: contain;" />
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+          <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 38px; height: 38px; object-fit: contain;" />
           <div>
-            <p style="font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 800; color: white; letter-spacing: 0.05em;">カッテニハコダテ</p>
-            <p style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 0.3em; margin-top: 2px;">KATTENI HAKODATE</p>
+            <p style="font-family: 'Shippori Mincho', serif; font-size: 17px; font-weight: 800; color: white; letter-spacing: 0.04em;">カッテニハコダテ</p>
+            <p style="font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 0.28em; margin-top: 2px;">KATTENI HAKODATE</p>
           </div>
         </div>
-        <p style="font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.9; max-width: 300px; margin-bottom: 28px;">
-          港町・函館の魅力を、地元目線でかってに発信するコミュニティメディア。グルメ・観光・移住・イベント情報をお届けします。
+        <p style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.9; max-width: 300px; margin-bottom: 24px;">
+          港町・函館の魅力を、地元目線でかってに発信するコミュニティメディア。
         </p>
         <a href="https://x.com/katteni_hakodate" target="_blank" style="
           display: inline-flex; align-items: center; gap: 6px;
-          font-size: 12px; color: rgba(255,255,255,0.5); padding: 7px 16px;
-          border: 1px solid rgba(255,255,255,0.12); border-radius: 4px;
-          transition: all 0.2s;
+          font-size: 12px; color: rgba(255,255,255,0.55);
+          padding: 7px 16px; border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 4px; transition: all 0.2s;
         "
-        onmouseover="this.style.borderColor='rgba(255,255,255,0.4)'; this.style.color='white'"
-        onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='rgba(255,255,255,0.5)'"
+        onmouseover="this.style.borderColor='rgba(255,255,255,0.5)'; this.style.color='white'"
+        onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='rgba(255,255,255,0.55)'"
         >𝕏 &nbsp;@katteni_hakodate</a>
       </div>
 
       <!-- Categories -->
       <div>
-        <p style="font-size: 10px; letter-spacing: 0.25em; color: #0d8a87; margin-bottom: 20px; text-transform: uppercase; font-weight: 700;">Category</p>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
-          {['グルメ', '観光', '暮らし', 'イベント', '人・ビジネス', '特産品'].map(cat => (
-            <li><a href={`/category/${cat}`} style="font-size: 14px; color: rgba(255,255,255,0.5); transition: color 0.2s;"
+        <p style="font-size: 10px; letter-spacing: 0.25em; color: #52d9d6; font-weight: 700; margin-bottom: 18px; text-transform: uppercase;">Category</p>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 11px;">
+          {['グルメ','観光','暮らし','イベント','人・ビジネス','特産品'].map(cat => (
+            <li><a href={`/category/${cat}`} style="font-size: 14px; color: rgba(255,255,255,0.55); transition: color 0.2s;"
               onmouseover="this.style.color='white'"
-              onmouseout="this.style.color='rgba(255,255,255,0.5)'">{cat}</a></li>
+              onmouseout="this.style.color='rgba(255,255,255,0.55)'">{cat}</a></li>
           ))}
         </ul>
       </div>
 
       <!-- Site -->
       <div>
-        <p style="font-size: 10px; letter-spacing: 0.25em; color: #0d8a87; margin-bottom: 20px; text-transform: uppercase; font-weight: 700;">Site</p>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+        <p style="font-size: 10px; letter-spacing: 0.25em; color: #52d9d6; font-weight: 700; margin-bottom: 18px; text-transform: uppercase;">Site</p>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 11px;">
           {[
             { text: 'カッテニハコダテとは', href: '/about' },
             { text: 'ハコダテ仕掛け人',     href: '/members' },
             { text: '情報を投稿する',        href: '/submit' },
             { text: 'すべての記事',          href: '/articles' },
           ].map(item => (
-            <li><a href={item.href} style="font-size: 14px; color: rgba(255,255,255,0.5); transition: color 0.2s;"
+            <li><a href={item.href} style="font-size: 14px; color: rgba(255,255,255,0.55); transition: color 0.2s;"
               onmouseover="this.style.color='white'"
-              onmouseout="this.style.color='rgba(255,255,255,0.5)'">{item.text}</a></li>
+              onmouseout="this.style.color='rgba(255,255,255,0.55)'">{item.text}</a></li>
           ))}
         </ul>
       </div>
     </div>
 
-    <div style="padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+    <div style="padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
       <p style="font-size: 12px; color: rgba(255,255,255,0.25);">© 2026 カッテニハコダテ All rights reserved.</p>
       <p style="font-size: 12px; color: rgba(255,255,255,0.25);">⚓ 港町函館より発信中</p>
     </div>
