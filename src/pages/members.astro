@@ -7,7 +7,7 @@ const members = [
   {
     name: '田中 健太',
     role: 'グルメ担当',
-    emoji: '🍣',
+    img: '/images/kacchin-gourmet.png',
     bio: '函館生まれ函館育ち。「本当においしい店は路地裏にある」が信条。朝市から屋台まで、函館のグルメを食べ歩き20年。',
     tags: ['朝市', '海鮮', 'ラーメン'],
     color: '#0d8a87',
@@ -15,7 +15,7 @@ const members = [
   {
     name: '佐藤 みき',
     role: 'イベント・観光担当',
-    emoji: '⚓',
+    img: '/images/kacchin-goryokaku.png',
     bio: '函館の魅力を発信したくてUターン。バル街の運営スタッフとしても活動中。地元民だからこそ知る「本物の函館」を届けます。',
     tags: ['バル街', '元町', 'イベント'],
     color: '#0d2d52',
@@ -23,7 +23,7 @@ const members = [
   {
     name: '木村 亮',
     role: '移住・暮らし担当',
-    emoji: '🏘️',
+    img: '/images/kacchin-tram.png',
     bio: '東京から函館に移住して3年。リモートワーカーとして働きながら、移住のリアルな体験を発信。移住希望者の相談にも乗ります。',
     tags: ['移住', 'リモートワーク', '子育て'],
     color: '#1a7fc0',
@@ -31,7 +31,7 @@ const members = [
   {
     name: '山田 花子',
     role: '温泉・特産品担当',
-    emoji: '♨️',
+    img: '/images/kacchin-asaichi.png',
     bio: '湯の川温泉の近くに住む温泉マニア。函館の海産物と温泉をこよなく愛す。地元の事業者さんとの繋がりを大切にしています。',
     tags: ['温泉', '海産物', '特産品'],
     color: '#c05a3a',
@@ -60,8 +60,8 @@ const members = [
           onmouseover="this.style.transform='translateY(-4px)'"
           onmouseout="this.style.transform=''">
           <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
-            <div style={`width: 56px; height: 56px; border-radius: 50%; background: ${member.color}18; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; border: 2px solid ${member.color}30;`}>
-              {member.emoji}
+            <div style={`width: 64px; height: 64px; border-radius: 50%; background: ${member.color}18; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid ${member.color}30; overflow: hidden; padding: 6px;`}>
+              <img src={member.img} alt={member.role} style="width: 100%; height: 100%; object-fit: contain;" />
             </div>
             <div>
               <h3 style="font-size: 16px; font-weight: 700; color: #0d2d52; margin-bottom: 2px;">{member.name}</h3>

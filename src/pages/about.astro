@@ -3,46 +3,163 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 ---
-<BaseLayout title="このサイトについて" description="カッテニハコダテのコンセプトと運営について">
-  <Header />
-  <main style="max-width: 800px; margin: 0 auto; padding: 48px 16px;">
-    <h1 style="font-size: 28px; font-weight: 900; color: #0d2d52; margin-bottom: 8px;">カッテニハコダテとは</h1>
-    <p style="color: #888; font-size: 14px; margin-bottom: 32px;">About this site</p>
 
-    <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
-      <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52; margin-bottom: 16px;">「かってに」発信するということ</h2>
-      <p style="font-size: 15px; line-height: 1.9; color: #333;">
-        「カッテニハコダテ」は、函館に住む人・働く人・大好きな人たちが、<strong>好き勝手に（かってに）</strong>函館の魅力を発信するコミュニティメディアです。
-      </p>
-      <p style="font-size: 15px; line-height: 1.9; color: #333; margin-top: 16px;">
-        観光ガイドでも行政の広報でもない。地元民が「これ、みんなに知ってほしい！」と思ったことを、飾らない言葉で届ける場所。それがカッテニハコダテです。
+<BaseLayout
+  title="カッテニハコダテとは"
+  description="港町・函館の魅力を、地元目線でかってに発信するコミュニティメディアのコンセプトページ"
+>
+  <Header />
+
+  <!-- Hero -->
+  <section style="
+    padding: 120px 24px 100px;
+    background: linear-gradient(160deg, #0d2d52 0%, #0d5a7a 60%, #0d8a87 100%);
+    text-align: center; position: relative; overflow: hidden;
+  ">
+    <div style="position: absolute; bottom: -1px; left: 0; right: 0; opacity: 0.12;">
+      <svg viewBox="0 0 1200 80" style="width:100%; display:block;">
+        <path d="M0,40 C300,70 600,10 900,40 C1050,55 1150,45 1200,40 L1200,80 L0,80Z" fill="white"/>
+      </svg>
+    </div>
+    <div style="position: relative; max-width: 720px; margin: 0 auto;">
+      <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 140px; margin-bottom: 32px; filter: drop-shadow(0 8px 32px rgba(0,0,0,0.35));" />
+      <p style="font-size: 11px; letter-spacing: 0.35em; color: #52d9d6; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">About</p>
+      <h1 style="
+        font-family: 'Shippori Mincho', serif;
+        font-size: clamp(28px, 4vw, 48px);
+        font-weight: 800; color: #ffffff;
+        line-height: 1.4; margin-bottom: 24px;
+        letter-spacing: 0.03em;
+      ">カッテニハコダテとは</h1>
+      <p style="font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.9; max-width: 560px; margin: 0 auto;">
+        函館に暮らす人、訪れた人、これから移住を考える人。<br>
+        それぞれの「ハコダテ」を、かってに集めて発信するメディアです。
       </p>
     </div>
+  </section>
 
-    <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
-      <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52; margin-bottom: 16px;">3つのビジョン</h2>
-      {[
-        { emoji: '💡', title: '知らなかった、が生まれる', desc: '函館に長く住んでいても知らないことがある。そんな発見を届けます。' },
-        { emoji: '❤️', title: 'もっと知りたい、が続く', desc: '一度読んだら終わりじゃない。函館への興味が深まる情報を。' },
-        { emoji: '🚂', title: '行ってみたい、が動く', desc: '読んだら函館に来たくなる。住みたくなる。そんなメディアを目指します。' },
-      ].map(item => (
-        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
-          <span style="font-size: 32px; flex-shrink: 0;">{item.emoji}</span>
-          <div>
-            <h3 style="font-size: 16px; font-weight: 700; color: #0d2d52; margin-bottom: 4px;">{item.title}</h3>
-            <p style="font-size: 14px; color: #555; line-height: 1.7;">{item.desc}</p>
+  <main style="max-width: 800px; margin: 0 auto; padding: 0 24px;">
+
+    <!-- コンセプト -->
+    <section style="padding: 80px 0 0;">
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Concept</p>
+      <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d0d0d; margin-bottom: 32px; line-height: 1.5;">
+        「かって」に、函館を好きでいい。
+      </h2>
+      <div style="font-size: 15px; color: #4a5568; line-height: 2.0; display: grid; gap: 20px;">
+        <p>函館には、観光ガイドに載っていない景色がある。地元の人しか知らない食堂がある。移住して初めて気づく、この街の面白さがある。</p>
+        <p>「カッテニハコダテ」は、そういう情報を<strong style="color: #0d2d52;">かってに</strong>集めて、かってに発信するコミュニティメディアです。プロのライターや観光協会ではなく、函館を好きな普通の人たちが書いています。</p>
+        <p>「かって」には2つの意味があります。ひとつは「勝手に＝自由に、制限なく」。もうひとつは「かつて＝昔の函館の記憶」。この街の今と昔を、自由に行き来しながら発信していきます。</p>
+      </div>
+    </section>
+
+    <!-- 3つのこだわり -->
+    <section style="padding: 80px 0 0;">
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Our Promise</p>
+      <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d0d0d; margin-bottom: 40px;">3つのこだわり</h2>
+      <div style="display: grid; gap: 20px;">
+        {[
+          {
+            num: '01',
+            title: '地元目線で書く',
+            body: '観光客向けの情報ではなく、実際に函館に暮らす人・深く関わる人の視点で発信します。「本当に美味しい店」「実際に住んでみてわかったこと」そういう言葉を大切にします。',
+            img: '/images/kacchin-slope.png',
+          },
+          {
+            num: '02',
+            title: 'リアルな情報を届ける',
+            body: 'PR記事や広告に偏らず、書いた人の実体験に基づいた情報だけを掲載します。「実際に行った」「実際に食べた」「実際に住んでみた」という体験が情報の基本です。',
+            img: '/images/kacchin-gourmet.png',
+          },
+          {
+            num: '03',
+            title: '函館を好きな人を増やす',
+            body: '最終的な目的は、函館を好きな人を増やすことです。読んで終わりではなく、実際に函館を訪れたくなる・住みたくなる、そんな情報を目指しています。',
+            img: '/images/kacchin-goryokaku.png',
+          },
+        ].map(item => (
+          <div style="
+            display: grid; grid-template-columns: 100px 1fr;
+            gap: 32px; align-items: center;
+            padding: 28px 32px; background: #f8fafc;
+            border-radius: 8px; border-left: 3px solid #0d8a87;
+          ">
+            <img src={item.img} alt={item.title} style="width: 80px; height: 80px; object-fit: contain;" />
+            <div>
+              <p style="font-size: 11px; font-weight: 700; color: #0d8a87; letter-spacing: 0.2em; margin-bottom: 8px;">{item.num}</p>
+              <h3 style="font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 700; color: #0d0d0d; margin-bottom: 8px;">{item.title}</h3>
+              <p style="font-size: 14px; color: #4a5568; line-height: 1.8;">{item.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- マスコット カッチン -->
+    <section style="padding: 80px 0 0;">
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Mascot</p>
+      <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d0d0d; margin-bottom: 40px;">マスコット・カッチン</h2>
+      <div style="background: linear-gradient(135deg, #e8eef2, #d4e4f0); border-radius: 12px; padding: 40px; display: grid; grid-template-columns: 180px 1fr; gap: 40px; align-items: center;">
+        <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 100%; filter: drop-shadow(0 8px 24px rgba(13,45,82,0.2));" />
+        <div>
+          <h3 style="font-family: 'Shippori Mincho', serif; font-size: 22px; font-weight: 800; color: #0d2d52; margin-bottom: 14px;">カッチン</h3>
+          <p style="font-size: 14px; color: #4a5568; line-height: 1.9; margin-bottom: 16px;">
+            港町・函館の海に住むタコのキャラクター。サングラスには函館の風景が映り込んでいます。グルメ、観光、暮らし、イベント…函館のあらゆる場所を泳ぎ回り、いちばん面白いことを知っています。
+          </p>
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;">
+            {[
+              { src: '/images/kacchin-gourmet.png', label: 'グルメ' },
+              { src: '/images/kacchin-slope.png', label: '観光' },
+              { src: '/images/kacchin-tram.png', label: '暮らし' },
+              { src: '/images/kacchin-goryokaku.png', label: 'イベント' },
+              { src: '/images/kacchin-asaichi.png', label: '特産品' },
+              { src: '/images/kacchin-404.png', label: '404' },
+            ].map(k => (
+              <div style="text-align: center;">
+                <img src={k.src} alt={k.label} style="width: 52px; height: 52px; object-fit: contain;" />
+                <p style="font-size: 10px; color: #6c757d; margin-top: 4px; letter-spacing: 0.05em;">{k.label}</p>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
+      </div>
+    </section>
 
-    <div style="background: #c05a3a; border-radius: 16px; padding: 32px; text-align: center; color: white;">
-      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">一緒に発信しませんか？</h2>
-      <p style="font-size: 14px; line-height: 1.7; margin-bottom: 24px; opacity: 0.9;">
-        函館が好きな人なら誰でも「ハコダテ仕掛け人」になれます。<br>専門知識は不要。あなたの好きな函館を教えてください。
-      </p>
-      <a href="/members" style="display: inline-block; padding: 12px 32px; background: white; color: #c05a3a; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">仕掛け人に応募する</a>
-    </div>
+    <!-- CTA -->
+    <section style="padding: 80px 0 120px;">
+      <div style="background: #0d2d52; border-radius: 8px; padding: 56px; text-align: center;">
+        <p style="font-size: 11px; letter-spacing: 0.3em; color: #52d9d6; font-weight: 700; margin-bottom: 16px; text-transform: uppercase;">Join Us</p>
+        <h2 style="font-family: 'Shippori Mincho', serif; font-size: 24px; font-weight: 800; color: white; margin-bottom: 16px; line-height: 1.5;">
+          あなたの函館を、教えてください。
+        </h2>
+        <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 36px; line-height: 1.8; max-width: 480px; margin-left: auto; margin-right: auto;">
+          好きなお店、おすすめの景色、移住して気づいたこと。<br>「ハコダテ仕掛け人」として一緒に発信しませんか？
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="/submit" style="
+            display: inline-block; padding: 14px 32px;
+            background: #c05a3a; color: white;
+            font-size: 14px; font-weight: 700;
+            border-radius: 4px; letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+          "
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+          >情報を投稿する</a>
+          <a href="/members" style="
+            display: inline-block; padding: 14px 32px;
+            border: 1.5px solid rgba(255,255,255,0.4); color: white;
+            font-size: 14px; font-weight: 700;
+            border-radius: 4px; letter-spacing: 0.05em;
+            transition: all 0.2s;
+          "
+          onmouseover="this.style.borderColor='rgba(255,255,255,0.9)'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,0.4)'"
+          >仕掛け人について</a>
+        </div>
+      </div>
+    </section>
+
   </main>
   <Footer />
 </BaseLayout>
