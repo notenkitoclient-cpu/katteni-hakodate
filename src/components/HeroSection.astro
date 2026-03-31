@@ -1,141 +1,145 @@
 ---
 ---
 <section style="
-  min-height: 92vh;
-  display: flex; align-items: center;
-  padding: 80px 24px;
-  background: #ffffff;
   position: relative;
+  background: linear-gradient(160deg, #061a2e 0%, #0a2d4a 45%, #0d5a7a 75%, #0d8a87 100%);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
   overflow: hidden;
 ">
-  <!-- Subtle background decoration -->
+  <!-- Stars / Noise texture overlay -->
   <div style="
-    position: absolute; top: 0; right: 0;
-    width: 55%; height: 100%;
-    background: linear-gradient(135deg, #e8eef2 0%, #d4e4f0 100%);
-    clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 20% 30%, rgba(13,138,135,0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 70%, rgba(13,45,82,0.4) 0%, transparent 50%);
+    pointer-events: none;
   "></div>
 
-  <div style="max-width: 1200px; margin: 0 auto; width: 100%; position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
+  <!-- Floating circles (depth) -->
+  <div style="position: absolute; top: 10%; right: 8%; width: 320px; height: 320px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06); pointer-events: none;"></div>
+  <div style="position: absolute; top: 18%; right: 14%; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.04); pointer-events: none;"></div>
 
-    <!-- Left: Typography -->
-    <div>
-      <p style="
-        font-size: 11px; letter-spacing: 0.3em;
-        color: #0d8a87; font-weight: 700;
-        margin-bottom: 24px; text-transform: uppercase;
-      ">⚓ Hakodate Community Media</p>
+  <!-- Main content -->
+  <div style="
+    flex: 1; display: flex; align-items: center;
+    max-width: 1200px; margin: 0 auto; padding: 80px 40px 60px;
+    width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 40px; align-items: center;
+  ">
+    <!-- Left: Text -->
+    <div style="position: relative; z-index: 2;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 28px;">
+        <div style="width: 32px; height: 1px; background: #0d8a87;"></div>
+        <p style="font-size: 11px; letter-spacing: 0.35em; color: #0d8a87; font-weight: 700; text-transform: uppercase;">Hakodate Community Media</p>
+      </div>
 
       <h1 style="
         font-family: 'Shippori Mincho', serif;
-        font-size: clamp(36px, 5vw, 60px);
-        font-weight: 800; line-height: 1.3;
-        color: #0d0d0d; margin-bottom: 28px;
+        font-size: clamp(38px, 5.5vw, 68px);
+        font-weight: 800; line-height: 1.25;
+        color: #ffffff; margin-bottom: 28px;
         letter-spacing: 0.02em;
       ">
         知らなかった、<br>
-        <span style="color: #0d2d52;">ハコダテ</span><span style="color: #0d8a87;">がある。</span>
+        <span style="color: #52d9d6;">ハコダテ</span>がある。
       </h1>
 
       <p style="
-        font-size: 15px; color: #6c757d; line-height: 1.9;
-        margin-bottom: 40px; max-width: 480px;
+        font-size: 15px; color: rgba(255,255,255,0.65);
+        line-height: 1.9; margin-bottom: 44px;
+        max-width: 440px;
       ">
         港町・函館に住む人、訪れる人、移住を考える人へ。<br>
         地元目線で、かってに函館の魅力を発信するコミュニティメディアです。
       </p>
 
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 56px;">
         <a href="/articles" style="
           padding: 14px 32px;
-          background: #0d2d52; color: white;
+          background: #0d8a87; color: white;
           font-size: 14px; font-weight: 700;
-          border-radius: 4px; transition: all 0.2s;
-          letter-spacing: 0.05em;
+          border-radius: 3px; letter-spacing: 0.06em;
+          transition: all 0.25s;
         "
-        onmouseover="this.style.background='#0d4a72'"
-        onmouseout="this.style.background='#0d2d52'"
+        onmouseover="this.style.background='#0faba8'"
+        onmouseout="this.style.background='#0d8a87'"
         >記事を読む</a>
 
         <a href="/about" style="
           padding: 14px 32px;
-          border: 1.5px solid #0d2d52; color: #0d2d52;
+          border: 1.5px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.85);
           font-size: 14px; font-weight: 700;
-          border-radius: 4px; transition: all 0.2s;
-          letter-spacing: 0.05em;
+          border-radius: 3px; letter-spacing: 0.06em;
+          transition: all 0.25s;
         "
-        onmouseover="this.style.background='#0d2d52'; this.style.color='white'"
-        onmouseout="this.style.background='transparent'; this.style.color='#0d2d52'"
+        onmouseover="this.style.borderColor='rgba(255,255,255,0.8)'; this.style.color='white'"
+        onmouseout="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='rgba(255,255,255,0.85)'"
         >サイトについて</a>
       </div>
 
       <!-- Stats -->
-      <div style="
-        display: flex; gap: 40px; margin-top: 56px;
-        padding-top: 40px; border-top: 1px solid #e2e6ea;
-      ">
+      <div style="display: flex; gap: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1);">
         {[
-          { num: '14', label: '記事' },
+          { num: '14+', label: '記事' },
           { num: '6', label: 'カテゴリ' },
           { num: '4', label: '仕掛け人' },
         ].map(item => (
           <div>
-            <p style="font-family: 'Shippori Mincho', serif; font-size: 32px; font-weight: 800; color: #0d2d52; line-height: 1;">{item.num}</p>
-            <p style="font-size: 12px; color: #6c757d; margin-top: 4px; letter-spacing: 0.1em;">{item.label}</p>
+            <p style="font-family: 'Shippori Mincho', serif; font-size: 30px; font-weight: 800; color: #52d9d6; line-height: 1;">{item.num}</p>
+            <p style="font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 5px; letter-spacing: 0.15em;">{item.label}</p>
           </div>
         ))}
       </div>
     </div>
 
-    <!-- Right: Visual -->
-    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-      <!-- カッチンメインビジュアル -->
+    <!-- Right: カッチン -->
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; z-index: 2;">
+      <!-- Glow behind カッチン -->
       <div style="
-        background: linear-gradient(160deg, #e8eef2 0%, #d4e4f0 100%);
-        border-radius: 16px; padding: 40px;
-        position: relative; overflow: hidden;
-        width: 100%;
-      ">
-        <!-- Decorative circles -->
-        <div style="position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(13,42,82,0.06); border-radius: 50%;"></div>
-        <div style="position: absolute; bottom: -20px; left: -20px; width: 120px; height: 120px; background: rgba(13,138,135,0.08); border-radius: 50%;"></div>
+        position: absolute; width: 360px; height: 360px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(13,138,135,0.25) 0%, transparent 70%);
+        pointer-events: none;
+      "></div>
 
-        <img
-          src="/images/kacchin-nightview.png"
-          alt="カッチン — カッテニハコダテのマスコット"
-          style="
-            width: 100%; max-width: 380px;
-            display: block; margin: 0 auto;
-            position: relative; z-index: 1;
-            filter: drop-shadow(0 16px 40px rgba(13,45,82,0.18));
-          "
-        />
+      <img
+        src="/images/kacchin-nightview.png"
+        alt="カッチン — カッテニハコダテのマスコット"
+        style="
+          width: 100%; max-width: 400px;
+          filter: drop-shadow(0 20px 60px rgba(13,138,135,0.35));
+          position: relative;
+          animation: float 6s ease-in-out infinite;
+        "
+      />
 
-        <!-- Caption -->
-        <p style="
-          text-align: center; margin-top: 20px;
-          font-family: 'Shippori Mincho', serif;
-          font-size: 15px; font-weight: 700; color: #0d2d52;
-          position: relative; z-index: 1;
-          letter-spacing: 0.06em;
-        ">カッチン（マスコット）</p>
-        <p style="text-align: center; font-size: 12px; color: #6c757d; margin-top: 4px; position: relative; z-index: 1;">港町ハコダテを見つめるタコ</p>
-      </div>
-
-      <!-- Floating badge -->
+      <!-- Floating label -->
       <div style="
-        position: absolute; top: -16px; right: -8px;
+        position: absolute; bottom: 0; right: 0;
         background: #c05a3a; color: white;
-        padding: 12px 16px; border-radius: 8px;
+        padding: 12px 18px; border-radius: 4px;
         font-size: 12px; font-weight: 700;
-        box-shadow: 0 4px 16px rgba(192,90,58,0.4);
-        text-align: center; line-height: 1.4;
-        z-index: 2;
+        box-shadow: 0 8px 24px rgba(192,90,58,0.45);
+        text-align: center; line-height: 1.5;
       ">
-        <div style="font-size: 18px; margin-bottom: 4px;">🦑</div>
-        <div>函館発</div>
-        <div>ローカル情報</div>
+        <div style="font-size: 10px; letter-spacing: 0.2em; margin-bottom: 2px;">HAKODATE</div>
+        <div>函館発ローカル情報</div>
       </div>
     </div>
   </div>
+
+  <!-- Wave separator -->
+  <div style="position: relative; flex-shrink: 0; line-height: 0;">
+    <svg viewBox="0 0 1440 80" style="width: 100%; display: block;" preserveAspectRatio="none">
+      <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#ffffff"/>
+    </svg>
+  </div>
 </section>
+
+<style>
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-16px); }
+  }
+</style>

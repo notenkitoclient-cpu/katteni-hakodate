@@ -1,40 +1,43 @@
 ---
 const categories = [
-  { name: 'グルメ', href: '/category/グルメ' },
-  { name: '観光', href: '/category/観光' },
-  { name: '暮らし', href: '/category/暮らし' },
-  { name: 'イベント', href: '/category/イベント' },
+  { name: 'グルメ',       href: '/category/グルメ' },
+  { name: '観光',         href: '/category/観光' },
+  { name: '暮らし',       href: '/category/暮らし' },
+  { name: 'イベント',     href: '/category/イベント' },
   { name: '人・ビジネス', href: '/category/人・ビジネス' },
-  { name: '特産品', href: '/category/特産品' },
+  { name: '特産品',       href: '/category/特産品' },
 ];
 ---
 
 <header id="site-header" style="
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  transition: box-shadow 0.3s ease;
+  background: rgba(6, 20, 38, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 ">
-  <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
 
     <!-- Logo -->
-    <a href="/" style="flex-shrink: 0; display: flex; flex-direction: column; line-height: 1;">
-      <span style="font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 800; color: #0d2d52; letter-spacing: 0.02em;">カッテニハコダテ</span>
-      <span style="font-size: 9px; color: #6c757d; letter-spacing: 0.2em; margin-top: 2px;">KATTENI HAKODATE</span>
+    <a href="/" style="flex-shrink: 0; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+      <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 32px; height: 32px; object-fit: contain;" />
+      <div style="line-height: 1;">
+        <span style="font-family: 'Shippori Mincho', serif; font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: 0.02em; display: block;">カッテニハコダテ</span>
+        <span style="font-size: 8px; color: rgba(255,255,255,0.4); letter-spacing: 0.22em; display: block; margin-top: 2px;">KATTENI HAKODATE</span>
+      </div>
     </a>
 
-    <!-- Category nav (desktop) -->
-    <nav style="display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1; justify-content: center;">
+    <!-- Category nav -->
+    <nav style="display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1; justify-content: center;">
       {categories.map((cat) => (
         <a href={cat.href} style="
-          padding: 6px 14px; font-size: 13px; font-weight: 500;
-          color: #3d4a52; white-space: nowrap; border-radius: 4px;
+          padding: 6px 13px; font-size: 13px; font-weight: 500;
+          color: rgba(255,255,255,0.65); white-space: nowrap; border-radius: 4px;
           transition: all 0.2s ease;
         "
-        onmouseover="this.style.background='#f0f2f4'; this.style.color='#0d2d52'"
-        onmouseout="this.style.background='transparent'; this.style.color='#3d4a52'"
+        onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.color='white'"
+        onmouseout="this.style.background='transparent'; this.style.color='rgba(255,255,255,0.65)'"
         >{cat.name}</a>
       ))}
     </nav>
@@ -42,12 +45,12 @@ const categories = [
     <!-- CTA -->
     <a href="/members" style="
       flex-shrink: 0; padding: 8px 18px;
-      background: #0d2d52; color: white;
-      border-radius: 4px; font-size: 13px; font-weight: 700;
-      white-space: nowrap; transition: opacity 0.2s;
+      background: #0d8a87; color: white;
+      border-radius: 3px; font-size: 12px; font-weight: 700;
+      white-space: nowrap; transition: background 0.2s; letter-spacing: 0.05em;
     "
-    onmouseover="this.style.opacity='0.85'"
-    onmouseout="this.style.opacity='1'"
+    onmouseover="this.style.background='#0faba8'"
+    onmouseout="this.style.background='#0d8a87'"
     >仕掛け人募集</a>
   </div>
 </header>
