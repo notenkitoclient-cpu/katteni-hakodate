@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="404 - ページが見つかりません">
+  <Header />
+  <main style="
+    min-height: 80vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 24px;
+    background: #ffffff;
+  ">
+    <div style="text-align: center; max-width: 480px;">
+      <img
+        src="/images/kacchin-404.png"
+        alt="カッチン 404エラー"
+        style="
+          width: 220px; height: auto;
+          display: block; margin: 0 auto 32px;
+          filter: drop-shadow(0 8px 24px rgba(13,45,82,0.15));
+        "
+      />
+      <p style="
+        font-size: 11px; letter-spacing: 0.3em;
+        color: #0d8a87; font-weight: 700;
+        margin-bottom: 16px; text-transform: uppercase;
+      ">404 Not Found</p>
+      <h1 style="
+        font-family: 'Shippori Mincho', serif;
+        font-size: 28px; font-weight: 800;
+        color: #0d0d0d; margin-bottom: 16px;
+        line-height: 1.4;
+      ">ページが見つかりません</h1>
+      <p style="
+        font-size: 14px; color: #6c757d;
+        line-height: 1.8; margin-bottom: 40px;
+      ">
+        お探しのページは移動または削除された可能性があります。<br>
+        カッチンもそのページを探したけど、見つけられなかったみたい…
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/" style="
+          padding: 12px 28px;
+          background: #0d2d52; color: white;
+          font-size: 14px; font-weight: 700;
+          border-radius: 4px; transition: opacity 0.2s;
+          letter-spacing: 0.05em;
+        "
+        onmouseover="this.style.opacity='0.85'"
+        onmouseout="this.style.opacity='1'"
+        >トップへ戻る</a>
+        <a href="/articles" style="
+          padding: 12px 28px;
+          border: 1.5px solid #0d2d52; color: #0d2d52;
+          font-size: 14px; font-weight: 700;
+          border-radius: 4px; transition: all 0.2s;
+          letter-spacing: 0.05em;
+        "
+        onmouseover="this.style.background='#0d2d52'; this.style.color='white'"
+        onmouseout="this.style.background='transparent'; this.style.color='#0d2d52'"
+        >記事一覧を見る</a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

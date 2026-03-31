@@ -88,35 +88,49 @@
     </div>
 
     <!-- Right: Visual -->
-    <div style="position: relative;">
-      <!-- Main visual card -->
+    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <!-- カッチンメインビジュアル -->
       <div style="
-        background: linear-gradient(160deg, #0d2d52 0%, #0d5a7a 50%, #0d8a87 100%);
-        border-radius: 8px; padding: 48px 40px;
-        color: white; text-align: center;
-        min-height: 400px; display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
+        background: linear-gradient(160deg, #e8eef2 0%, #d4e4f0 100%);
+        border-radius: 16px; padding: 40px;
         position: relative; overflow: hidden;
+        width: 100%;
       ">
-        <!-- Wave -->
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; opacity: 0.12;">
-          <svg viewBox="0 0 400 80" style="width:100%; display:block;">
-            <path d="M0,40 C100,70 200,10 300,40 C350,55 380,45 400,40 L400,80 L0,80Z" fill="white"/>
-          </svg>
-        </div>
-        <div style="font-size: 64px; margin-bottom: 20px;">⚓</div>
-        <p style="font-family: 'Shippori Mincho', serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.5;">港町・函館から<br>本物の情報を</p>
-        <p style="font-size: 13px; opacity: 0.75; line-height: 1.7; max-width: 280px;">グルメ、観光、移住、イベント。地元民が選んだ、本当に価値ある情報だけをお届けします。</p>
+        <!-- Decorative circles -->
+        <div style="position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(13,42,82,0.06); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -20px; left: -20px; width: 120px; height: 120px; background: rgba(13,138,135,0.08); border-radius: 50%;"></div>
+
+        <img
+          src="/images/kacchin-nightview.png"
+          alt="カッチン — カッテニハコダテのマスコット"
+          style="
+            width: 100%; max-width: 380px;
+            display: block; margin: 0 auto;
+            position: relative; z-index: 1;
+            filter: drop-shadow(0 16px 40px rgba(13,45,82,0.18));
+          "
+        />
+
+        <!-- Caption -->
+        <p style="
+          text-align: center; margin-top: 20px;
+          font-family: 'Shippori Mincho', serif;
+          font-size: 15px; font-weight: 700; color: #0d2d52;
+          position: relative; z-index: 1;
+          letter-spacing: 0.06em;
+        ">カッチン（マスコット）</p>
+        <p style="text-align: center; font-size: 12px; color: #6c757d; margin-top: 4px; position: relative; z-index: 1;">港町ハコダテを見つめるタコ</p>
       </div>
 
       <!-- Floating badge -->
       <div style="
-        position: absolute; top: -16px; right: -16px;
+        position: absolute; top: -16px; right: -8px;
         background: #c05a3a; color: white;
         padding: 12px 16px; border-radius: 8px;
         font-size: 12px; font-weight: 700;
         box-shadow: 0 4px 16px rgba(192,90,58,0.4);
         text-align: center; line-height: 1.4;
+        z-index: 2;
       ">
         <div style="font-size: 18px; margin-bottom: 4px;">🦑</div>
         <div>函館発</div>

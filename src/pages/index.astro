@@ -12,12 +12,12 @@ const featured = sorted.filter(a => a.data.featured).slice(0, 3);
 const recent = sorted.slice(0, 6);
 
 const categories = [
-  { name: 'グルメ', emoji: '🍣', desc: '地元民が通う店・海鮮グルメ', color: '#0d8a87', bg: '#f0fafa' },
-  { name: '観光', emoji: '⚓', desc: '穴場・定番・絶景スポット', color: '#0d2d52', bg: '#f0f4f8' },
-  { name: '暮らし', emoji: '🏘️', desc: '移住・子育て・生活情報', color: '#1a7fc0', bg: '#f0f6fc' },
-  { name: 'イベント', emoji: '🎆', desc: '季節のお祭り・港のイベント', color: '#c05a3a', bg: '#fdf4f0' },
-  { name: '人・ビジネス', emoji: '👥', desc: '函館で活躍する人の物語', color: '#5a3a7a', bg: '#f6f0fc' },
-  { name: '特産品', emoji: '🦑', desc: 'イカ・海産物・函館の名物', color: '#1a6a5a', bg: '#f0faf6' },
+  { name: 'グルメ', img: '/images/kacchin-gourmet.png', desc: '地元民が通う店・海鮮グルメ', color: '#0d8a87', bg: '#f0fafa' },
+  { name: '観光', img: '/images/kacchin-slope.png', desc: '穴場・定番・絶景スポット', color: '#0d2d52', bg: '#f0f4f8' },
+  { name: '暮らし', img: '/images/kacchin-tram.png', desc: '移住・子育て・生活情報', color: '#1a7fc0', bg: '#f0f6fc' },
+  { name: 'イベント', img: '/images/kacchin-goryokaku.png', desc: '季節のお祭り・港のイベント', color: '#c05a3a', bg: '#fdf4f0' },
+  { name: '人・ビジネス', img: '/images/kacchin-nightview.png', desc: '函館で活躍する人の物語', color: '#5a3a7a', bg: '#f6f0fc' },
+  { name: '特産品', img: '/images/kacchin-asaichi.png', desc: 'イカ・海産物・函館の名物', color: '#1a6a5a', bg: '#f0faf6' },
 ];
 ---
 
@@ -68,10 +68,10 @@ const categories = [
       </div>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
         {categories.map(cat => (
-          <a href={`/category/${cat.name}`} style={`display: flex; align-items: center; gap: 16px; padding: 20px 24px; background: ${cat.bg}; border-radius: 8px; border: 1px solid transparent; text-decoration: none; transition: all 0.25s ease;`}
+          <a href={`/category/${cat.name}`} style={`display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: ${cat.bg}; border-radius: 8px; border: 1px solid transparent; text-decoration: none; transition: all 0.25s ease;`}
             onmouseover={`this.style.borderColor='${cat.color}40'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'`}
             onmouseout="this.style.borderColor='transparent'; this.style.transform=''; this.style.boxShadow=''">
-            <span style="font-size: 32px; flex-shrink: 0;">{cat.emoji}</span>
+            <img src={cat.img} alt={cat.name} style="width: 60px; height: 60px; object-fit: contain; flex-shrink: 0;" />
             <div>
               <p style={`font-size: 15px; font-weight: 700; color: ${cat.color}; margin-bottom: 3px;`}>{cat.name}</p>
               <p style="font-size: 12px; color: #6c757d; line-height: 1.4;">{cat.desc}</p>
