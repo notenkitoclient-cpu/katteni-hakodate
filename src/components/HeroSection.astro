@@ -1,144 +1,141 @@
 ---
 ---
+<!-- ======================================================
+  HERO — 全画面 (studyinshizuoka.jp 参照)
+  背景: 空〜海のグラデーション (写真の代替)
+  中央: 大きいキャッチコピー + CTA
+====================================================== -->
 <section style="
   position: relative;
-  background: #f0f8fa;
+  width: 100%;
+  height: 100vh;
+  min-height: 560px;
   overflow: hidden;
-  min-height: 88vh;
   display: flex; flex-direction: column;
 ">
-  <!-- Soft radial accent (top right) -->
+  <!-- 空〜海グラデーション背景 -->
   <div style="
-    position: absolute; top: -100px; right: -60px;
-    width: 560px; height: 560px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(13,138,135,0.10) 0%, transparent 70%);
-    pointer-events: none;
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      180deg,
+      #b8d8e8 0%,
+      #7ab8d4 25%,
+      #3a8aaa 50%,
+      #1a5a7a 75%,
+      #0d3a58 100%
+    );
   "></div>
+
+  <!-- 白い光のオーバーレイ（上部） -->
   <div style="
-    position: absolute; bottom: 40px; left: -80px;
-    width: 320px; height: 320px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(13,45,82,0.06) 0%, transparent 70%);
+    position: absolute; top: 0; left: 0; right: 0; height: 40%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
     pointer-events: none;
   "></div>
 
-  <!-- Main -->
+  <!-- 波紋デコレーション -->
   <div style="
-    flex: 1;
-    max-width: 1200px; margin: 0 auto; width: 100%;
-    padding: 80px 40px 60px;
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 40px; align-items: center;
+    position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+  "></div>
+  <div style="
+    position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 500px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.06);
+    pointer-events: none;
+  "></div>
+
+  <!-- カッチン（右下に配置） -->
+  <img
+    src="/images/kacchin-nightview.png"
+    alt="カッチン"
+    style="
+      position: absolute;
+      right: 6%; bottom: 80px;
+      width: clamp(200px, 22vw, 320px);
+      filter: drop-shadow(0 20px 48px rgba(0,0,0,0.25));
+      animation: float 5s ease-in-out infinite;
+      z-index: 2;
+    "
+  />
+
+  <!-- メインコンテンツ（中央） -->
+  <div style="
+    position: relative; z-index: 3;
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 0 24px;
   ">
-    <!-- Left: Text -->
-    <div>
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 28px;">
-        <div style="width: 28px; height: 2px; background: #0d8a87; border-radius: 1px;"></div>
-        <p style="font-size: 11px; letter-spacing: 0.32em; color: #0d8a87; font-weight: 700; text-transform: uppercase;">Hakodate Community Media</p>
-      </div>
+    <p style="
+      font-size: 11px; letter-spacing: 0.45em;
+      color: rgba(255,255,255,0.75); font-weight: 700;
+      text-transform: uppercase; margin-bottom: 24px;
+    ">⚓ &nbsp; Hakodate Community Media</p>
 
-      <h1 style="
-        font-family: 'Shippori Mincho', serif;
-        font-size: clamp(36px, 5vw, 62px);
-        font-weight: 800; line-height: 1.25;
-        color: #0d2d52; margin-bottom: 28px;
-        letter-spacing: 0.02em;
-      ">
-        知らなかった、<br>
-        <span style="color: #0d8a87;">ハコダテ</span>がある。
-      </h1>
+    <h1 style="
+      font-family: 'Shippori Mincho', serif;
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 800; color: #ffffff;
+      line-height: 1.2; letter-spacing: 0.03em;
+      margin-bottom: 24px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    ">
+      知らなかった、<br>ハコダテがある。
+    </h1>
 
-      <p style="
-        font-size: 15px; color: #5a6a7a; line-height: 1.95;
-        margin-bottom: 44px; max-width: 440px;
-      ">
-        港町・函館に住む人、訪れる人、移住を考える人へ。<br>
-        地元目線で、かってに函館の魅力を発信するコミュニティメディアです。
-      </p>
+    <p style="
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255,255,255,0.82);
+      line-height: 1.85; margin-bottom: 40px;
+      max-width: 520px;
+    ">
+      港町・函館に住む人、訪れる人、移住を考える人へ。<br>
+      地元目線でかってに函館の魅力を発信するコミュニティメディア。
+    </p>
 
-      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 52px;">
-        <a href="/articles" style="
-          padding: 14px 32px;
-          background: #0d2d52; color: white;
-          font-size: 14px; font-weight: 700; border-radius: 4px;
-          letter-spacing: 0.05em; transition: background 0.2s;
-        "
-        onmouseover="this.style.background='#1a4a72'"
-        onmouseout="this.style.background='#0d2d52'"
-        >記事を読む</a>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+      <a href="/articles" style="
+        padding: 14px 36px;
+        background: white; color: #0d3a58;
+        font-size: 14px; font-weight: 700; border-radius: 4px;
+        letter-spacing: 0.06em; transition: all 0.2s;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      "
+      onmouseover="this.style.background='#e8f4f8'; this.style.boxShadow='0 6px 28px rgba(0,0,0,0.2)'"
+      onmouseout="this.style.background='white'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.15)'"
+      >記事を読む</a>
 
-        <a href="/about" style="
-          padding: 14px 32px;
-          border: 1.5px solid #0d8a87; color: #0d8a87;
-          font-size: 14px; font-weight: 700; border-radius: 4px;
-          letter-spacing: 0.05em; transition: all 0.2s;
-        "
-        onmouseover="this.style.background='#0d8a87'; this.style.color='white'"
-        onmouseout="this.style.background='transparent'; this.style.color='#0d8a87'"
-        >サイトについて</a>
-      </div>
-
-      <!-- Stats -->
-      <div style="display: flex; gap: 40px; padding-top: 32px; border-top: 1px solid #d4e8ec;">
-        {[
-          { num: '14+', label: '記事' },
-          { num: '6',   label: 'カテゴリ' },
-          { num: '4',   label: '仕掛け人' },
-        ].map(item => (
-          <div>
-            <p style="font-family: 'Shippori Mincho', serif; font-size: 30px; font-weight: 800; color: #0d2d52; line-height: 1;">{item.num}</p>
-            <p style="font-size: 11px; color: #7a9aaa; margin-top: 4px; letter-spacing: 0.15em;">{item.label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Right: カッチン (transparent PNG, no background box) -->
-    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-      <!-- Subtle circle behind character -->
-      <div style="
-        position: absolute;
-        width: 380px; height: 380px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(13,138,135,0.08) 0%, transparent 68%);
-        pointer-events: none;
-      "></div>
-
-      <img
-        src="/images/kacchin-nightview.png"
-        alt="カッチン — カッテニハコダテのマスコット"
-        style="
-          width: 90%; max-width: 380px;
-          position: relative; z-index: 1;
-          filter: drop-shadow(0 16px 40px rgba(13,45,82,0.14));
-          animation: float 5s ease-in-out infinite;
-        "
-      />
-
-      <!-- Brick badge -->
-      <div style="
-        position: absolute; bottom: 16px; right: 0;
-        background: #c05a3a; color: white;
-        padding: 10px 16px; border-radius: 6px;
-        font-size: 12px; font-weight: 700;
-        box-shadow: 0 6px 20px rgba(192,90,58,0.3);
-        text-align: center; line-height: 1.5; z-index: 2;
-      ">
-        <div style="font-size: 10px; letter-spacing: 0.18em; margin-bottom: 2px;">HAKODATE</div>
-        <div>函館発ローカル情報</div>
-      </div>
+      <a href="/about" style="
+        padding: 14px 36px;
+        border: 2px solid rgba(255,255,255,0.6); color: white;
+        font-size: 14px; font-weight: 700; border-radius: 4px;
+        letter-spacing: 0.06em; transition: all 0.2s;
+      "
+      onmouseover="this.style.background='rgba(255,255,255,0.12)'; this.style.borderColor='white'"
+      onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.6)'"
+      >サイトについて</a>
     </div>
   </div>
 
-  <!-- Wave to next section -->
-  <div style="line-height: 0; flex-shrink: 0;">
-    <svg viewBox="0 0 1440 56" style="width:100%; display:block;" preserveAspectRatio="none">
-      <path d="M0,28 C360,56 720,0 1080,28 C1260,42 1380,18 1440,28 L1440,56 L0,56 Z" fill="#ffffff"/>
+  <!-- 下部のスクロール促進 -->
+  <div style="position: relative; z-index: 3; text-align: center; padding-bottom: 28px;">
+    <p style="font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.2em;">SCROLL ↓</p>
+  </div>
+
+  <!-- Wave to white -->
+  <div style="position: absolute; bottom: -1px; left: 0; right: 0; z-index: 4; line-height: 0;">
+    <svg viewBox="0 0 1440 64" style="width:100%; display:block;" preserveAspectRatio="none">
+      <path d="M0,32 C240,64 480,0 720,32 C960,64 1200,0 1440,32 L1440,64 L0,64 Z" fill="#ffffff"/>
     </svg>
   </div>
 </section>
 
 <style>
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-14px); }
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-16px); }
   }
 </style>

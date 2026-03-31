@@ -8,16 +8,58 @@ import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
 const sorted = allArticles.sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const featured = sorted.filter(a => a.data.featured).slice(0, 3);
-const recent   = sorted.slice(0, 6);
+const recent = sorted.slice(0, 6);
 
-const categories = [
-  { name: 'グルメ',       img: '/images/kacchin-gourmet.png',   desc: '地元民が通う店・海鮮グルメ',   color: '#0d8a87', accent: '#e6f7f7' },
-  { name: '観光',         img: '/images/kacchin-slope.png',     desc: '穴場・定番・絶景スポット',     color: '#1a7fc0', accent: '#e8f2fa' },
-  { name: '暮らし',       img: '/images/kacchin-tram.png',      desc: '移住・子育て・生活情報',       color: '#3a8fd4', accent: '#eaf4fc' },
-  { name: 'イベント',     img: '/images/kacchin-goryokaku.png', desc: '季節のお祭り・港のイベント',   color: '#c05a3a', accent: '#fdf2ee' },
-  { name: '人・ビジネス', img: '/images/kacchin-nightview.png', desc: '函館で活躍する人の物語',       color: '#7a50b0', accent: '#f4f0fa' },
-  { name: '特産品',       img: '/images/kacchin-asaichi.png',   desc: 'イカ・海産物・函館の名物',     color: '#1a9a6a', accent: '#ebf8f2' },
+// 4 大タイル (studyinshizuoka の "4つの静岡ライフ" 相当)
+const lifeTiles = [
+  {
+    name:    'グルメ',
+    sub:     '食べる [Gourmet]',
+    desc:    '海鮮・ラーメン・朝市。地元が通う本物の味。',
+    img:     '/images/kacchin-gourmet.png',
+    href:    '/category/グルメ',
+    gradient:'linear-gradient(135deg, #0a4a4a 0%, #0d8a87 100%)',
+  },
+  {
+    name:    '観光',
+    sub:     '巡る [Sightseeing]',
+    desc:    '夜景・元町・金森倉庫。函館の絶景を歩く。',
+    img:     '/images/kacchin-slope.png',
+    href:    '/category/観光',
+    gradient:'linear-gradient(135deg, #0a2040 0%, #1a5a9a 100%)',
+  },
+  {
+    name:    '暮らし',
+    sub:     '住む [Living]',
+    desc:    '移住・子育て・仕事。函館で暮らすリアル。',
+    img:     '/images/kacchin-tram.png',
+    href:    '/category/暮らし',
+    gradient:'linear-gradient(135deg, #0a3060 0%, #2a7aaa 100%)',
+  },
+  {
+    name:    'イベント',
+    sub:     '楽しむ [Events]',
+    desc:    'バル街・函館港まつり。季節の祭りを全力で。',
+    img:     '/images/kacchin-goryokaku.png',
+    href:    '/category/イベント',
+    gradient:'linear-gradient(135deg, #5a1a0a 0%, #c05a3a 100%)',
+  },
+  {
+    name:    '特産品',
+    sub:     '味わう [Products]',
+    desc:    'イカ・昆布・海産物。函館が誇る食の宝庫。',
+    img:     '/images/kacchin-asaichi.png',
+    href:    '/category/特産品',
+    gradient:'linear-gradient(135deg, #064028 0%, #1a9a6a 100%)',
+  },
+  {
+    name:    '人・ビジネス',
+    sub:     '出会う [People]',
+    desc:    '函館で働く・作る・挑む。人の物語を届ける。',
+    img:     '/images/kacchin-nightview.png',
+    href:    '/category/人・ビジネス',
+    gradient:'linear-gradient(135deg, #2a0a5a 0%, #7a4abA 100%)',
+  },
 ];
 ---
 
@@ -27,58 +69,67 @@ const categories = [
 
   <main style="background: #ffffff;">
 
-    <!-- ===== PICK UP ===== -->
-    {featured.length > 0 && (
-      <section style="padding: 80px 0;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px;">
-          <div style="display: flex; align-items: flex-end; gap: 16px; margin-bottom: 44px;">
-            <div>
-              <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Pick Up</p>
-              <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d2d52;">注目の記事</h2>
-            </div>
-            <div style="flex: 1; height: 1px; background: linear-gradient(to right, #c8dde6, transparent); margin-bottom: 6px;"></div>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 24px;">
-            {featured.map(a => (
-              <ArticleCard title={a.data.title} description={a.data.description} category={a.data.category} date={a.data.date} author={a.data.author} slug={a.id} featured={true} />
-            ))}
-          </div>
-        </div>
-      </section>
-    )}
-
-    <!-- ===== CATEGORY ===== -->
-    <section style="padding: 80px 0; background: #f5fafc;">
+    <!-- =====================================================
+      SECTION 1: "6つのハコダテライフ"  (4-tile 相当 → 3×2)
+    ===================================================== -->
+    <section style="padding: 80px 0 100px; background: #fff;">
       <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px;">
-        <div style="display: flex; align-items: flex-end; gap: 16px; margin-bottom: 44px;">
-          <div>
-            <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Category</p>
-            <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d2d52;">カテゴリから探す</h2>
-          </div>
-          <div style="flex: 1; height: 1px; background: linear-gradient(to right, #c8dde6, transparent); margin-bottom: 6px;"></div>
+
+        <!-- Section heading -->
+        <div style="text-align: center; margin-bottom: 56px;">
+          <p style="font-size: 11px; letter-spacing: 0.35em; color: #0d8a87; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">In Hakodate</p>
+          <h2 style="font-family: 'Shippori Mincho', serif; font-size: 32px; font-weight: 800; color: #0d2d52; letter-spacing: 0.03em;">6つのハコダテライフ</h2>
+          <p style="font-size: 14px; color: #7a9aaa; margin-top: 12px; line-height: 1.7;">グルメ、観光、暮らし、イベント、特産品、人。<br>あなたのハコダテを見つけてください。</p>
         </div>
 
+        <!-- 3×2 タイルグリッド -->
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-          {categories.map(cat => (
-            <a href={`/category/${cat.name}`}
+          {lifeTiles.map(tile => (
+            <a href={tile.href}
+              class="life-tile"
               style={`
-                display: flex; align-items: center; gap: 16px;
-                padding: 20px 22px;
-                background: ${cat.accent};
-                border-radius: 10px;
-                border: 1.5px solid transparent;
-                text-decoration: none;
-                transition: all 0.25s ease;
+                display: block; border-radius: 10px; overflow: hidden;
+                background: ${tile.gradient};
+                text-decoration: none; position: relative;
+                aspect-ratio: 4/3;
               `}
-              onmouseover={`this.style.borderColor='${cat.color}'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 28px rgba(0,0,0,0.08)'`}
-              onmouseout="this.style.borderColor='transparent'; this.style.transform=''; this.style.boxShadow=''"
             >
-              <img src={cat.img} alt={cat.name}
-                style="width: 60px; height: 60px; object-fit: contain; flex-shrink: 0;"
-              />
-              <div>
-                <p style={`font-size: 15px; font-weight: 700; color: ${cat.color}; margin-bottom: 3px; font-family: 'Shippori Mincho', serif;`}>{cat.name}</p>
-                <p style="font-size: 12px; color: #7a9aaa; line-height: 1.5;">{cat.desc}</p>
+              <!-- Gradient overlay for text readability -->
+              <div style="
+                position: absolute; inset: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+                z-index: 1;
+              "></div>
+
+              <!-- カッチン画像 -->
+              <div style="
+                position: absolute; inset: 0;
+                display: flex; align-items: center; justify-content: center;
+                padding-bottom: 48px;
+              ">
+                <img src={tile.img} alt={tile.name}
+                  style="
+                    height: 65%; width: 100%; object-fit: contain;
+                    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
+                    transition: transform 0.5s ease;
+                  "
+                  class="tile-img"
+                />
+              </div>
+
+              <!-- テキスト (下部オーバーレイ) -->
+              <div style="
+                position: absolute; bottom: 0; left: 0; right: 0;
+                padding: 20px 22px;
+                z-index: 2;
+              ">
+                <p style="font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.15em; margin-bottom: 4px;">{tile.sub}</p>
+                <h3 style="
+                  font-family: 'Shippori Mincho', serif;
+                  font-size: 22px; font-weight: 800; color: white;
+                  letter-spacing: 0.04em; margin-bottom: 4px;
+                ">{tile.name}</h3>
+                <p style="font-size: 12px; color: rgba(255,255,255,0.72); line-height: 1.5;">{tile.desc}</p>
               </div>
             </a>
           ))}
@@ -86,66 +137,89 @@ const categories = [
       </div>
     </section>
 
-    <!-- ===== LATEST ===== -->
-    <section style="padding: 80px 0;">
+    <!-- =====================================================
+      SECTION 2: 最新記事
+    ===================================================== -->
+    <section style="padding: 80px 0 100px; background: #f4f9fb;">
       <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px;">
-        <div style="display: flex; align-items: flex-end; gap: 16px; margin-bottom: 44px;">
+
+        <div style="display: flex; align-items: flex-end; gap: 16px; margin-bottom: 48px;">
           <div>
-            <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Latest</p>
-            <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d2d52;">最新記事</h2>
+            <p style="font-size: 11px; letter-spacing: 0.35em; color: #0d8a87; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">News &amp; Topics</p>
+            <h2 style="font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: #0d2d52;">最新記事</h2>
           </div>
-          <div style="flex: 1; height: 1px; background: linear-gradient(to right, #c8dde6, transparent); margin-bottom: 6px;"></div>
-          <a href="/articles" style="font-size: 13px; color: #0d8a87; font-weight: 600; border-bottom: 1px solid #0d8a87; padding-bottom: 2px; white-space: nowrap; margin-bottom: 6px; transition: opacity 0.2s;"
+          <div style="flex: 1; height: 1px; background: linear-gradient(to right, #bcd4dc, transparent); margin-bottom: 6px;"></div>
+          <a href="/articles"
+            style="font-size: 13px; color: #0d8a87; font-weight: 600; border-bottom: 1px solid currentColor; padding-bottom: 2px; white-space: nowrap; margin-bottom: 6px; transition: opacity 0.2s;"
             onmouseover="this.style.opacity='0.7'"
             onmouseout="this.style.opacity='1'"
           >すべて見る →</a>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 24px;">
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
           {recent.map(a => (
-            <ArticleCard title={a.data.title} description={a.data.description} category={a.data.category} date={a.data.date} author={a.data.author} slug={a.id} featured={a.data.featured} />
+            <ArticleCard
+              title={a.data.title}
+              description={a.data.description}
+              category={a.data.category}
+              date={a.data.date}
+              author={a.data.author}
+              slug={a.id}
+              featured={a.data.featured}
+            />
           ))}
         </div>
       </div>
     </section>
 
-    <!-- ===== CTA ===== -->
-    <section style="padding: 0 0 100px; background: #f5fafc;">
-      <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+    <!-- =====================================================
+      SECTION 3: JOIN US バナー
+    ===================================================== -->
+    <section style="padding: 80px 40px 100px; background: #f4f9fb;">
+      <div style="max-width: 1200px; margin: 0 auto;">
         <div style="
-          background: #0d2d52;
+          background: linear-gradient(120deg, #0d2d52 0%, #0d5a7a 50%, #0d8a87 100%);
           border-radius: 12px; padding: 64px 56px;
           display: grid; grid-template-columns: 1fr auto;
-          gap: 48px; align-items: center;
+          gap: 40px; align-items: center;
           position: relative; overflow: hidden;
         ">
-          <!-- Decorative カッチン -->
-          <img src="/images/kacchin-asaichi.png" alt="" aria-hidden="true" style="
-            position: absolute; right: 220px; bottom: -10px;
-            width: 160px; opacity: 0.12; pointer-events: none;
+          <!-- 背景カッチン (薄く) -->
+          <img src="/images/kacchin-nightview.png" alt="" aria-hidden="true" style="
+            position: absolute; right: 200px; bottom: -20px;
+            width: 200px; opacity: 0.08;
+            pointer-events: none;
           " />
 
-          <div>
-            <p style="font-size: 11px; letter-spacing: 0.3em; color: #52d9d6; font-weight: 700; margin-bottom: 14px; text-transform: uppercase;">Join Us</p>
-            <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: white; margin-bottom: 14px; line-height: 1.45;">あなたの函館を、教えてください。</h2>
-            <p style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.9; max-width: 480px;">好きなお店、おすすめの景色、移住して気づいたこと。「ハコダテ仕掛け人」として一緒に発信しませんか？</p>
+          <div style="position: relative;">
+            <p style="font-size: 11px; letter-spacing: 0.35em; color: rgba(255,255,255,0.65); font-weight: 700; margin-bottom: 14px; text-transform: uppercase;">Join Us</p>
+            <h2 style="font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: white; margin-bottom: 16px; line-height: 1.4;">
+              あなたの函館を、<br>教えてください。
+            </h2>
+            <p style="font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.9; max-width: 460px;">
+              好きなお店、おすすめの景色、移住して気づいたこと。<br>「ハコダテ仕掛け人」として一緒に発信しませんか？
+            </p>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 12px; flex-shrink: 0;">
+
+          <div style="display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; position: relative;">
             <a href="/submit" style="
-              padding: 13px 28px; background: #c05a3a; color: white;
+              padding: 14px 32px; background: #c05a3a; color: white;
               border-radius: 4px; font-size: 14px; font-weight: 700;
-              text-align: center; white-space: nowrap; letter-spacing: 0.05em; transition: opacity 0.2s;
+              text-align: center; white-space: nowrap; letter-spacing: 0.05em;
+              transition: opacity 0.2s;
             "
             onmouseover="this.style.opacity='0.85'"
             onmouseout="this.style.opacity='1'"
             >情報を投稿する</a>
             <a href="/members" style="
-              padding: 13px 28px;
-              border: 1.5px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.8);
+              padding: 14px 32px;
+              border: 1.5px solid rgba(255,255,255,0.35); color: rgba(255,255,255,0.85);
               border-radius: 4px; font-size: 14px; font-weight: 700;
-              text-align: center; white-space: nowrap; letter-spacing: 0.05em; transition: all 0.2s;
+              text-align: center; white-space: nowrap; letter-spacing: 0.05em;
+              transition: all 0.2s;
             "
-            onmouseover="this.style.borderColor='rgba(255,255,255,0.7)'; this.style.color='white'"
-            onmouseout="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='rgba(255,255,255,0.8)'"
+            onmouseover="this.style.borderColor='white'; this.style.color='white'"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.35)'; this.style.color='rgba(255,255,255,0.85)'"
             >仕掛け人について</a>
           </div>
         </div>
@@ -155,3 +229,14 @@ const categories = [
   </main>
   <Footer />
 </BaseLayout>
+
+<style>
+  .life-tile { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .life-tile:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 56px rgba(0,0,0,0.18);
+  }
+  .life-tile:hover .tile-img {
+    transform: scale(1.08);
+  }
+</style>
