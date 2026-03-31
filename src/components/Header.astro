@@ -1,44 +1,56 @@
 ---
 const categories = [
-  { name: 'グルメ', emoji: '🍣', href: '/category/グルメ' },
-  { name: '観光', emoji: '⚓', href: '/category/観光' },
-  { name: '暮らし', emoji: '🏘️', href: '/category/暮らし' },
-  { name: 'イベント', emoji: '🎆', href: '/category/イベント' },
-  { name: '人・ビジネス', emoji: '👥', href: '/category/人・ビジネス' },
-  { name: '特産品', emoji: '🦑', href: '/category/特産品' },
+  { name: 'グルメ', href: '/category/グルメ' },
+  { name: '観光', href: '/category/観光' },
+  { name: '暮らし', href: '/category/暮らし' },
+  { name: 'イベント', href: '/category/イベント' },
+  { name: '人・ビジネス', href: '/category/人・ビジネス' },
+  { name: '特産品', href: '/category/特産品' },
 ];
 ---
 
-<header style="background-color: #e8eef2; border-bottom: 2px solid #b8c8d8; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(8px);">
-  <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px;">
-    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
-      <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-        <!-- Anchor icon for maritime feel -->
-        <div style="width: 36px; height: 36px; background: #0d2d52; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">⚓</div>
-        <div style="display: flex; flex-direction: column; line-height: 1.1;">
-          <span style="font-size: 20px; font-weight: 900; color: #0d2d52; letter-spacing: -0.5px; font-family: 'Noto Sans JP', sans-serif;">カッテニハコダテ</span>
-          <span style="font-size: 10px; color: #5a7a9a; letter-spacing: 2px; font-weight: 400;">KATTENI HAKODATE</span>
-        </div>
-      </a>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <a href="/about" style="font-size: 12px; color: #3a5a7a; text-decoration: none; padding: 6px 12px; border-radius: 20px; border: 1px solid #9ab8cc; transition: all 0.2s; display: none;" class="md-show">このサイトについて</a>
-        <a href="/members" style="font-size: 13px; color: #fff; text-decoration: none; padding: 7px 16px; border-radius: 20px; background-color: #c05a3a; font-weight: 700; white-space: nowrap;">仕掛け人募集</a>
-      </div>
-    </div>
-    <nav style="overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 1px;">
-      <div style="display: flex; gap: 6px; padding-bottom: 8px; min-width: max-content;">
-        {categories.map((cat) => (
-          <a
-            href={cat.href}
-            style="display: flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; color: #0d2d52; text-decoration: none; border: 1px solid #9ab8cc; background: white; white-space: nowrap; transition: all 0.2s;"
-            onmouseover="this.style.background='#0d2d52'; this.style.color='white'; this.style.borderColor='#0d2d52';"
-            onmouseout="this.style.background='white'; this.style.color='#0d2d52'; this.style.borderColor='#9ab8cc';"
-          >
-            <span>{cat.emoji}</span>
-            <span>{cat.name}</span>
-          </a>
-        ))}
-      </div>
+<header id="site-header" style="
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s ease;
+">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+
+    <!-- Logo -->
+    <a href="/" style="flex-shrink: 0; display: flex; flex-direction: column; line-height: 1;">
+      <span style="font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 800; color: #0d2d52; letter-spacing: 0.02em;">カッテニハコダテ</span>
+      <span style="font-size: 9px; color: #6c757d; letter-spacing: 0.2em; margin-top: 2px;">KATTENI HAKODATE</span>
+    </a>
+
+    <!-- Category nav (desktop) -->
+    <nav style="display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1; justify-content: center;">
+      {categories.map((cat) => (
+        <a href={cat.href} style="
+          padding: 6px 14px; font-size: 13px; font-weight: 500;
+          color: #3d4a52; white-space: nowrap; border-radius: 4px;
+          transition: all 0.2s ease;
+        "
+        onmouseover="this.style.background='#f0f2f4'; this.style.color='#0d2d52'"
+        onmouseout="this.style.background='transparent'; this.style.color='#3d4a52'"
+        >{cat.name}</a>
+      ))}
     </nav>
+
+    <!-- CTA -->
+    <a href="/members" style="
+      flex-shrink: 0; padding: 8px 18px;
+      background: #0d2d52; color: white;
+      border-radius: 4px; font-size: 13px; font-weight: 700;
+      white-space: nowrap; transition: opacity 0.2s;
+    "
+    onmouseover="this.style.opacity='0.85'"
+    onmouseout="this.style.opacity='1'"
+    >仕掛け人募集</a>
   </div>
 </header>
+
+<!-- Header height spacer -->
+<div style="height: 64px;"></div>

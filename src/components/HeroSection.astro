@@ -1,47 +1,127 @@
 ---
 ---
-<section style="background: linear-gradient(160deg, #0d2d52 0%, #0d4a72 40%, #0d7a8a 80%, #0d8a87 100%); color: white; padding: 72px 16px 64px; text-align: center; position: relative; overflow: hidden;">
+<section style="
+  min-height: 92vh;
+  display: flex; align-items: center;
+  padding: 80px 24px;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+">
+  <!-- Subtle background decoration -->
+  <div style="
+    position: absolute; top: 0; right: 0;
+    width: 55%; height: 100%;
+    background: linear-gradient(135deg, #e8eef2 0%, #d4e4f0 100%);
+    clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
+  "></div>
 
-  <!-- Wave pattern decoration -->
-  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; opacity: 0.15;">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style="width: 100%; height: 100%;">
-      <path d="M0,30 C200,60 400,0 600,30 C800,60 1000,0 1200,30 L1200,60 L0,60 Z" fill="white"/>
-    </svg>
-  </div>
+  <div style="max-width: 1200px; margin: 0 auto; width: 100%; position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
 
-  <!-- Star/light dots decoration -->
-  <div style="position: absolute; top: 20px; left: 10%; width: 3px; height: 3px; background: white; border-radius: 50%; opacity: 0.6;"></div>
-  <div style="position: absolute; top: 40px; left: 25%; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.4;"></div>
-  <div style="position: absolute; top: 15px; right: 20%; width: 4px; height: 4px; background: #c8e8ff; border-radius: 50%; opacity: 0.5;"></div>
-  <div style="position: absolute; top: 60px; right: 35%; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.3;"></div>
+    <!-- Left: Typography -->
+    <div>
+      <p style="
+        font-size: 11px; letter-spacing: 0.3em;
+        color: #0d8a87; font-weight: 700;
+        margin-bottom: 24px; text-transform: uppercase;
+      ">⚓ Hakodate Community Media</p>
 
-  <div style="max-width: 800px; margin: 0 auto; position: relative;">
-    <p style="font-size: 12px; letter-spacing: 4px; color: #7ecfcf; font-weight: 700; margin-bottom: 16px; text-transform: uppercase;">⚓ Hakodate Community Media</p>
-    <h1 style="font-size: clamp(30px, 5.5vw, 52px); font-weight: 900; line-height: 1.25; margin-bottom: 24px; font-family: 'Noto Serif JP', serif;">
-      知らなかった、<br>
-      <span style="color: #7ecfcf;">ハコダテがある。</span>
-    </h1>
-    <p style="font-size: 15px; color: #a8c8e8; line-height: 1.9; margin-bottom: 36px; max-width: 560px; margin-left: auto; margin-right: auto;">
-      港町・函館に住む人、訪れる人、移住を考える人へ。<br>
-      地元目線で、かってに函館の魅力を発信するコミュニティメディアです。
-    </p>
-    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-      <a href="/about" style="display: inline-block; padding: 12px 28px; background: #c05a3a; color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">カッテニって何？</a>
-      <a href="/members" style="display: inline-block; padding: 12px 28px; border: 2px solid rgba(255,255,255,0.6); color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">仕掛け人になる</a>
-    </div>
-  </div>
+      <h1 style="
+        font-family: 'Shippori Mincho', serif;
+        font-size: clamp(36px, 5vw, 60px);
+        font-weight: 800; line-height: 1.3;
+        color: #0d0d0d; margin-bottom: 28px;
+        letter-spacing: 0.02em;
+      ">
+        知らなかった、<br>
+        <span style="color: #0d2d52;">ハコダテ</span><span style="color: #0d8a87;">がある。</span>
+      </h1>
 
-  <!-- Stats bar -->
-  <div style="max-width: 720px; margin: 52px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.15);">
-    {[
-      { icon: '🍣', num: '6', label: 'カテゴリ', sub: 'グルメ〜暮らしまで' },
-      { icon: '🏘️', num: '地元', label: '目線', sub: '住民が発信する情報' },
-      { icon: '⚓', num: '毎日', label: '更新', sub: '函館の今をお届け' },
-    ].map(item => (
-      <div style="padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.1);">
-        <p style="font-size: 22px; font-weight: 900; color: #7ecfcf; margin-bottom: 2px;">{item.icon} {item.num}<span style="font-size: 14px;">{item.label}</span></p>
-        <p style="font-size: 11px; color: #7a9ab8;">{item.sub}</p>
+      <p style="
+        font-size: 15px; color: #6c757d; line-height: 1.9;
+        margin-bottom: 40px; max-width: 480px;
+      ">
+        港町・函館に住む人、訪れる人、移住を考える人へ。<br>
+        地元目線で、かってに函館の魅力を発信するコミュニティメディアです。
+      </p>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="/articles" style="
+          padding: 14px 32px;
+          background: #0d2d52; color: white;
+          font-size: 14px; font-weight: 700;
+          border-radius: 4px; transition: all 0.2s;
+          letter-spacing: 0.05em;
+        "
+        onmouseover="this.style.background='#0d4a72'"
+        onmouseout="this.style.background='#0d2d52'"
+        >記事を読む</a>
+
+        <a href="/about" style="
+          padding: 14px 32px;
+          border: 1.5px solid #0d2d52; color: #0d2d52;
+          font-size: 14px; font-weight: 700;
+          border-radius: 4px; transition: all 0.2s;
+          letter-spacing: 0.05em;
+        "
+        onmouseover="this.style.background='#0d2d52'; this.style.color='white'"
+        onmouseout="this.style.background='transparent'; this.style.color='#0d2d52'"
+        >サイトについて</a>
       </div>
-    ))}
+
+      <!-- Stats -->
+      <div style="
+        display: flex; gap: 40px; margin-top: 56px;
+        padding-top: 40px; border-top: 1px solid #e2e6ea;
+      ">
+        {[
+          { num: '14', label: '記事' },
+          { num: '6', label: 'カテゴリ' },
+          { num: '4', label: '仕掛け人' },
+        ].map(item => (
+          <div>
+            <p style="font-family: 'Shippori Mincho', serif; font-size: 32px; font-weight: 800; color: #0d2d52; line-height: 1;">{item.num}</p>
+            <p style="font-size: 12px; color: #6c757d; margin-top: 4px; letter-spacing: 0.1em;">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Right: Visual -->
+    <div style="position: relative;">
+      <!-- Main visual card -->
+      <div style="
+        background: linear-gradient(160deg, #0d2d52 0%, #0d5a7a 50%, #0d8a87 100%);
+        border-radius: 8px; padding: 48px 40px;
+        color: white; text-align: center;
+        min-height: 400px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        position: relative; overflow: hidden;
+      ">
+        <!-- Wave -->
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; opacity: 0.12;">
+          <svg viewBox="0 0 400 80" style="width:100%; display:block;">
+            <path d="M0,40 C100,70 200,10 300,40 C350,55 380,45 400,40 L400,80 L0,80Z" fill="white"/>
+          </svg>
+        </div>
+        <div style="font-size: 64px; margin-bottom: 20px;">⚓</div>
+        <p style="font-family: 'Shippori Mincho', serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.5;">港町・函館から<br>本物の情報を</p>
+        <p style="font-size: 13px; opacity: 0.75; line-height: 1.7; max-width: 280px;">グルメ、観光、移住、イベント。地元民が選んだ、本当に価値ある情報だけをお届けします。</p>
+      </div>
+
+      <!-- Floating badge -->
+      <div style="
+        position: absolute; top: -16px; right: -16px;
+        background: #c05a3a; color: white;
+        padding: 12px 16px; border-radius: 8px;
+        font-size: 12px; font-weight: 700;
+        box-shadow: 0 4px 16px rgba(192,90,58,0.4);
+        text-align: center; line-height: 1.4;
+      ">
+        <div style="font-size: 18px; margin-bottom: 4px;">🦑</div>
+        <div>函館発</div>
+        <div>ローカル情報</div>
+      </div>
+    </div>
   </div>
 </section>

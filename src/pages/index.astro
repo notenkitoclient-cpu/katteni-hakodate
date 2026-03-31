@@ -7,17 +7,17 @@ import ArticleCard from '../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
-const sortedArticles = allArticles.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const featuredArticles = sortedArticles.filter(a => a.data.featured).slice(0, 3);
-const recentArticles = sortedArticles.slice(0, 6);
+const sorted = allArticles.sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const featured = sorted.filter(a => a.data.featured).slice(0, 3);
+const recent = sorted.slice(0, 6);
 
 const categories = [
-  { name: 'グルメ', emoji: '🍣', desc: '地元民が通う店・海鮮グルメ', color: '#0d8a87' },
-  { name: '観光', emoji: '⚓', desc: 'スポット・穴場・定番コース', color: '#0d2d52' },
-  { name: '暮らし', emoji: '🏘️', desc: '移住・子育て・生活情報', color: '#1a7fc0' },
-  { name: 'イベント', emoji: '🎆', desc: '季節のイベント・港のお祭り', color: '#c05a3a' },
-  { name: '人・ビジネス', emoji: '👥', desc: '函館で活躍する人たちの物語', color: '#5a3a7a' },
-  { name: '特産品', emoji: '🦑', desc: 'イカ・海産物・函館の名物', color: '#1a6a5a' },
+  { name: 'グルメ', emoji: '🍣', desc: '地元民が通う店・海鮮グルメ', color: '#0d8a87', bg: '#f0fafa' },
+  { name: '観光', emoji: '⚓', desc: '穴場・定番・絶景スポット', color: '#0d2d52', bg: '#f0f4f8' },
+  { name: '暮らし', emoji: '🏘️', desc: '移住・子育て・生活情報', color: '#1a7fc0', bg: '#f0f6fc' },
+  { name: 'イベント', emoji: '🎆', desc: '季節のお祭り・港のイベント', color: '#c05a3a', bg: '#fdf4f0' },
+  { name: '人・ビジネス', emoji: '👥', desc: '函館で活躍する人の物語', color: '#5a3a7a', bg: '#f6f0fc' },
+  { name: '特産品', emoji: '🦑', desc: 'イカ・海産物・函館の名物', color: '#1a6a5a', bg: '#f0faf6' },
 ];
 ---
 
@@ -25,80 +25,100 @@ const categories = [
   <Header />
   <HeroSection />
 
-  <main style="max-width: 1200px; margin: 0 auto; padding: 48px 16px;">
+  <main style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
 
-    <!-- Featured articles -->
-    {featuredArticles.length > 0 && (
-      <section style="margin-bottom: 64px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-          <span style="display: inline-block; background: #c05a3a; color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 12px; letter-spacing: 1px;">PICK UP</span>
-          <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52;">注目の記事</h2>
+    <!-- Section label style -->
+    <style>
+      .section-label {
+        display: flex; align-items: center; gap: 16px;
+        margin-bottom: 40px;
+      }
+      .section-label h2 {
+        font-family: 'Shippori Mincho', serif;
+        font-size: 26px; font-weight: 800;
+        color: #0d0d0d; letter-spacing: 0.02em;
+      }
+      .section-label span {
+        font-size: 11px; letter-spacing: 0.2em;
+        color: #aab4bc; text-transform: uppercase;
+        padding-top: 4px;
+      }
+    </style>
+
+    <!-- PICK UP -->
+    {featured.length > 0 && (
+      <section style="padding: 80px 0 0;">
+        <div class="section-label">
+          <h2>注目の記事</h2>
+          <span>Pick Up</span>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-          {featuredArticles.map((article) => (
-            <ArticleCard
-              title={article.data.title}
-              description={article.data.description}
-              category={article.data.category}
-              date={article.data.date}
-              author={article.data.author}
-              slug={article.id}
-              featured={true}
-            />
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px;">
+          {featured.map(a => (
+            <ArticleCard title={a.data.title} description={a.data.description} category={a.data.category} date={a.data.date} author={a.data.author} slug={a.id} featured={true} />
           ))}
         </div>
       </section>
     )}
 
     <!-- Categories -->
-    <section style="margin-bottom: 64px;">
-      <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52; margin-bottom: 24px;">カテゴリーから探す</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
-        {categories.map((cat) => (
-          <a
-            href={`/category/${cat.name}`}
-            style={`display: flex; flex-direction: column; align-items: center; padding: 20px 12px; background: white; border-radius: 12px; text-decoration: none; text-align: center; border: 2px solid transparent; transition: all 0.2s;`}
-            onmouseover={`this.style.borderColor='${cat.color}'; this.style.transform='translateY(-2px)'`}
-            onmouseout="this.style.borderColor='transparent'; this.style.transform=''"
-          >
-            <span style="font-size: 36px; margin-bottom: 8px;">{cat.emoji}</span>
-            <span style={`font-size: 14px; font-weight: 700; color: ${cat.color}; margin-bottom: 4px;`}>{cat.name}</span>
-            <span style="font-size: 11px; color: #888; line-height: 1.4;">{cat.desc}</span>
+    <section style="padding: 80px 0 0;">
+      <div class="section-label">
+        <h2>カテゴリから探す</h2>
+        <span>Category</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        {categories.map(cat => (
+          <a href={`/category/${cat.name}`} style={`display: flex; align-items: center; gap: 16px; padding: 20px 24px; background: ${cat.bg}; border-radius: 8px; border: 1px solid transparent; text-decoration: none; transition: all 0.25s ease;`}
+            onmouseover={`this.style.borderColor='${cat.color}40'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'`}
+            onmouseout="this.style.borderColor='transparent'; this.style.transform=''; this.style.boxShadow=''">
+            <span style="font-size: 32px; flex-shrink: 0;">{cat.emoji}</span>
+            <div>
+              <p style={`font-size: 15px; font-weight: 700; color: ${cat.color}; margin-bottom: 3px;`}>{cat.name}</p>
+              <p style="font-size: 12px; color: #6c757d; line-height: 1.4;">{cat.desc}</p>
+            </div>
           </a>
         ))}
       </div>
     </section>
 
-    <!-- Recent articles -->
-    <section style="margin-bottom: 64px;">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
-        <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52;">最新記事</h2>
-        <a href="/articles" style="font-size: 13px; color: #0d8a87; text-decoration: none; font-weight: 500;">すべて見る →</a>
+    <!-- Latest articles -->
+    <section style="padding: 80px 0 0;">
+      <div class="section-label" style="justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <h2>最新記事</h2>
+          <span>Latest</span>
+        </div>
+        <a href="/articles" style="font-size: 13px; color: #0d8a87; font-weight: 500; border-bottom: 1px solid #0d8a87; padding-bottom: 2px; transition: opacity 0.2s;"
+          onmouseover="this.style.opacity='0.7'"
+          onmouseout="this.style.opacity='1'">すべて見る →</a>
       </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-        {recentArticles.map((article) => (
-          <ArticleCard
-            title={article.data.title}
-            description={article.data.description}
-            category={article.data.category}
-            date={article.data.date}
-            author={article.data.author}
-            slug={article.id}
-          />
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px;">
+        {recent.map(a => (
+          <ArticleCard title={a.data.title} description={a.data.description} category={a.data.category} date={a.data.date} author={a.data.author} slug={a.id} featured={a.data.featured} />
         ))}
       </div>
     </section>
 
-    <!-- CTA banner -->
-    <section style="background: linear-gradient(135deg, #0d2d52, #0d4a72, #0d7a8a); border-radius: 16px; padding: 48px 32px; text-align: center; color: white; margin-bottom: 32px;">
-      <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">あなたの函館を、教えてください</h2>
-      <p style="font-size: 14px; color: #c8d4e8; line-height: 1.7; margin-bottom: 24px;">
-        好きなお店、おすすめスポット、移住して気づいたこと。<br>
-        「ハコダテ仕掛け人」として一緒に発信しませんか？
-      </p>
-      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-        <a href="/submit" style="padding: 12px 24px; background: #c05a3a; color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">情報を投稿する</a>
-        <a href="/members" style="padding: 12px 24px; border: 2px solid white; color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">仕掛け人について</a>
+    <!-- CTA Banner -->
+    <section style="padding: 80px 0 120px;">
+      <div style="
+        background: #0d2d52; border-radius: 8px;
+        padding: 64px 56px; display: grid;
+        grid-template-columns: 1fr auto; gap: 48px; align-items: center;
+      ">
+        <div>
+          <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 16px; text-transform: uppercase;">Join Us</p>
+          <h2 style="font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: white; margin-bottom: 14px; line-height: 1.4;">あなたの函館を、教えてください。</h2>
+          <p style="font-size: 14px; color: #a8c8e8; line-height: 1.8;">好きなお店、おすすめの景色、移住して気づいたこと。「ハコダテ仕掛け人」として一緒に発信しませんか？</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; flex-shrink: 0;">
+          <a href="/submit" style="padding: 14px 28px; background: #c05a3a; color: white; border-radius: 4px; font-size: 14px; font-weight: 700; text-align: center; white-space: nowrap; transition: opacity 0.2s;"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'">情報を投稿する</a>
+          <a href="/members" style="padding: 14px 28px; border: 1.5px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; font-size: 14px; font-weight: 700; text-align: center; white-space: nowrap; transition: all 0.2s;"
+            onmouseover="this.style.borderColor='rgba(255,255,255,0.8)'"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.3)'">仕掛け人について</a>
+        </div>
       </div>
     </section>
 

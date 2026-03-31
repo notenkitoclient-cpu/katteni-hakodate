@@ -1,42 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  --color-hako-bg: #e8eef2;
+  --color-white: #ffffff;
+  --color-black: #0d0d0d;
+  --color-gray-50: #f8f9fa;
+  --color-gray-100: #f0f2f4;
+  --color-gray-200: #e2e6ea;
+  --color-gray-500: #6c757d;
+  --color-gray-700: #3d4a52;
+
   --color-hako-navy: #0d2d52;
   --color-hako-teal: #0d8a87;
-  --color-hako-blue: #1a7fc0;
   --color-hako-brick: #c05a3a;
   --color-hako-sand: #c8ab8a;
-  --color-hako-text: #0d1b2a;
   --color-hako-mist: #e8eef2;
 
   --font-family-sans: 'Noto Sans JP', sans-serif;
-  --font-family-serif: 'Noto Serif JP', serif;
+  --font-family-serif: 'Shippori Mincho', 'Noto Serif JP', serif;
 }
 
 @layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background-color: #e8eef2;
+    background-color: #ffffff;
+    color: #0d0d0d;
+    font-family: 'Noto Sans JP', sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
 }
 
-/* Article content styles */
+/* Article content */
+.article-content { line-height: 1.9; font-size: 17px; color: #2a2a2a; }
 .article-content h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #0d2d52;
-  margin: 28px 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #c8d8e8;
+  font-family: 'Shippori Mincho', serif;
+  font-size: 22px; font-weight: 700;
+  color: #0d2d52; margin: 48px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e6ea;
 }
 .article-content h3 {
-  font-size: 17px;
-  font-weight: 700;
-  color: #0d2d52;
-  margin: 20px 0 8px;
+  font-size: 18px; font-weight: 700;
+  color: #0d2d52; margin: 32px 0 12px;
 }
-.article-content p { margin-bottom: 16px; }
-.article-content ul { padding-left: 24px; margin-bottom: 16px; }
-.article-content li { margin-bottom: 6px; }
-.article-content strong { color: #0d2d52; }
-.article-content a { color: #0d8a87; text-decoration: underline; }
+.article-content p { margin-bottom: 20px; }
+.article-content ul { padding-left: 24px; margin-bottom: 20px; }
+.article-content li { margin-bottom: 8px; }
+.article-content strong { color: #0d2d52; font-weight: 700; }
+.article-content a { color: #0d8a87; border-bottom: 1px solid #0d8a87; }
+.article-content table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+.article-content th { background: #f0f2f4; padding: 10px 14px; text-align: left; font-weight: 700; border: 1px solid #e2e6ea; }
+.article-content td { padding: 10px 14px; border: 1px solid #e2e6ea; }

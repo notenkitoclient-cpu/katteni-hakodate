@@ -6,88 +6,90 @@ import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
-  return articles.map((article) => ({
-    params: { slug: article.id },
-    props: { article },
-  }));
+  return articles.map(a => ({ params: { slug: a.id }, props: { article: a } }));
 }
 
 const { article } = Astro.props;
 const { Content } = await render(article);
 
 const categoryColors: Record<string, string> = {
-  'グルメ': '#e55a2b',
-  '観光': '#2b8ae5',
-  '暮らし': '#2ba85c',
-  'イベント': '#e5a02b',
-  '人・ビジネス': '#8b2be5',
-  '特産品': '#2bb8e5',
+  'グルメ': '#0d8a87', '観光': '#0d2d52', '暮らし': '#1a7fc0',
+  'イベント': '#c05a3a', '人・ビジネス': '#5a3a7a', '特産品': '#1a6a5a',
 };
-const catColor = categoryColors[article.data.category] || '#E8567A';
+const categoryBg: Record<string, string> = {
+  'グルメ': 'linear-gradient(135deg, #0d4a4a, #0d8a87)',
+  '観光': 'linear-gradient(135deg, #0d1a38, #0d2d52)',
+  '暮らし': 'linear-gradient(135deg, #0a3a6a, #1a7fc0)',
+  'イベント': 'linear-gradient(135deg, #7a2a18, #c05a3a)',
+  '人・ビジネス': 'linear-gradient(135deg, #2a1a4a, #5a3a7a)',
+  '特産品': 'linear-gradient(135deg, #0a3a2a, #1a6a5a)',
+};
+const catColor = categoryColors[article.data.category] || '#0d8a87';
+const catBg = categoryBg[article.data.category] || 'linear-gradient(135deg,#0d2d52,#0d8a87)';
 ---
 
 <BaseLayout title={article.data.title} description={article.data.description}>
   <Header />
-  <main style="max-width: 800px; margin: 0 auto; padding: 32px 16px 64px;">
+
+  <!-- Hero image -->
+  <div style={`background: ${catBg}; height: 360px; display:flex; align-items:center; justify-content:center; position:relative;`}>
+    <span style="font-size: 80px; opacity: 0.25;">
+      {article.data.category === 'グルメ' ? '🍣' : article.data.category === '観光' ? '⚓' : article.data.category === '暮らし' ? '🏘️' : article.data.category === 'イベント' ? '🎆' : article.data.category === '人・ビジネス' ? '👥' : '🦑'}
+    </span>
+    <div style="position:absolute; bottom:0; left:0; right:0; height:80px; background: linear-gradient(transparent, white);"></div>
+  </div>
+
+  <main style="max-width: 760px; margin: 0 auto; padding: 0 24px 100px;">
+
     <!-- Breadcrumb -->
-    <nav style="font-size: 13px; color: #888; margin-bottom: 24px;">
-      <a href="/" style="color: #888; text-decoration: none;">ホーム</a>
-      <span style="margin: 0 8px;">›</span>
-      <a href={`/category/${article.data.category}`} style="color: #888; text-decoration: none;">{article.data.category}</a>
-      <span style="margin: 0 8px;">›</span>
-      <span style="color: #333;">{article.data.title}</span>
+    <nav style="font-size: 12px; color: #aab4bc; margin-bottom: 32px; display: flex; gap: 8px; align-items: center;">
+      <a href="/" style="color: #aab4bc; transition: color 0.2s;" onmouseover="this.style.color='#0d2d52'" onmouseout="this.style.color='#aab4bc'">ホーム</a>
+      <span>›</span>
+      <a href={`/category/${article.data.category}`} style="color: #aab4bc; transition: color 0.2s;" onmouseover="this.style.color='#0d2d52'" onmouseout="this.style.color='#aab4bc'">{article.data.category}</a>
+      <span>›</span>
+      <span style="color: #3d4a52;">{article.data.title.substring(0, 20)}...</span>
     </nav>
 
-    <!-- Article header -->
-    <div style="margin-bottom: 32px;">
-      <div style="margin-bottom: 12px;">
-        <span style={`display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 12px; color: white; background: ${catColor}; margin-right: 8px;`}>{article.data.category}</span>
-        {article.data.featured && (
-          <span style="display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 12px; color: white; background: #E8567A;">PICK UP</span>
-        )}
-      </div>
-      <h1 style="font-size: clamp(22px, 4vw, 30px); font-weight: 900; line-height: 1.4; color: #1a2b4a; margin-bottom: 16px; font-family: 'Noto Serif JP', serif;">{article.data.title}</h1>
-      <p style="font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 16px;">{article.data.description}</p>
-      <div style="display: flex; align-items: center; gap: 16px; font-size: 13px; color: #888; padding-bottom: 20px; border-bottom: 2px solid #d4cfc9;">
-        <span>✍️ {article.data.author}</span>
-        <span>📅 {article.data.date}</span>
-      </div>
+    <!-- Meta -->
+    <div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center;">
+      <span style={`font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 2px; color: white; background: ${catColor}; letter-spacing: 0.1em;`}>{article.data.category}</span>
+      {article.data.featured && <span style="font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 2px; color: white; background: #c05a3a; letter-spacing: 0.1em;">PICK UP</span>}
     </div>
 
-    <!-- Hero image placeholder -->
-    <div style={`background: linear-gradient(135deg, ${catColor}22, ${catColor}44); border-radius: 12px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; margin-bottom: 32px;`}>
-      <span style="font-size: 64px; opacity: 0.5;">
-        {article.data.category === 'グルメ' ? '🍜' : article.data.category === '観光' ? '🗺️' : article.data.category === '暮らし' ? '🏠' : article.data.category === 'イベント' ? '🎉' : article.data.category === '人・ビジネス' ? '👥' : '🎁'}
-      </span>
+    <!-- Title -->
+    <h1 style="font-family: 'Shippori Mincho', serif; font-size: clamp(24px, 4vw, 34px); font-weight: 800; line-height: 1.45; color: #0d0d0d; margin-bottom: 20px; letter-spacing: 0.02em;">{article.data.title}</h1>
+
+    <!-- Description -->
+    <p style="font-size: 16px; color: #6c757d; line-height: 1.8; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e2e6ea;">{article.data.description}</p>
+
+    <!-- Author / Date -->
+    <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 48px; font-size: 13px; color: #6c757d;">
+      <span>✍️ {article.data.author}</span>
+      <span>📅 {article.data.date}</span>
     </div>
 
-    <!-- Article content -->
-    <div style="background: white; border-radius: 12px; padding: 32px; line-height: 1.9; font-size: 16px; color: #333;">
+    <!-- Content -->
+    <div class="article-content">
       <Content />
     </div>
 
     <!-- Tags -->
     {article.data.tags && article.data.tags.length > 0 && (
-      <div style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
+      <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid #e2e6ea; display: flex; flex-wrap: wrap; gap: 8px;">
         {article.data.tags.map((tag: string) => (
-          <span style="font-size: 12px; padding: 4px 12px; border-radius: 12px; background: #f0ece8; color: #666; border: 1px solid #d4cfc9;">#{tag}</span>
+          <span style="font-size: 12px; padding: 5px 14px; border-radius: 2px; background: #f0f2f4; color: #3d4a52; border: 1px solid #e2e6ea;">#{tag}</span>
         ))}
       </div>
     )}
 
-    <!-- Back link -->
-    <div style="margin-top: 40px; text-align: center;">
-      <a href="/" style="display: inline-block; padding: 12px 28px; background: #1a2b4a; color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">← トップページに戻る</a>
+    <!-- Back -->
+    <div style="margin-top: 56px; text-align: center;">
+      <a href="/" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border: 1.5px solid #0d2d52; color: #0d2d52; border-radius: 4px; font-size: 14px; font-weight: 700; transition: all 0.2s;"
+        onmouseover="this.style.background='#0d2d52'; this.style.color='white'"
+        onmouseout="this.style.background='transparent'; this.style.color='#0d2d52'">
+        ← トップページに戻る
+      </a>
     </div>
   </main>
   <Footer />
 </BaseLayout>
-
-<style is:global>
-  .prose h2 { font-size: 20px; font-weight: 700; color: #1a2b4a; margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 2px solid #e8e3de; }
-  .prose h3 { font-size: 17px; font-weight: 700; color: #1a2b4a; margin: 20px 0 8px; }
-  .prose p { margin-bottom: 16px; }
-  .prose ul { padding-left: 24px; margin-bottom: 16px; }
-  .prose li { margin-bottom: 6px; }
-  .prose strong { color: #1a2b4a; }
-</style>
