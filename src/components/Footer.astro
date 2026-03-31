@@ -1,0 +1,60 @@
+---
+---
+<footer style="background: linear-gradient(180deg, #0a1f38 0%, #060f1e 100%); color: white; padding: 52px 16px 24px; margin-top: 80px; position: relative; overflow: hidden;">
+  <!-- Wave top decoration -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; opacity: 0.08;">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+      <path d="M0,20 C200,40 400,0 600,20 C800,40 1000,0 1200,20 L1200,0 L0,0 Z" fill="white"/>
+    </svg>
+  </div>
+
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 36px; margin-bottom: 44px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+          <span style="font-size: 20px;">⚓</span>
+          <h3 style="font-size: 16px; font-weight: 900; color: white;">カッテニハコダテ</h3>
+        </div>
+        <p style="font-size: 13px; color: #5a7a9a; line-height: 1.7;">
+          港町・函館の魅力を、<br>地元目線でかってに発信する<br>コミュニティメディア
+        </p>
+        <div style="margin-top: 16px; display: flex; gap: 10px;">
+          <a href="https://instagram.com" target="_blank" style="color: #4a8ab8; text-decoration: none; font-size: 12px; padding: 4px 10px; border: 1px solid #1a3a5c; border-radius: 12px;">Instagram</a>
+          <a href="https://twitter.com" target="_blank" style="color: #4a8ab8; text-decoration: none; font-size: 12px; padding: 4px 10px; border: 1px solid #1a3a5c; border-radius: 12px;">X (Twitter)</a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 14px; color: #4a8ab8; letter-spacing: 1px; text-transform: uppercase;">Category</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          {[
+            { name: 'グルメ', emoji: '🍣' },
+            { name: '観光', emoji: '⚓' },
+            { name: '暮らし', emoji: '🏘️' },
+            { name: 'イベント', emoji: '🎆' },
+            { name: '人・ビジネス', emoji: '👥' },
+            { name: '特産品', emoji: '🦑' },
+          ].map(cat => (
+            <li><a href={`/category/${cat.name}`} style="color: #6a9ab8; text-decoration: none; font-size: 13px;">{cat.emoji} {cat.name}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 14px; color: #4a8ab8; letter-spacing: 1px; text-transform: uppercase;">Site</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          {[
+            { text: 'このサイトについて', href: '/about' },
+            { text: 'ハコダテ仕掛け人', href: '/members' },
+            { text: '情報を投稿する', href: '/submit' },
+            { text: 'お問い合わせ', href: '/contact' },
+          ].map(item => (
+            <li><a href={item.href} style="color: #6a9ab8; text-decoration: none; font-size: 13px;">{item.text}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <div style="border-top: 1px solid #1a2a3a; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <p style="font-size: 12px; color: #3a5a7a;">© 2026 カッテニハコダテ All rights reserved.</p>
+      <p style="font-size: 11px; color: #2a4a6a;">⚓ 港町函館より発信中</p>
+    </div>
+  </div>
+</footer>

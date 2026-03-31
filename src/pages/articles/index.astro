@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const allArticles = await getCollection('articles');
+const sortedArticles = allArticles.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const categories = ['グルメ', '観光', '暮らし', 'イベント', '人・ビジネス', '特産品'];
+---
+
+<BaseLayout title="すべての記事" description="カッテニハコダテの全記事一覧">
+  <Header />
+  <main style="max-width: 1200px; margin: 0 auto; padding: 48px 16px 80px;">
+
+    <div style="margin-bottom: 36px;">
+      <h1 style="font-size: 28px; font-weight: 900; color: #0d2d52; margin-bottom: 8px;">すべての記事</h1>
+      <p style="font-size: 14px; color: #5a7a9a;">{sortedArticles.length}本の記事</p>
+    </div>
+
+    <!-- Category filter -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;">
+      <a href="/articles" style="padding: 6px 16px; background: #0d2d52; color: white; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600;">すべて</a>
+      {categories.map(cat => (
+        <a href={`/category/${cat}`} style="padding: 6px 16px; background: white; color: #0d2d52; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 500; border: 1px solid #9ab8cc; transition: all 0.2s;"
+          onmouseover="this.style.background='#0d2d52'; this.style.color='white'"
+          onmouseout="this.style.background='white'; this.style.color='#0d2d52'">
+          {cat}
+        </a>
+      ))}
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+      {sortedArticles.map((article) => (
+        <ArticleCard
+          title={article.data.title}
+          description={article.data.description}
+          category={article.data.category}
+          date={article.data.date}
+          author={article.data.author}
+          slug={article.id}
+          featured={article.data.featured}
+        />
+      ))}
+    </div>
+
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const members = [
+  {
+    name: '田中 健太',
+    role: 'グルメ担当',
+    emoji: '🍣',
+    bio: '函館生まれ函館育ち。「本当においしい店は路地裏にある」が信条。朝市から屋台まで、函館のグルメを食べ歩き20年。',
+    tags: ['朝市', '海鮮', 'ラーメン'],
+    color: '#0d8a87',
+  },
+  {
+    name: '佐藤 みき',
+    role: 'イベント・観光担当',
+    emoji: '⚓',
+    bio: '函館の魅力を発信したくてUターン。バル街の運営スタッフとしても活動中。地元民だからこそ知る「本物の函館」を届けます。',
+    tags: ['バル街', '元町', 'イベント'],
+    color: '#0d2d52',
+  },
+  {
+    name: '木村 亮',
+    role: '移住・暮らし担当',
+    emoji: '🏘️',
+    bio: '東京から函館に移住して3年。リモートワーカーとして働きながら、移住のリアルな体験を発信。移住希望者の相談にも乗ります。',
+    tags: ['移住', 'リモートワーク', '子育て'],
+    color: '#1a7fc0',
+  },
+  {
+    name: '山田 花子',
+    role: '温泉・特産品担当',
+    emoji: '♨️',
+    bio: '湯の川温泉の近くに住む温泉マニア。函館の海産物と温泉をこよなく愛す。地元の事業者さんとの繋がりを大切にしています。',
+    tags: ['温泉', '海産物', '特産品'],
+    color: '#c05a3a',
+  },
+];
+---
+
+<BaseLayout title="ハコダテ仕掛け人" description="カッテニハコダテを一緒に作るコミュニティメンバーの紹介">
+  <Header />
+  <main style="max-width: 1000px; margin: 0 auto; padding: 48px 16px;">
+
+    <!-- Header section -->
+    <div style="text-align: center; margin-bottom: 48px;">
+      <p style="font-size: 12px; letter-spacing: 3px; color: #0d8a87; font-weight: 700; margin-bottom: 12px; text-transform: uppercase;">⚓ Community Members</p>
+      <h1 style="font-size: 32px; font-weight: 900; color: #0d2d52; margin-bottom: 16px; font-family: 'Noto Serif JP', serif;">ハコダテ仕掛け人</h1>
+      <p style="font-size: 15px; color: #4a6a8a; line-height: 1.8; max-width: 560px; margin: 0 auto;">
+        カッテニハコダテは、函館が大好きな仕掛け人たちが支えています。<br>
+        観光ガイドでも行政でもない、地元民のリアルな声をお届けします。
+      </p>
+    </div>
+
+    <!-- Members grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 64px;">
+      {members.map((member) => (
+        <div style={`background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(13,45,82,0.08); border-top: 4px solid ${member.color}; transition: transform 0.2s;`}
+          onmouseover="this.style.transform='translateY(-4px)'"
+          onmouseout="this.style.transform=''">
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+            <div style={`width: 56px; height: 56px; border-radius: 50%; background: ${member.color}18; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; border: 2px solid ${member.color}30;`}>
+              {member.emoji}
+            </div>
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; color: #0d2d52; margin-bottom: 2px;">{member.name}</h3>
+              <p style={`font-size: 12px; font-weight: 600; color: ${member.color};`}>{member.role}</p>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #4a6a8a; line-height: 1.7; margin-bottom: 16px;">{member.bio}</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            {member.tags.map(tag => (
+              <span style={`font-size: 11px; padding: 3px 10px; border-radius: 10px; background: ${member.color}12; color: ${member.color}; font-weight: 600;`}>#{tag}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Join CTA -->
+    <div style="background: linear-gradient(135deg, #0d2d52, #0d4a72, #0d7a8a); border-radius: 20px; padding: 52px 32px; text-align: center; color: white;">
+      <p style="font-size: 12px; letter-spacing: 3px; color: #7ecfcf; font-weight: 700; margin-bottom: 16px;">JOIN US</p>
+      <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px; font-family: 'Noto Serif JP', serif;">あなたも仕掛け人になりませんか？</h2>
+      <p style="font-size: 14px; color: #a8c8e8; line-height: 1.8; margin-bottom: 28px; max-width: 500px; margin-left: auto; margin-right: auto;">
+        条件はひとつ、「函館が好き」なこと。<br>
+        専門知識は不要。あなたの好きな函館を、あなたの言葉で発信してください。
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/submit" style="padding: 13px 28px; background: #c05a3a; color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">応募フォームへ</a>
+        <a href="/about" style="padding: 13px 28px; border: 2px solid rgba(255,255,255,0.5); color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">活動内容を見る</a>
+      </div>
+    </div>
+
+  </main>
+  <Footer />
+</BaseLayout>

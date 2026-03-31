@@ -1,0 +1,47 @@
+---
+---
+<section style="background: linear-gradient(160deg, #0d2d52 0%, #0d4a72 40%, #0d7a8a 80%, #0d8a87 100%); color: white; padding: 72px 16px 64px; text-align: center; position: relative; overflow: hidden;">
+
+  <!-- Wave pattern decoration -->
+  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; opacity: 0.15;">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+      <path d="M0,30 C200,60 400,0 600,30 C800,60 1000,0 1200,30 L1200,60 L0,60 Z" fill="white"/>
+    </svg>
+  </div>
+
+  <!-- Star/light dots decoration -->
+  <div style="position: absolute; top: 20px; left: 10%; width: 3px; height: 3px; background: white; border-radius: 50%; opacity: 0.6;"></div>
+  <div style="position: absolute; top: 40px; left: 25%; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.4;"></div>
+  <div style="position: absolute; top: 15px; right: 20%; width: 4px; height: 4px; background: #c8e8ff; border-radius: 50%; opacity: 0.5;"></div>
+  <div style="position: absolute; top: 60px; right: 35%; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.3;"></div>
+
+  <div style="max-width: 800px; margin: 0 auto; position: relative;">
+    <p style="font-size: 12px; letter-spacing: 4px; color: #7ecfcf; font-weight: 700; margin-bottom: 16px; text-transform: uppercase;">⚓ Hakodate Community Media</p>
+    <h1 style="font-size: clamp(30px, 5.5vw, 52px); font-weight: 900; line-height: 1.25; margin-bottom: 24px; font-family: 'Noto Serif JP', serif;">
+      知らなかった、<br>
+      <span style="color: #7ecfcf;">ハコダテがある。</span>
+    </h1>
+    <p style="font-size: 15px; color: #a8c8e8; line-height: 1.9; margin-bottom: 36px; max-width: 560px; margin-left: auto; margin-right: auto;">
+      港町・函館に住む人、訪れる人、移住を考える人へ。<br>
+      地元目線で、かってに函館の魅力を発信するコミュニティメディアです。
+    </p>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="/about" style="display: inline-block; padding: 12px 28px; background: #c05a3a; color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">カッテニって何？</a>
+      <a href="/members" style="display: inline-block; padding: 12px 28px; border: 2px solid rgba(255,255,255,0.6); color: white; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">仕掛け人になる</a>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div style="max-width: 720px; margin: 52px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.15);">
+    {[
+      { icon: '🍣', num: '6', label: 'カテゴリ', sub: 'グルメ〜暮らしまで' },
+      { icon: '🏘️', num: '地元', label: '目線', sub: '住民が発信する情報' },
+      { icon: '⚓', num: '毎日', label: '更新', sub: '函館の今をお届け' },
+    ].map(item => (
+      <div style="padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.1);">
+        <p style="font-size: 22px; font-weight: 900; color: #7ecfcf; margin-bottom: 2px;">{item.icon} {item.num}<span style="font-size: 14px;">{item.label}</span></p>
+        <p style="font-size: 11px; color: #7a9ab8;">{item.sub}</p>
+      </div>
+    ))}
+  </div>
+</section>

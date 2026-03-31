@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout title="このサイトについて" description="カッテニハコダテのコンセプトと運営について">
+  <Header />
+  <main style="max-width: 800px; margin: 0 auto; padding: 48px 16px;">
+    <h1 style="font-size: 28px; font-weight: 900; color: #0d2d52; margin-bottom: 8px;">カッテニハコダテとは</h1>
+    <p style="color: #888; font-size: 14px; margin-bottom: 32px;">About this site</p>
+
+    <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
+      <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52; margin-bottom: 16px;">「かってに」発信するということ</h2>
+      <p style="font-size: 15px; line-height: 1.9; color: #333;">
+        「カッテニハコダテ」は、函館に住む人・働く人・大好きな人たちが、<strong>好き勝手に（かってに）</strong>函館の魅力を発信するコミュニティメディアです。
+      </p>
+      <p style="font-size: 15px; line-height: 1.9; color: #333; margin-top: 16px;">
+        観光ガイドでも行政の広報でもない。地元民が「これ、みんなに知ってほしい！」と思ったことを、飾らない言葉で届ける場所。それがカッテニハコダテです。
+      </p>
+    </div>
+
+    <div style="background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
+      <h2 style="font-size: 20px; font-weight: 700; color: #0d2d52; margin-bottom: 16px;">3つのビジョン</h2>
+      {[
+        { emoji: '💡', title: '知らなかった、が生まれる', desc: '函館に長く住んでいても知らないことがある。そんな発見を届けます。' },
+        { emoji: '❤️', title: 'もっと知りたい、が続く', desc: '一度読んだら終わりじゃない。函館への興味が深まる情報を。' },
+        { emoji: '🚂', title: '行ってみたい、が動く', desc: '読んだら函館に来たくなる。住みたくなる。そんなメディアを目指します。' },
+      ].map(item => (
+        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+          <span style="font-size: 32px; flex-shrink: 0;">{item.emoji}</span>
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; color: #0d2d52; margin-bottom: 4px;">{item.title}</h3>
+            <p style="font-size: 14px; color: #555; line-height: 1.7;">{item.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div style="background: #c05a3a; border-radius: 16px; padding: 32px; text-align: center; color: white;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">一緒に発信しませんか？</h2>
+      <p style="font-size: 14px; line-height: 1.7; margin-bottom: 24px; opacity: 0.9;">
+        函館が好きな人なら誰でも「ハコダテ仕掛け人」になれます。<br>専門知識は不要。あなたの好きな函館を教えてください。
+      </p>
+      <a href="/members" style="display: inline-block; padding: 12px 32px; background: white; color: #c05a3a; border-radius: 24px; text-decoration: none; font-weight: 700; font-size: 14px;">仕掛け人に応募する</a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

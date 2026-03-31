@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const categories = ['グルメ', '観光', '暮らし', 'イベント', '人・ビジネス', '特産品'];
+---
+
+<BaseLayout title="情報を投稿する" description="函館の情報をカッテニハコダテに投稿しよう">
+  <Header />
+  <main style="max-width: 720px; margin: 0 auto; padding: 48px 16px 80px;">
+
+    <div style="text-align: center; margin-bottom: 40px;">
+      <p style="font-size: 12px; letter-spacing: 3px; color: #0d8a87; font-weight: 700; margin-bottom: 12px;">📝 SHARE YOUR HAKODATE</p>
+      <h1 style="font-size: 28px; font-weight: 900; color: #0d2d52; margin-bottom: 14px; font-family: 'Noto Serif JP', serif;">あなたの函館を教えてください</h1>
+      <p style="font-size: 14px; color: #4a6a8a; line-height: 1.7;">
+        おすすめのお店、知られていないスポット、移住してわかったこと。<br>
+        なんでもOK。あなたの「函館」をシェアしてください。
+      </p>
+    </div>
+
+    <div style="background: white; border-radius: 16px; padding: 36px; box-shadow: 0 2px 16px rgba(13,45,82,0.08);">
+      <form name="submit" method="POST" data-netlify="true" style="display: flex; flex-direction: column; gap: 20px;">
+        <input type="hidden" name="form-name" value="submit" />
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">カテゴリ <span style="color: #c05a3a;">*</span></label>
+          <select name="category" required style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; background: white; outline: none;">
+            <option value="">選択してください</option>
+            {categories.map(cat => <option value={cat}>{cat}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">タイトル・スポット名 <span style="color: #c05a3a;">*</span></label>
+          <input type="text" name="title" required placeholder="例：地元民しか知らない絶品ランチの店" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">詳細・おすすめポイント <span style="color: #c05a3a;">*</span></label>
+          <textarea name="content" required rows="5" placeholder="どんなお店・スポットですか？おすすめポイントをできるだけ詳しく教えてください。" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; resize: vertical; box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif;"></textarea>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">場所・住所（わかれば）</label>
+          <input type="text" name="location" placeholder="例：函館市元町○○番地 / 函館駅から徒歩5分" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">お名前（ニックネームOK）</label>
+            <input type="text" name="name" placeholder="函館太郎" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">メールアドレス</label>
+            <input type="email" name="email" placeholder="hakodate@example.com" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
+          </div>
+        </div>
+
+        <div style="background: #e8eef2; border-radius: 10px; padding: 14px 16px;">
+          <p style="font-size: 12px; color: #5a7a9a; line-height: 1.6; margin: 0;">
+            ✉️ 投稿いただいた情報は編集部で確認後、記事として掲載させていただく場合があります。掲載の際は事前にご連絡します。
+          </p>
+        </div>
+
+        <button type="submit" style="padding: 14px; background: #0d2d52; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; transition: background 0.2s;"
+          onmouseover="this.style.background='#0d4a72'"
+          onmouseout="this.style.background='#0d2d52'">
+          ⚓ 投稿する
+        </button>
+      </form>
+    </div>
+
+  </main>
+  <Footer />
+</BaseLayout>
