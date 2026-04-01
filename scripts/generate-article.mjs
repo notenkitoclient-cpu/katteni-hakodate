@@ -335,12 +335,12 @@ ${existingList || '（まだ記事はありません）'}
   "title": "記事タイトル（あなたらしいタイトルで、日本語）",
   "description": "記事の要約（80文字以内、日本語）",
   "category": "選択したカテゴリ名",
-  "content": "記事本文（Markdown形式、あなたの文体で900〜1400文字、##見出しを2〜3個使う）"
+  "content": "記事本文（Markdown形式、あなたの文体で400〜600文字、##見出しを1〜2個使う。サクッと読める短さで、でもライターの個性は必ず出す）"
 }`;
 
   const response = await client.messages.create({
     model: process.env.ARTICLE_MODEL || 'claude-sonnet-4-6',
-    max_tokens: 4096,
+    max_tokens: 2048,
     system: systemPrompt,
     messages: [{ role: 'user', content: userPrompt }],
   });

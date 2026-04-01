@@ -8,107 +8,38 @@ import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
 const sorted = allArticles.sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const recent  = sorted.slice(0, 6);
-const feature = recent[0];
-const rest    = recent.slice(1);
+const recent = sorted.slice(0, 5);
 
-/* ── 6 categories with icon config ── */
-const categories = [
-  { name: 'グルメ',       en: 'Gourmet',   emoji: '🍜', img: '/images/kacchin-gourmet.png',   href: '/category/グルメ',       accent: '#0d8a87', light: '#d4f2f0' },
-  { name: '観光',         en: 'Sightseeing',emoji: '🗺', img: '/images/kacchin-slope.png',    href: '/category/観光',         accent: '#1a7fc0', light: '#d4e6f8' },
-  { name: '暮らし',       en: 'Living',    emoji: '🏡', img: '/images/kacchin-tram.png',     href: '/category/暮らし',       accent: '#2a88c0', light: '#d8ecf8' },
-  { name: 'イベント',     en: 'Events',    emoji: '🎉', img: '/images/kacchin-goryokaku.png',href: '/category/イベント',     accent: '#c05a3a', light: '#fbe8e0' },
-  { name: '特産品',       en: 'Products',  emoji: '🦑', img: '/images/kacchin-asaichi.png',  href: '/category/特産品',       accent: '#1a9a6a', light: '#d4f0e4' },
-  { name: '人・ビジネス', en: 'People',    emoji: '🤝', img: '/images/kacchin-nightview.png',href: '/category/人・ビジネス', accent: '#7a50b8', light: '#ede4f8' },
-];
+const allCF = await getCollection('crowdfunding');
+const featuredCF = allCF
+  .filter(cf => cf.data.featured)
+  .sort((a,b) => new Date(b.data.endDate).getTime() - new Date(a.data.endDate).getTime())
+  .slice(0, 3);
 
-/* ── Life tiles (editorial card style) ── */
-const lifeTiles = [
-  {
-    name:  'グルメ',
-    en:    'Gourmet',
-    desc:  '海鮮・ラーメン・朝市。地元が通う本物の味。',
-    img:   '/images/kacchin-gourmet.png',
-    href:  '/category/グルメ',
-    accent:'#0d8a87',
-    from:  '#0a5a58',
-    to:    '#0ea09c',
-    light: '#d4f2f0',
-    span:  'hero',
-  },
-  {
-    name:  '観光',
-    en:    'Sightseeing',
-    desc:  '夜景・元町・金森倉庫。函館の絶景を歩く。',
-    img:   '/images/kacchin-slope.png',
-    href:  '/category/観光',
-    accent:'#1a7fc0',
-    from:  '#0d2a4a',
-    to:    '#1a72c0',
-    light: '#daeaf8',
-    span:  '',
-  },
-  {
-    name:  '暮らし',
-    en:    'Living',
-    desc:  '移住・子育て・仕事。函館で暮らすリアル。',
-    img:   '/images/kacchin-tram.png',
-    href:  '/category/暮らし',
-    accent:'#2a88c0',
-    from:  '#0d2840',
-    to:    '#2a78b8',
-    light: '#daeef8',
-    span:  '',
-  },
-  {
-    name:  'イベント',
-    en:    'Events',
-    desc:  'バル街・港まつり。季節の祭りを全力で。',
-    img:   '/images/kacchin-goryokaku.png',
-    href:  '/category/イベント',
-    accent:'#c05a3a',
-    from:  '#3a1005',
-    to:    '#c05a3a',
-    light: '#fce8e0',
-    span:  '',
-  },
-  {
-    name:  '特産品',
-    en:    'Products',
-    desc:  'イカ・昆布・海産物。函館の食の宝庫。',
-    img:   '/images/kacchin-asaichi.png',
-    href:  '/category/特産品',
-    accent:'#1a9a6a',
-    from:  '#023a20',
-    to:    '#1a9a6a',
-    light: '#d4f0e4',
-    span:  '',
-  },
-  {
-    name:  '人・ビジネス',
-    en:    'People & Business',
-    desc:  '函館で働く・作る・挑む。人の物語。',
-    img:   '/images/kacchin-nightview.png',
-    href:  '/category/人・ビジネス',
-    accent:'#7a50b8',
-    from:  '#1a0838',
-    to:    '#7a50b8',
-    light: '#ede4f8',
-    span:  'wide',
-  },
-];
-
-/* ── Ticker content ── */
 const ticks = [
-  '🦑 イカソーメンは函館の誇るグルメ',
-  '🌙 日本三大夜景・函館山の絶景',
-  '🚃 路面電車が現役で走る港町',
-  '🌸 五稜郭の桜と春の函館',
-  '🐟 朝市で食べる新鮮な海の幸',
-  '🏛 元町の異国情緒あふれる坂道',
-  '❄ 冬の津軽海峡と函館の空',
-  '🍜 塩ラーメン発祥の地・函館',
+  '🦑 イカソーメンは函館の誇るグルメ','🌙 日本三大夜景・函館山の絶景',
+  '🚃 路面電車が現役で走る港町','🌸 五稜郭の桜と春の函館',
+  '🐟 朝市で食べる新鮮な海の幸','🏛 元町の異国情緒あふれる坂道',
+  '💰 道南のクラファンを勝手に応援中','🎉 道南のイベントを勝手にまとめます',
 ];
+
+const categories = [
+  { name: 'グルメ', emoji: '🍜', img: '/images/kacchin-gourmet.png', href: '/category/グルメ', light: '#d4f2f0', accent: '#0d8a87' },
+  { name: '観光',   emoji: '🗺', img: '/images/kacchin-slope.png',   href: '/category/観光',   light: '#d4e6f8', accent: '#1a7fc0' },
+  { name: '暮らし', emoji: '🏡', img: '/images/kacchin-tram.png',    href: '/category/暮らし', light: '#d8ecf8', accent: '#2a88c0' },
+  { name: 'イベント',emoji: '🎉',img: '/images/kacchin-goryokaku.png',href: '/category/イベント',light: '#fbe8e0', accent: '#c05a3a' },
+  { name: '特産品', emoji: '🦑', img: '/images/kacchin-asaichi.png', href: '/category/特産品', light: '#d4f0e4', accent: '#1a9a6a' },
+  { name: '人・ビジネス',emoji:'🤝',img:'/images/kacchin-nightview.png',href:'/category/人・ビジネス',light:'#ede4f8',accent:'#7a50b8' },
+];
+
+function daysLeft(dateStr: string) {
+  const end = new Date(dateStr);
+  const now = new Date();
+  return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86400000));
+}
+function percent(current: number, goal: number) {
+  return Math.min(100, Math.round((current / goal) * 100));
+}
 ---
 
 <BaseLayout title="ホーム">
@@ -117,14 +48,12 @@ const ticks = [
 
   <main class="main-page">
 
-    <!-- ═══════════════════════════════════════════
-      TICKER STRIP
-    ═══════════════════════════════════════════ -->
+    <!-- TICKER -->
     <div class="ticker-wrap">
-      <span class="ticker-tag">HAKODATE</span>
+      <span class="ticker-tag">KATTE NI</span>
       <div class="ticker-track">
         <div class="ticker-run">
-          {[...ticks, ...ticks].map(t => (
+          {[...ticks,...ticks].map(t => (
             <span class="t-item">{t}<span class="t-sep">◆</span></span>
           ))}
         </div>
@@ -132,9 +61,103 @@ const ticks = [
     </div>
 
 
-    <!-- ═══════════════════════════════════════════
-      CATEGORY ICONS  (saiko-niseko style)
-    ═══════════════════════════════════════════ -->
+    <!-- 3団コーナー -->
+    <section class="dan-section">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="sec-eye">勝手に3団</p>
+            <h2 class="sec-title">カッテニハコダテの活動</h2>
+          </div>
+          <p class="sec-note">頼まれてないけど、勝手にやってます。</p>
+        </header>
+
+        <div class="dan-grid">
+
+          <!-- 記事団 -->
+          <a href="/articles" class="dan-card dan-article">
+            <div class="dan-stamp">勝手に</div>
+            <div class="dan-icon">🗞</div>
+            <h3 class="dan-name">記事団</h3>
+            <p class="dan-desc">地元ライター5名が函館・道南の魅力を勝手にリサーチして執筆。毎日3本更新中。</p>
+            <span class="dan-btn">記事を読む →</span>
+          </a>
+
+          <!-- クラファン応援団 -->
+          <a href="/crowdfunding" class="dan-card dan-cf">
+            <div class="dan-stamp">勝手に</div>
+            <div class="dan-icon">💰</div>
+            <h3 class="dan-name">クラファン<br>応援団</h3>
+            <p class="dan-desc">道南エリアのクラウドファンディング案件を勝手に発掘・紹介。応援したいから応援する。</p>
+            <span class="dan-btn">応援案件を見る →</span>
+          </a>
+
+          <!-- イベント情報団 -->
+          <a href="/events" class="dan-card dan-ev">
+            <div class="dan-stamp">勝手に</div>
+            <div class="dan-icon">🎉</div>
+            <h3 class="dan-name">イベント<br>情報団</h3>
+            <p class="dan-desc">函館・北斗・七飯のイベント情報を勝手にまとめます。近日公開予定！</p>
+            <span class="dan-btn dan-soon">近日公開 ✦</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- クラファン応援団 ピックアップ -->
+    {featuredCF.length > 0 && (
+      <section class="cf-section">
+        <div class="wrap">
+          <header class="sec-head sec-head--row">
+            <div>
+              <p class="sec-eye">💰 Crowdfunding</p>
+              <h2 class="sec-title">勝手にクラファン応援団</h2>
+            </div>
+            <a href="/crowdfunding" class="sec-more">もっと見る →</a>
+          </header>
+
+          <div class="cf-grid">
+            {featuredCF.map(cf => {
+              const pct = percent(cf.data.currentAmount, cf.data.goalAmount);
+              const days = daysLeft(cf.data.endDate);
+              return (
+                <a href={cf.data.url} target="_blank" rel="noopener" class="cf-card">
+                  <div class="cf-head">
+                    <span class="cf-area">{cf.data.area}</span>
+                    <span class="cf-cat">{cf.data.category}</span>
+                    {days <= 7 && <span class="cf-urgent">残り{days}日</span>}
+                  </div>
+                  <h3 class="cf-title">{cf.data.title}</h3>
+                  <p class="cf-summary">{cf.data.summary}</p>
+                  <div class="cf-bar-wrap">
+                    <div class="cf-bar">
+                      <div class="cf-fill" style={`--pct: ${pct}%`}></div>
+                    </div>
+                    <span class="cf-pct">{pct}%</span>
+                  </div>
+                  <div class="cf-stats">
+                    <div class="cf-stat">
+                      <b>{cf.data.currentAmount.toLocaleString()}円</b>
+                      <span>/ {cf.data.goalAmount.toLocaleString()}円</span>
+                    </div>
+                    <div class="cf-stat-right">
+                      <span>👥 {cf.data.supporterCount}人</span>
+                      <span class="cf-days">{days > 0 ? `残り${days}日` : '終了'}</span>
+                    </div>
+                  </div>
+                  <div class="cf-cta">CAMPfireで応援する ↗</div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    )}
+
+
+    <!-- カテゴリ -->
     <section class="cat-section">
       <div class="wrap">
         <div class="cat-row">
@@ -144,7 +167,6 @@ const ticks = [
                 <img src={cat.img} alt={cat.name} class="cat-img" loading="lazy" />
               </div>
               <span class="cat-label">{cat.name}</span>
-              <span class="cat-en">{cat.en}</span>
             </a>
           ))}
         </div>
@@ -152,107 +174,19 @@ const ticks = [
     </section>
 
 
-    <!-- ═══════════════════════════════════════════
-      LIFE TILES — エディトリアルカードグリッド
-    ═══════════════════════════════════════════ -->
-    <section class="tiles-section">
-      <div class="wrap">
-
-        <header class="sec-head">
-          <div>
-            <p class="sec-eye">In Hakodate</p>
-            <h2 class="sec-title">6つのハコダテライフ</h2>
-          </div>
-          <p class="sec-note">グルメ、観光、暮らし、イベント、<br>特産品、人。あなたの函館を見つけて。</p>
-        </header>
-
-        <div class="tile-grid">
-          {lifeTiles.map(tile => (
-            <a
-              href={tile.href}
-              class={`tile ${tile.span ? 'tile--' + tile.span : ''}`}
-            >
-              <!-- Colored image area -->
-              <div
-                class="tile-top"
-                style={`background: linear-gradient(145deg, ${tile.from} 0%, ${tile.to} 100%);`}
-              >
-                <div class="tile-top-overlay"></div>
-                <img src={tile.img} alt={tile.name} class="tile-kacchin" loading="lazy" />
-                <div class="tile-badge" style={`background: ${tile.accent};`}>{tile.name}</div>
-              </div>
-
-              <!-- White text area -->
-              <div class="tile-body">
-                <p class="tile-en">{tile.en}</p>
-                <h3 class="tile-name" style={`color: ${tile.accent};`}>{tile.name}</h3>
-                <p class="tile-desc">{tile.desc}</p>
-                <span class="tile-arrow" style={`color: ${tile.accent};`}>→ 読む</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ═══════════════════════════════════════════
-      LATEST ARTICLES
-    ═══════════════════════════════════════════ -->
+    <!-- 最新記事 -->
     <section class="articles-section">
       <div class="wrap">
-
         <header class="sec-head sec-head--row">
           <div>
-            <p class="sec-eye">News &amp; Topics</p>
-            <h2 class="sec-title">最新記事</h2>
+            <p class="sec-eye">🗞 Articles</p>
+            <h2 class="sec-title">勝手に記事団</h2>
           </div>
           <a href="/articles" class="sec-more">すべて見る →</a>
         </header>
 
-        <!-- Featured (first article, wide) -->
-        {feature && (
-          <a href={`/articles/${feature.id}`} class="feature-card">
-            <div class="feature-thumb" style={
-              feature.data.category === 'グルメ'      ? 'background: linear-gradient(135deg,#073a38,#0ea09c)' :
-              feature.data.category === '観光'        ? 'background: linear-gradient(135deg,#0d2a4a,#1a72c0)' :
-              feature.data.category === '暮らし'      ? 'background: linear-gradient(135deg,#0d2840,#2a78b8)' :
-              feature.data.category === 'イベント'    ? 'background: linear-gradient(135deg,#3a1005,#c05a3a)' :
-              feature.data.category === '特産品'      ? 'background: linear-gradient(135deg,#023a20,#1a9a6a)' :
-                                                        'background: linear-gradient(135deg,#1a0838,#7a50b8)'
-            }>
-              <img
-                src={
-                  feature.data.category === 'グルメ'      ? '/images/kacchin-gourmet.png' :
-                  feature.data.category === '観光'        ? '/images/kacchin-slope.png' :
-                  feature.data.category === '暮らし'      ? '/images/kacchin-tram.png' :
-                  feature.data.category === 'イベント'    ? '/images/kacchin-goryokaku.png' :
-                  feature.data.category === '特産品'      ? '/images/kacchin-asaichi.png' :
-                  '/images/kacchin-nightview.png'
-                }
-                alt={feature.data.category}
-                class="feature-img"
-                loading="lazy"
-              />
-              {feature.data.featured && <span class="feature-pick">PICK UP</span>}
-            </div>
-
-            <div class="feature-body">
-              <div class="feature-meta">
-                <span class="fcat">{feature.data.category}</span>
-                <span class="fdate">{feature.data.date}</span>
-                <span class="fauth">{feature.data.author}</span>
-              </div>
-              <h3 class="feature-title">{feature.data.title}</h3>
-              <p  class="feature-desc">{feature.data.description}</p>
-              <span class="feature-link">記事を読む →</span>
-            </div>
-          </a>
-        )}
-
-        <!-- Rest grid -->
         <div class="article-grid">
-          {rest.map(a => (
+          {recent.map(a => (
             <ArticleCard
               title={a.data.title}
               description={a.data.description}
@@ -264,43 +198,29 @@ const ticks = [
             />
           ))}
         </div>
-
       </div>
     </section>
 
 
-    <!-- ═══════════════════════════════════════════
-      JOIN US
-    ═══════════════════════════════════════════ -->
+    <!-- JOIN US -->
     <section class="join-section">
       <div class="wrap">
         <div class="join-card">
-
-          <!-- Dot grid texture -->
           <div class="join-dots" aria-hidden="true"></div>
-
-          <!-- Decorative wave shape -->
-          <div class="join-wave-deco" aria-hidden="true"></div>
-
-          <!-- Background mascot -->
           <img src="/images/kacchin-nightview.png" alt="" aria-hidden="true" class="join-mascot-bg" />
-
           <div class="join-content">
             <p class="join-eye">Join Us</p>
-            <h2 class="join-title">
-              あなたの函館を、<br>教えてください。
-            </h2>
+            <h2 class="join-title">あなたも勝手に<br>仕掛け人になりませんか？</h2>
             <p class="join-body">
-              好きなお店、おすすめの景色、移住して気づいたこと。<br>
-              「ハコダテ仕掛け人」として一緒に発信しませんか？
+              条件はひとつ、「道南が好き」なこと。<br>
+              地域のクラファン・イベント・お店情報、<br>
+              何でも教えてください。一緒に盛り上げましょう。
             </p>
           </div>
-
           <div class="join-btns">
-            <a href="/submit"  class="jbtn jbtn--primary">情報を投稿する</a>
-            <a href="/members" class="jbtn jbtn--ghost">仕掛け人について</a>
+            <a href="/submit" class="jbtn jbtn--primary">情報を投稿する</a>
+            <a href="/members" class="jbtn jbtn--ghost">仕掛け人を見る</a>
           </div>
-
         </div>
       </div>
     </section>
@@ -311,621 +231,160 @@ const ticks = [
 
 
 <style>
-/* ──────────────────────────────────────────
-   Page base
-────────────────────────────────────────── */
-.main-page {
-  background: #faf7f0;
-}
-.wrap {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 40px;
-}
+.main-page { background: #faf7f0; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 
+/* Ticker */
+.ticker-wrap { display: flex; align-items: center; background: #fff; border-top: 2px solid #e8734a; border-bottom: 1px solid #e8eef2; height: 46px; overflow: hidden; }
+.ticker-tag { flex-shrink: 0; background: #e8734a; color: #fff; font-size: 9.5px; font-weight: 700; letter-spacing: 0.26em; padding: 0 18px; height: 100%; display: flex; align-items: center; }
+.ticker-track { flex: 1; overflow: hidden; mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%); }
+.ticker-run { display: flex; animation: tickRoll 30s linear infinite; white-space: nowrap; }
+@keyframes tickRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 28px; font-size: 12px; color: #3a5060; font-weight: 500; }
+.t-sep { font-size: 5px; color: #e8734a; margin-left: 10px; }
 
-/* ──────────────────────────────────────────
-   TICKER
-────────────────────────────────────────── */
-.ticker-wrap {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  border-top: 2px solid #0d8a87;
-  border-bottom: 1px solid #e8eef2;
-  height: 46px;
-  overflow: hidden;
-}
-.ticker-tag {
-  flex-shrink: 0;
-  background: #0d8a87;
-  color: #fff;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.26em;
-  padding: 0 18px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-.ticker-track {
-  flex: 1;
-  overflow: hidden;
-  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
-}
-.ticker-run {
-  display: flex;
-  animation: tickRoll 30s linear infinite;
-  white-space: nowrap;
-}
-@keyframes tickRoll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-.t-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 28px;
-  font-size: 12px;
-  color: #3a5060;
-  font-weight: 500;
-}
-.t-sep {
-  font-size: 5px;
-  color: #0d8a87;
-  margin-left: 10px;
-}
-
-
-/* ──────────────────────────────────────────
-   CATEGORY ICONS
-────────────────────────────────────────── */
-.cat-section {
-  padding: 56px 0 48px;
-  background: #ffffff;
-  border-bottom: 1px solid #edf2f6;
-}
-.cat-row {
-  display: flex;
-  justify-content: center;
-  gap: 0;
-}
-.cat-icon-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
-  border-radius: 12px;
-  text-decoration: none;
-  transition: background 0.22s, transform 0.22s;
-  flex: 1;
-  max-width: 160px;
-}
-.cat-icon-item:hover {
-  background: #f0f8f8;
-  transform: translateY(-3px);
-}
-.cat-circle {
-  width: 72px;
-  height: 72px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition: box-shadow 0.22s;
-}
-.cat-icon-item:hover .cat-circle {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-.cat-img {
-  width: 62px;
-  height: 62px;
-  object-fit: contain;
-  transition: transform 0.35s;
-}
-.cat-icon-item:hover .cat-img { transform: scale(1.1); }
-.cat-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #0d2d52;
-  letter-spacing: 0.03em;
-}
-.cat-en {
-  font-size: 9.5px;
-  color: #9ab8c8;
-  letter-spacing: 0.1em;
-}
-
-
-/* ──────────────────────────────────────────
-   SECTION HEADER shared
-────────────────────────────────────────── */
-.sec-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 40px;
-  margin-bottom: 48px;
-  flex-wrap: wrap;
-}
-.sec-head--row {
-  align-items: flex-end;
-}
-.sec-eye {
-  font-size: 10px;
-  letter-spacing: 0.36em;
-  color: #0d8a87;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.sec-eye::before {
-  content: '';
-  display: inline-block;
-  width: 20px;
-  height: 2px;
-  background: #0d8a87;
-  border-radius: 1px;
-}
-.sec-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 30px;
-  font-weight: 800;
-  color: #0d2d52;
-  letter-spacing: 0.03em;
-}
-.sec-note {
-  font-size: 13px;
-  color: #7a9aaa;
-  line-height: 1.8;
-  text-align: right;
-}
-.sec-more {
-  font-size: 13px;
-  color: #0d8a87;
-  font-weight: 600;
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 2px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-bottom: 6px;
-  transition: opacity 0.2s;
-}
+/* Section headers */
+.sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; margin-bottom: 40px; flex-wrap: wrap; }
+.sec-head--row { align-items: flex-end; }
+.sec-eye { font-size: 10px; letter-spacing: 0.3em; color: #e8734a; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.sec-eye::before { content: ''; display: inline-block; width: 20px; height: 2px; background: #e8734a; border-radius: 1px; }
+.sec-title { font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: #0d2d52; letter-spacing: 0.03em; }
+.sec-note { font-size: 13px; color: #7a9aaa; line-height: 1.8; text-align: right; }
+.sec-more { font-size: 13px; color: #e8734a; font-weight: 600; border-bottom: 1px solid currentColor; padding-bottom: 2px; white-space: nowrap; flex-shrink: 0; margin-bottom: 6px; transition: opacity 0.2s; }
 .sec-more:hover { opacity: 0.7; }
 
+/* 3団 */
+.dan-section { padding: 80px 0 88px; background: #fff; border-bottom: 1px solid #edf2f6; }
+.dan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.dan-card {
+  position: relative; border-radius: 16px; padding: 36px 28px 28px;
+  text-decoration: none; display: flex; flex-direction: column; gap: 12px;
+  overflow: hidden; transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+.dan-card:hover { transform: translateY(-6px); box-shadow: 0 20px 56px rgba(13,45,82,0.14); }
+.dan-article { background: linear-gradient(145deg, #0d6b68, #0d8a87); color: white; }
+.dan-cf     { background: linear-gradient(145deg, #c04a28, #e8734a); color: white; }
+.dan-ev     { background: linear-gradient(145deg, #0d2040, #0d2d52); color: white; }
 
-/* ──────────────────────────────────────────
-   LIFE TILES
-────────────────────────────────────────── */
-.tiles-section {
-  padding: 88px 0 96px;
-  background: #faf7f0;
+.dan-stamp {
+  position: absolute; top: 14px; right: -6px;
+  background: rgba(255,255,255,0.22); color: white;
+  font-size: 9px; font-weight: 900; letter-spacing: 0.2em;
+  padding: 4px 14px; transform: rotate(3deg);
+  border-radius: 2px;
 }
-
-.tile-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 16px;
-}
-
-/* Base tile */
-.tile {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  border: 1px solid #e8eef4;
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
-}
-.tile:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 48px rgba(13, 45, 82, 0.12);
-}
-
-/* Hero tile (グルメ): spans 2 rows */
-.tile--hero {
-  grid-column: 1;
-  grid-row: 1 / 3;
-}
-/* Wide tile (人・ビジネス): spans all 3 cols */
-.tile--wide {
-  grid-column: 1 / 4;
-  flex-direction: row;
-}
-
-/* Colored top image area */
-.tile-top {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Default height — will be overridden below */
-  min-height: 160px;
-  flex-shrink: 0;
-}
-.tile .tile-top { min-height: 160px; }
-.tile--hero .tile-top { min-height: 260px; }
-.tile--wide .tile-top {
-  width: 280px;
-  min-height: unset;
-  flex-shrink: 0;
-}
-
-.tile-top-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.08);
-}
-
-.tile-kacchin {
-  height: 75%;
-  width: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.25));
-  transition: transform 0.45s ease;
-  position: relative;
-  z-index: 1;
-}
-.tile:hover .tile-kacchin { transform: scale(1.07); }
-
-.tile-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 2;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 4px;
-  letter-spacing: 0.1em;
-}
-
-/* White text area */
-.tile-body {
-  padding: 18px 22px 22px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-.tile--wide .tile-body {
-  justify-content: center;
-  padding: 24px 32px;
-}
-
-.tile-en {
-  font-size: 9.5px;
-  letter-spacing: 0.18em;
-  color: #9ab8c8;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.tile-name {
+.dan-icon { font-size: 36px; line-height: 1; }
+.dan-name {
   font-family: 'Shippori Mincho', serif;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  margin-bottom: 8px;
-  line-height: 1.2;
+  font-size: 22px; font-weight: 800; color: white; line-height: 1.3; letter-spacing: 0.03em;
 }
-.tile--hero .tile-name { font-size: 22px; }
+.dan-desc { font-size: 13px; color: rgba(255,255,255,0.82); line-height: 1.8; flex: 1; }
+.dan-btn {
+  display: inline-block; margin-top: 8px;
+  font-size: 12px; font-weight: 700; color: white;
+  letter-spacing: 0.08em; opacity: 0.9;
+  transition: letter-spacing 0.2s, opacity 0.2s;
+}
+.dan-soon { opacity: 0.6; cursor: default; }
+.dan-card:hover .dan-btn { letter-spacing: 0.14em; opacity: 1; }
 
-.tile-desc {
-  font-size: 12.5px;
-  color: #5a7080;
-  line-height: 1.7;
-  margin-bottom: 14px;
-  flex: 1;
+/* クラファン */
+.cf-section { padding: 80px 0 88px; background: #faf7f0; }
+.cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.cf-card {
+  background: white; border-radius: 14px; padding: 24px;
+  border: 1.5px solid #e8eef4; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: transform 0.25s, box-shadow 0.25s;
 }
-.tile-arrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  transition: letter-spacing 0.2s;
+.cf-card:hover { transform: translateY(-4px); box-shadow: 0 14px 44px rgba(13,45,82,0.10); }
+.cf-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cf-area {
+  font-size: 11px; font-weight: 700; padding: 3px 10px;
+  border-radius: 4px; background: #fff3e0; color: #e8734a; letter-spacing: 0.08em;
 }
-.tile:hover .tile-arrow { letter-spacing: 0.14em; }
-
-
-/* ──────────────────────────────────────────
-   LATEST ARTICLES
-────────────────────────────────────────── */
-.articles-section {
-  padding: 88px 0 96px;
-  background: #ffffff;
-  border-top: 1px solid #edf2f6;
-}
-
-/* Featured wide card */
-.feature-card {
-  display: grid;
-  grid-template-columns: 5fr 7fr;
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #e8eef4;
-  margin-bottom: 32px;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.28s, box-shadow 0.28s;
-}
-.feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 50px rgba(13,45,82,0.11);
-}
-
-.feature-thumb {
-  position: relative;
-  min-height: 280px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.feature-img {
-  height: 80%;
-  width: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 12px 30px rgba(0,0,0,0.25));
-  transition: transform 0.5s;
-}
-.feature-card:hover .feature-img { transform: scale(1.06); }
-
-.feature-pick {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: #c05a3a;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 4px;
-  letter-spacing: 0.1em;
-}
-
-.feature-body {
-  padding: 36px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.feature-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.fcat {
-  background: #e4f5f4;
-  color: #0d8a87;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 9px;
-  border-radius: 4px;
-  letter-spacing: 0.08em;
-}
-.fdate, .fauth {
-  font-size: 11px;
-  color: #9ab8c8;
-}
-.feature-title {
+.cf-cat { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #e4f5f4; color: #0d8a87; letter-spacing: 0.06em; }
+.cf-urgent { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; background: #fde; color: #c0304a; margin-left: auto; }
+.cf-title {
   font-family: 'Shippori Mincho', serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: #0d2d52;
-  line-height: 1.6;
-  margin-bottom: 14px;
+  font-size: 15px; font-weight: 700; color: #0d2d52; line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
-.feature-desc {
-  font-size: 14px;
-  color: #5a7080;
-  line-height: 1.85;
-  margin-bottom: 24px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.feature-link {
-  font-size: 13px;
-  color: #0d8a87;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  transition: letter-spacing 0.2s;
-}
-.feature-card:hover .feature-link { letter-spacing: 0.1em; }
+.cf-summary { font-size: 12.5px; color: #5a7080; line-height: 1.75; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cf-bar-wrap { display: flex; align-items: center; gap: 10px; }
+.cf-bar { flex: 1; height: 8px; background: #edf2f6; border-radius: 4px; overflow: hidden; }
+.cf-fill { height: 100%; background: linear-gradient(90deg, #e8734a, #f0a070); border-radius: 4px; width: 0; animation: fillBar 1.2s 0.3s ease-out forwards; }
+@keyframes fillBar { to { width: var(--pct); } }
+.cf-pct { font-size: 13px; font-weight: 800; color: #e8734a; min-width: 36px; text-align: right; }
+.cf-stats { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.cf-stat b { font-size: 16px; font-weight: 800; color: #0d2d52; }
+.cf-stat span { font-size: 12px; color: #9ab8c8; }
+.cf-stat-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 12px; color: #7a9aaa; }
+.cf-days { font-weight: 700; color: #e8734a; }
+.cf-cta { padding: 11px 0 0; border-top: 1px solid #edf2f6; font-size: 13px; font-weight: 700; color: #e8734a; letter-spacing: 0.04em; transition: letter-spacing 0.2s; }
+.cf-card:hover .cf-cta { letter-spacing: 0.08em; }
 
-/* Article grid */
-.article-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-}
+/* Categories */
+.cat-section { padding: 48px 0; background: #fff; border-top: 1px solid #edf2f6; border-bottom: 1px solid #edf2f6; }
+.cat-row { display: flex; justify-content: center; gap: 0; }
+.cat-icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 20px; border-radius: 12px; text-decoration: none; transition: background 0.22s, transform 0.22s; flex: 1; max-width: 140px; }
+.cat-icon-item:hover { background: #fff3e0; transform: translateY(-3px); }
+.cat-circle { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: box-shadow 0.22s; }
+.cat-icon-item:hover .cat-circle { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.cat-img { width: 56px; height: 56px; object-fit: contain; transition: transform 0.35s; }
+.cat-icon-item:hover .cat-img { transform: scale(1.1); }
+.cat-label { font-size: 12px; font-weight: 700; color: #0d2d52; letter-spacing: 0.02em; }
 
+/* Articles */
+.articles-section { padding: 80px 0 88px; background: #faf7f0; }
+.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; }
 
-/* ──────────────────────────────────────────
-   JOIN US
-────────────────────────────────────────── */
-.join-section {
-  padding: 88px 0 96px;
-  background: #faf7f0;
-}
-
+/* JOIN */
+.join-section { padding: 80px 0 96px; background: #fff; border-top: 1px solid #edf2f6; }
 .join-card {
   position: relative;
-  background: linear-gradient(120deg, #0d2d52 0%, #0d4870 38%, #0d7080 68%, #0d8a87 100%);
-  border-radius: 20px;
-  padding: 72px 64px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 48px;
-  align-items: center;
-  overflow: hidden;
+  background: linear-gradient(120deg,#0d2d52 0%,#0d4870 38%,#0d6070 68%,#0d7a80 100%);
+  border-radius: 20px; padding: 72px 64px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 48px; align-items: center; overflow: hidden;
 }
-
-/* Dot texture */
-.join-dots {
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
-  background-image: radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-}
-
-/* Decorative wave shape in top-right */
-.join-wave-deco {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  border: 60px solid rgba(255,255,255,0.04);
-  pointer-events: none;
-}
-
-/* Background mascot */
-.join-mascot-bg {
-  position: absolute;
-  right: 240px;
-  bottom: -24px;
-  width: 200px;
-  opacity: 0.07;
-  pointer-events: none;
-  filter: grayscale(1);
-}
-
-/* Content */
+.join-dots { position: absolute; inset: 0; border-radius: 20px; background-image: radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none; }
+.join-mascot-bg { position: absolute; right: 240px; bottom: -24px; width: 200px; opacity: 0.07; pointer-events: none; filter: grayscale(1); }
 .join-content { position: relative; z-index: 1; }
-.join-eye {
-  font-size: 10px;
-  letter-spacing: 0.4em;
-  color: rgba(255,255,255,0.5);
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.join-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 30px;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.5;
-  margin-bottom: 18px;
-}
-.join-body {
-  font-size: 14px;
-  color: rgba(255,255,255,0.62);
-  line-height: 2;
-  max-width: 480px;
-}
+.join-eye { font-size: 10px; letter-spacing: 0.4em; color: rgba(255,255,255,0.5); font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
+.join-title { font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: #fff; line-height: 1.5; margin-bottom: 16px; }
+.join-body { font-size: 14px; color: rgba(255,255,255,0.62); line-height: 2; max-width: 480px; }
+.join-btns { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; position: relative; z-index: 1; }
+.jbtn { padding: 14px 32px; border-radius: 6px; font-size: 13px; font-weight: 700; text-align: center; white-space: nowrap; letter-spacing: 0.05em; transition: all 0.22s; }
+.jbtn--primary { background: #e8734a; color: #fff; box-shadow: 0 4px 18px rgba(232,115,74,0.38); }
+.jbtn--primary:hover { background: #f0845a; transform: translateY(-2px); }
+.jbtn--ghost { border: 1.5px solid rgba(255,255,255,0.32); color: rgba(255,255,255,0.85); }
+.jbtn--ghost:hover { border-color: rgba(255,255,255,0.7); color: #fff; background: rgba(255,255,255,0.08); }
 
-/* Buttons */
-.join-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.jbtn {
-  padding: 14px 36px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-  letter-spacing: 0.05em;
-  transition: all 0.22s;
-}
-.jbtn--primary {
-  background: #e8734a;
-  color: #fff;
-  box-shadow: 0 4px 18px rgba(232, 115, 74, 0.38);
-}
-.jbtn--primary:hover {
-  background: #f0845a;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(232,115,74,0.44);
-}
-.jbtn--ghost {
-  border: 1.5px solid rgba(255,255,255,0.32);
-  color: rgba(255,255,255,0.85);
-}
-.jbtn--ghost:hover {
-  border-color: rgba(255,255,255,0.7);
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-}
-
-/* ──────────────────────────────────────────
-   RESPONSIVE
-────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 768px) {
   .wrap { padding: 0 16px; }
-
-  /* Category */
+  .dan-section { padding: 56px 0 64px; }
+  .dan-grid { grid-template-columns: 1fr; }
+  .cf-section { padding: 56px 0 64px; }
+  .cf-grid { grid-template-columns: 1fr; }
   .cat-row { flex-wrap: wrap; gap: 4px; }
-  .cat-icon-item { max-width: 31%; min-width: 80px; padding: 12px 6px; }
-  .cat-circle { width: 56px; height: 56px; }
-  .cat-img { width: 48px; height: 48px; }
-
-  /* Section headers */
-  .sec-head { gap: 12px; }
-  .sec-note { text-align: left; font-size: 12px; }
-  .sec-title { font-size: 22px; }
-  .tiles-section { padding: 56px 0 64px; }
+  .cat-icon-item { max-width: 31%; min-width: 80px; padding: 10px 6px; }
+  .cat-circle { width: 52px; height: 52px; }
+  .cat-img { width: 44px; height: 44px; }
   .articles-section { padding: 56px 0 64px; }
-
-  /* Life tiles */
-  .tile-grid {
-    grid-template-columns: 1fr;
-  }
-  .tile--hero { grid-column: auto; grid-row: auto; }
-  .tile--wide {
-    grid-column: auto;
-    flex-direction: column;
-  }
-  .tile--wide .tile-top { width: 100%; min-height: 160px; }
-  .tile--hero .tile-top { min-height: 200px; }
-
-  /* Feature card */
-  .feature-card { grid-template-columns: 1fr; }
-  .feature-thumb { min-height: 200px; }
-  .feature-body { padding: 20px; }
-  .feature-title { font-size: 17px; }
-
-  /* Article grid */
   .article-grid { grid-template-columns: 1fr; }
-
-  /* JOIN */
-  .join-card {
-    padding: 40px 20px;
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
+  .join-card { padding: 40px 20px; grid-template-columns: 1fr; gap: 24px; }
   .join-title { font-size: 22px; }
   .join-btns { flex-direction: row; flex-wrap: wrap; }
   .jbtn { padding: 12px 20px; font-size: 12px; }
+  .sec-head { gap: 12px; }
+  .sec-note { text-align: left; }
+  .sec-title { font-size: 22px; }
+  .ticker-tag { padding: 0 10px; font-size: 8.5px; }
 }
-
 @media (max-width: 480px) {
   .cat-icon-item { max-width: 48%; }
-  .ticker-tag { padding: 0 10px; font-size: 8.5px; }
+  .dan-name { font-size: 18px; }
 }
 </style>
