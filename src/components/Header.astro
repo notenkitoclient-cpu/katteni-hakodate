@@ -23,18 +23,36 @@ const categories = [
       </div>
     </a>
 
-    <!-- Navigation -->
+    <!-- Desktop Navigation -->
     <nav class="nav" aria-label="メインナビゲーション">
       {categories.map(cat => (
         <a href={cat.href} class="nav-item">{cat.name}</a>
       ))}
     </nav>
 
-    <!-- CTA -->
+    <!-- Desktop CTA -->
     <a href="/members" class="header-cta">仕掛け人募集</a>
+
+    <!-- Hamburger button (mobile only) -->
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span class="ham-bar"></span>
+      <span class="ham-bar"></span>
+      <span class="ham-bar"></span>
+    </button>
 
   </div>
 </header>
+
+<!-- Mobile drawer -->
+<div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+  <nav class="drawer-nav">
+    {categories.map(cat => (
+      <a href={cat.href} class="drawer-item">{cat.name}</a>
+    ))}
+    <a href="/members" class="drawer-cta">仕掛け人に参加する</a>
+  </nav>
+</div>
+<div class="drawer-overlay" id="drawer-overlay"></div>
 
 <div class="header-offset" aria-hidden="true"></div>
 
@@ -108,7 +126,7 @@ const categories = [
   margin-top: 3px;
 }
 
-/* Nav */
+/* Desktop Nav */
 .nav {
   flex: 1;
   display: flex;
@@ -119,7 +137,6 @@ const categories = [
   scrollbar-width: none;
 }
 .nav::-webkit-scrollbar { display: none; }
-
 .nav-item {
   padding: 6px 11px;
   font-size: 13px;
@@ -134,7 +151,7 @@ const categories = [
   color: #0d8a87;
 }
 
-/* CTA */
+/* Desktop CTA */
 .header-cta {
   flex-shrink: 0;
   padding: 8px 18px;
@@ -152,14 +169,148 @@ const categories = [
   transform: translateY(-1px);
 }
 
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.hamburger:hover { background: #f0f8f8; }
+.ham-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #0d2d52;
+  border-radius: 2px;
+  transition: transform 0.28s ease, opacity 0.2s;
+}
+.hamburger.open .ham-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open .ham-bar:nth-child(2) { opacity: 0; }
+.hamburger.open .ham-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile drawer */
+.mobile-drawer {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(13,45,82,0.08);
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.28s ease, opacity 0.22s ease;
+}
+.mobile-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 24px;
+  gap: 2px;
+}
+.drawer-item {
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0d2d52;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+}
+.drawer-item:hover {
+  background: #e4f5f4;
+  color: #0d8a87;
+}
+.drawer-cta {
+  margin-top: 10px;
+  padding: 14px 16px;
+  background: #0d8a87;
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.04em;
+  transition: background 0.2s;
+}
+.drawer-cta:hover { background: #0fa09c; }
+
+/* Overlay behind drawer */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  background: rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .header-offset { height: 64px; margin-bottom: -64px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .header-inner { padding: 0 16px; }
+  .nav { display: none; }
+  .header-cta { display: none; }
+  .hamburger { display: flex; }
+  .logo-en { display: none; }
+}
 </style>
 
 <script>
   const hdr = document.getElementById('site-header');
-  function sync() {
+  const btn = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+
+  // Scroll shadow
+  function syncScroll() {
     hdr?.classList.toggle('scrolled', window.scrollY > 30);
   }
-  sync();
-  window.addEventListener('scroll', sync, { passive: true });
+  syncScroll();
+  window.addEventListener('scroll', syncScroll, { passive: true });
+
+  // Hamburger toggle
+  function openMenu() {
+    btn?.classList.add('open');
+    drawer?.classList.add('open');
+    overlay?.classList.add('open');
+    btn?.setAttribute('aria-expanded', 'true');
+    drawer?.setAttribute('aria-hidden', 'false');
+  }
+  function closeMenu() {
+    btn?.classList.remove('open');
+    drawer?.classList.remove('open');
+    overlay?.classList.remove('open');
+    btn?.setAttribute('aria-expanded', 'false');
+    drawer?.setAttribute('aria-hidden', 'true');
+  }
+  btn?.addEventListener('click', () => {
+    btn.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  overlay?.addEventListener('click', closeMenu);
+
+  // Close on link tap
+  drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 </script>
