@@ -7,44 +7,179 @@ import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
 const sortedArticles = allArticles.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const categories = ['グルメ', '観光', '暮らし', 'イベント', '人・ビジネス', '特産品'];
+const categories = ['グルメ', '暮らし', 'イベント', '人・ビジネス', '特産品'];
 ---
 
-<BaseLayout title="すべての記事" description="カッテニハコダテの全記事一覧">
+<BaseLayout title="勝手に調べた" description="函館・道南の気になることを勝手に調べた記事一覧。ローカルあるある、検証、まとめ。">
   <Header />
-  <main style="max-width: 1200px; margin: 0 auto; padding: 48px 16px 80px;">
 
-    <div style="margin-bottom: 36px;">
-      <h1 style="font-size: 28px; font-weight: 900; color: #0d2d52; margin-bottom: 8px;">すべての記事</h1>
-      <p style="font-size: 14px; color: #5a7a9a;">{sortedArticles.length}本の記事</p>
+  <main class="shira-page">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <div class="hero-texture" aria-hidden="true"></div>
+      <div class="page-hero-inner wrap">
+        <span class="hero-stamp">勝手に</span>
+        <p class="hero-eye">🔍 調べた</p>
+        <h1 class="hero-title">勝手に調べた</h1>
+        <p class="hero-sub">
+          函館市民なら気になるアレを、勝手にリサーチして勝手に記事にしました。<br>
+          ローカルあるある・検証・まとめ、全部ここにあります。
+        </p>
+        <p class="hero-count">{sortedArticles.length}本の記事</p>
+      </div>
     </div>
 
-    <!-- Category filter -->
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;">
-      <a href="/articles" style="padding: 6px 16px; background: #0d2d52; color: white; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600;">すべて</a>
-      {categories.map(cat => (
-        <a href={`/category/${cat}`} style="padding: 6px 16px; background: white; color: #0d2d52; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 500; border: 1px solid #9ab8cc; transition: all 0.2s;"
-          onmouseover="this.style.background='#0d2d52'; this.style.color='white'"
-          onmouseout="this.style.background='white'; this.style.color='#0d2d52'">
-          {cat}
-        </a>
-      ))}
+    <!-- Category Filter -->
+    <div class="filter-bar">
+      <div class="wrap">
+        <div class="filter-list">
+          <a href="/articles" class="filter-btn filter-btn--active">すべて</a>
+          {categories.map(cat => (
+            <a href={`/category/${cat}`} class="filter-btn">{cat}</a>
+          ))}
+        </div>
+      </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-      {sortedArticles.map((article) => (
-        <ArticleCard
-          title={article.data.title}
-          description={article.data.description}
-          category={article.data.category}
-          date={article.data.date}
-          author={article.data.author}
-          slug={article.id}
-          featured={article.data.featured}
-        />
-      ))}
+    <!-- Article List -->
+    <div class="articles-body wrap">
+      {sortedArticles.length === 0 ? (
+        <div class="empty">
+          <p class="empty-icon">🔍</p>
+          <p class="empty-title">まだ調べた記事がありません</p>
+          <p class="empty-sub">鋭意執筆中です。もう少しお待ちください！</p>
+        </div>
+      ) : (
+        <div class="article-grid">
+          {sortedArticles.map(article => (
+            <ArticleCard
+              title={article.data.title}
+              description={article.data.description}
+              category={article.data.category}
+              date={article.data.date}
+              author={article.data.author}
+              slug={article.id}
+              featured={article.data.featured}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Submit CTA -->
+    <div class="submit-band wrap">
+      <div class="submit-inner">
+        <div>
+          <p class="submit-title">「これ調べてほしい」があればぜひ！</p>
+          <p class="submit-sub">函館で気になること、地元民ならではの疑問をお寄せください。勝手に調べます。</p>
+        </div>
+        <a href="/submit" class="submit-btn">情報を投稿する →</a>
+      </div>
     </div>
 
   </main>
   <Footer />
 </BaseLayout>
+
+<style>
+.shira-page { background: #F5EDD8; min-height: 100vh; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+/* Hero */
+.page-hero {
+  position: relative; overflow: hidden;
+  background: #9E3D26;
+  padding: 96px 0 64px;
+}
+.hero-texture {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.07) 28px, rgba(0,0,0,0.07) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 56px, rgba(0,0,0,0.05) 56px, rgba(0,0,0,0.05) 58px);
+  background-size: 58px 30px;
+}
+.page-hero-inner { position: relative; z-index: 1; }
+.hero-stamp {
+  display: inline-block; background: #D4A02A; color: #2A2420;
+  font-size: 10px; font-weight: 900; letter-spacing: 0.3em;
+  padding: 4px 16px; transform: rotate(-1.5deg);
+  font-family: 'Shippori Mincho', serif;
+  border: 2px solid #2A2420; margin-bottom: 16px;
+}
+.hero-eye { font-size: 11px; letter-spacing: 0.3em; color: rgba(245,237,216,0.6); font-weight: 700; margin-bottom: 10px; }
+.hero-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(28px, 5vw, 48px); font-weight: 900;
+  color: #F5EDD8; letter-spacing: 0.04em; margin-bottom: 16px;
+}
+.hero-sub { font-size: 14px; color: rgba(245,237,216,0.75); line-height: 2; margin-bottom: 20px; }
+.hero-count {
+  display: inline-block;
+  font-family: 'Shippori Mincho', serif;
+  font-size: 12px; font-weight: 700;
+  color: #D4A02A; letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(212,160,42,0.4); padding-bottom: 2px;
+}
+
+/* Filter */
+.filter-bar {
+  background: #FBF7EF;
+  border-top: 3px solid #2A2420;
+  border-bottom: 2px solid #EDE3CC;
+  padding: 16px 0;
+}
+.filter-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 6px 16px;
+  font-size: 12.5px; font-weight: 700;
+  border: 2px solid #8A7A6A; color: #5A4A3A;
+  font-family: 'Shippori Mincho', serif;
+  letter-spacing: 0.04em;
+  transition: all 0.18s;
+}
+.filter-btn:hover { border-color: #9E3D26; color: #9E3D26; background: #F7E8E2; }
+.filter-btn--active { background: #9E3D26; color: #F5EDD8; border-color: #9E3D26; }
+
+/* Articles */
+.articles-body { padding: 48px 0 80px; }
+.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+/* Empty */
+.empty { text-align: center; padding: 80px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-title { font-family: 'Shippori Mincho', serif; font-size: 20px; font-weight: 700; color: #2A2420; margin-bottom: 8px; }
+.empty-sub { font-size: 14px; color: #8A7A6A; }
+
+/* Submit band */
+.submit-band { padding-bottom: 80px; }
+.submit-inner {
+  background: #2A2420; border: 2px solid #2A2420;
+  box-shadow: 4px 4px 0 #9E3D26;
+  padding: 32px 40px; display: flex;
+  align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+}
+.submit-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 17px; font-weight: 800; color: #F5EDD8; margin-bottom: 6px;
+}
+.submit-sub { font-size: 13px; color: #8A7A6A; line-height: 1.7; }
+.submit-btn {
+  flex-shrink: 0; padding: 12px 24px;
+  background: #D4A02A; color: #2A2420;
+  border: 2px solid #D4A02A;
+  font-size: 13px; font-weight: 800;
+  font-family: 'Shippori Mincho', serif;
+  white-space: nowrap; transition: background 0.2s;
+}
+.submit-btn:hover { background: #E0AD30; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wrap { padding: 0 16px; }
+  .page-hero { padding: 88px 0 48px; }
+  .articles-body { padding: 32px 0 56px; }
+  .article-grid { grid-template-columns: 1fr; }
+  .submit-inner { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+}
+</style>

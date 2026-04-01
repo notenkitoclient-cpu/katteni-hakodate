@@ -1,9 +1,9 @@
 ---
 const navItems = [
-  { name: '記事',             href: '/articles' },
-  { name: '勝手に応援団',     href: '/crowdfunding' },
-  { name: 'イベント情報団',   href: '/events' },
-  { name: '仕掛け人',         href: '/members' },
+  { name: '情報収集', href: '/news' },
+  { name: '応援',     href: '/crowdfunding' },
+  { name: '調べた',   href: '/articles' },
+  { name: '仕掛け人', href: '/members' },
 ];
 ---
 
@@ -29,7 +29,7 @@ const navItems = [
     </nav>
 
     <!-- Desktop CTA -->
-    <a href="/submit" class="header-cta">情報を投稿する</a>
+    <a href="/submit" class="header-cta">情報を投稿する ＋</a>
 
     <!-- Hamburger (mobile) -->
     <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
@@ -57,15 +57,11 @@ const navItems = [
 <style>
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: 64px;
-  background: rgba(255,255,255,0.93);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-.site-header.scrolled {
-  border-bottom: 1px solid rgba(13,45,82,0.08);
-  box-shadow: 0 2px 20px rgba(13,45,82,0.07);
+  height: 62px;
+  background: rgba(251,247,239,0.96);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 3px solid #9E3D26;
+  box-shadow: 0 2px 12px rgba(42,36,32,0.08);
 }
 .header-inner {
   max-width: 1200px; margin: 0 auto;
@@ -74,64 +70,84 @@ const navItems = [
 }
 
 /* Logo */
-.logo { flex-shrink: 0; display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.logo { flex-shrink: 0; display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .logo-mark {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg,#d4ecf7,#b4e0f0);
+  width: 34px; height: 34px; border-radius: 4px;
+  background: #9E3D26;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; flex-shrink: 0;
+  border: 2px solid #2A2420;
 }
-.logo-img { width: 26px; height: 26px; object-fit: contain; }
+.logo-img { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); }
 .logo-type { line-height: 1; }
-.logo-ja { display: block; font-family: 'Shippori Mincho', serif; font-size: 15px; font-weight: 800; color: #0d2d52; letter-spacing: 0.02em; }
-.logo-en { display: block; font-size: 7.5px; letter-spacing: 0.22em; color: #9ab8c8; margin-top: 3px; }
+.logo-ja { display: block; font-family: 'Shippori Mincho', serif; font-size: 15px; font-weight: 800; color: #2A2420; letter-spacing: 0.02em; }
+.logo-en { display: block; font-size: 7px; letter-spacing: 0.28em; color: #8A7A6A; margin-top: 3px; text-transform: uppercase; }
 
 /* Desktop Nav */
-.nav { flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.nav { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
-.nav-item { padding: 6px 11px; font-size: 13px; font-weight: 500; color: #4a6070; white-space: nowrap; border-radius: 5px; transition: background 0.18s, color 0.18s; }
-.nav-item:hover { background: #fff3e0; color: #e8734a; }
+.nav-item {
+  padding: 6px 14px; font-size: 13.5px; font-weight: 700; color: #5A4A3A;
+  white-space: nowrap; border-radius: 3px; letter-spacing: 0.04em;
+  transition: background 0.18s, color 0.18s;
+  font-family: 'Shippori Mincho', serif;
+}
+.nav-item:hover { background: #F7E8E2; color: #9E3D26; }
 
 /* CTA */
 .header-cta {
   flex-shrink: 0; padding: 8px 16px;
-  background: #e8734a; color: #fff; border-radius: 5px;
-  font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
-  white-space: nowrap; transition: background 0.2s, transform 0.2s;
+  background: #9E3D26; color: #F5EDD8; border-radius: 3px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+  white-space: nowrap; transition: background 0.2s;
+  border: 2px solid #2A2420;
+  font-family: 'Shippori Mincho', serif;
 }
-.header-cta:hover { background: #f0845a; transform: translateY(-1px); }
+.header-cta:hover { background: #B84A2E; }
 
 /* Hamburger */
 .hamburger {
   display: none; flex-direction: column; justify-content: center;
   gap: 5px; width: 40px; height: 40px; padding: 8px;
   background: none; border: none; cursor: pointer;
-  margin-left: auto; border-radius: 8px; transition: background 0.2s;
+  margin-left: auto; border-radius: 4px; transition: background 0.2s;
 }
-.hamburger:hover { background: #fff3e0; }
-.ham-bar { display: block; width: 22px; height: 2px; background: #0d2d52; border-radius: 2px; transition: transform 0.28s ease, opacity 0.2s; }
-.hamburger.open .ham-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger:hover { background: #F7E8E2; }
+.ham-bar { display: block; width: 22px; height: 2.5px; background: #2A2420; border-radius: 1px; transition: transform 0.28s ease, opacity 0.2s; }
+.hamburger.open .ham-bar:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
 .hamburger.open .ham-bar:nth-child(2) { opacity: 0; }
-.hamburger.open .ham-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.hamburger.open .ham-bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
 /* Mobile drawer */
 .mobile-drawer {
-  position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
-  background: rgba(255,255,255,0.97); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(13,45,82,0.08);
+  position: fixed; top: 62px; left: 0; right: 0; z-index: 99;
+  background: #FBF7EF;
+  border-bottom: 3px solid #9E3D26;
   transform: translateY(-8px); opacity: 0; pointer-events: none;
   transition: transform 0.28s ease, opacity 0.22s ease;
 }
 .mobile-drawer.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
 .drawer-nav { display: flex; flex-direction: column; padding: 16px 20px 24px; gap: 2px; }
-.drawer-item { padding: 13px 16px; font-size: 15px; font-weight: 600; color: #0d2d52; border-radius: 8px; transition: background 0.18s, color 0.18s; }
-.drawer-item:hover { background: #fff3e0; color: #e8734a; }
-.drawer-cta { margin-top: 10px; padding: 14px 16px; background: #e8734a; color: white; border-radius: 8px; font-size: 14px; font-weight: 700; text-align: center; letter-spacing: 0.04em; transition: background 0.2s; }
-.drawer-cta:hover { background: #f0845a; }
-.drawer-overlay { position: fixed; inset: 0; z-index: 98; background: rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.drawer-item {
+  padding: 13px 16px; font-size: 15px; font-weight: 700; color: #2A2420;
+  border-radius: 4px; transition: background 0.18s, color 0.18s;
+  font-family: 'Shippori Mincho', serif; letter-spacing: 0.04em;
+  border-bottom: 1px solid #EDE3CC;
+}
+.drawer-item:hover { background: #F7E8E2; color: #9E3D26; }
+.drawer-cta {
+  margin-top: 12px; padding: 14px 16px;
+  background: #9E3D26; color: #F5EDD8;
+  border-radius: 3px; border: 2px solid #2A2420;
+  font-size: 14px; font-weight: 700; text-align: center;
+  letter-spacing: 0.06em; transition: background 0.2s;
+  font-family: 'Shippori Mincho', serif;
+}
+.drawer-cta:hover { background: #B84A2E; }
+.drawer-overlay { position: fixed; inset: 0; z-index: 98; background: rgba(42,36,32,0.3); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .drawer-overlay.open { opacity: 1; pointer-events: auto; }
 
-.header-offset { height: 64px; margin-bottom: -64px; }
+.header-offset { height: 62px; margin-bottom: -62px; }
 
 @media (max-width: 900px) {
   .header-inner { padding: 0 16px; }
@@ -143,14 +159,9 @@ const navItems = [
 </style>
 
 <script>
-  const hdr = document.getElementById('site-header');
   const btn = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
   const overlay = document.getElementById('drawer-overlay');
-
-  function syncScroll() { hdr?.classList.toggle('scrolled', window.scrollY > 30); }
-  syncScroll();
-  window.addEventListener('scroll', syncScroll, { passive: true });
 
   function openMenu() {
     btn?.classList.add('open'); drawer?.classList.add('open'); overlay?.classList.add('open');

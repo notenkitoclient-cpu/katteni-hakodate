@@ -8,7 +8,7 @@ import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
 const sorted = allArticles.sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const recent = sorted.slice(0, 5);
+const recent = sorted.slice(0, 3);
 
 const allCF = await getCollection('crowdfunding');
 const featuredCF = allCF
@@ -17,19 +17,10 @@ const featuredCF = allCF
   .slice(0, 3);
 
 const ticks = [
-  '🦑 イカソーメンは函館の誇るグルメ','🌙 日本三大夜景・函館山の絶景',
-  '🚃 路面電車が現役で走る港町','🌸 五稜郭の桜と春の函館',
-  '🐟 朝市で食べる新鮮な海の幸','🏛 元町の異国情緒あふれる坂道',
-  '💰 道南のクラファンを勝手に応援中','🎉 道南のイベントを勝手にまとめます',
-];
-
-const categories = [
-  { name: 'グルメ', emoji: '🍜', img: '/images/kacchin-gourmet.png', href: '/category/グルメ', light: '#d4f2f0', accent: '#0d8a87' },
-  { name: '観光',   emoji: '🗺', img: '/images/kacchin-slope.png',   href: '/category/観光',   light: '#d4e6f8', accent: '#1a7fc0' },
-  { name: '暮らし', emoji: '🏡', img: '/images/kacchin-tram.png',    href: '/category/暮らし', light: '#d8ecf8', accent: '#2a88c0' },
-  { name: 'イベント',emoji: '🎉',img: '/images/kacchin-goryokaku.png',href: '/category/イベント',light: '#fbe8e0', accent: '#c05a3a' },
-  { name: '特産品', emoji: '🦑', img: '/images/kacchin-asaichi.png', href: '/category/特産品', light: '#d4f0e4', accent: '#1a9a6a' },
-  { name: '人・ビジネス',emoji:'🤝',img:'/images/kacchin-nightview.png',href:'/category/人・ビジネス',light:'#ede4f8',accent:'#7a50b8' },
+  '📋 函館のリアルな情報を毎日収集中','💰 道南のプロジェクトを勝手に応援',
+  '🔍 地元あるあるを勝手に調べた','🍜 函館グルメの新発見をお届け',
+  '🏗 工事中のあの場所、何ができるの？','🎉 今週末の道南イベントをチェック',
+  '⚓ 頼まれてないけどやってます','🗞 新しいお店・なくなるお店',
 ];
 
 function daysLeft(dateStr: string) {
@@ -37,12 +28,16 @@ function daysLeft(dateStr: string) {
   const now = new Date();
   return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86400000));
 }
-function percent(current: number, goal: number) {
+function pct(current: number, goal: number) {
+  if (!goal) return null;
   return Math.min(100, Math.round((current / goal) * 100));
+}
+function fmtYen(n: number) {
+  return n.toLocaleString('ja-JP') + '円';
 }
 ---
 
-<BaseLayout title="ホーム">
+<BaseLayout title="ホーム" description="函館・道南の超ローカル情報メディア。開店・閉店・地域プロジェクト・地元あるあるを勝手に発信。">
   <Header />
   <HeroSection />
 
@@ -61,44 +56,53 @@ function percent(current: number, goal: number) {
     </div>
 
 
-    <!-- 3団コーナー -->
-    <section class="dan-section">
+    <!-- 3軸コーナー -->
+    <section class="axes-section">
       <div class="wrap">
         <header class="sec-head">
           <div>
-            <p class="sec-eye">勝手に3団</p>
-            <h2 class="sec-title">カッテニハコダテの活動</h2>
+            <p class="sec-eye">カッテニハコダテの3つの活動</p>
+            <h2 class="sec-title">勝手に、全力でやってます。</h2>
           </div>
-          <p class="sec-note">頼まれてないけど、勝手にやってます。</p>
+          <p class="sec-note">頼まれてないけど、なぜかやめられない。</p>
         </header>
 
-        <div class="dan-grid">
+        <div class="axes-grid">
 
-          <!-- 記事団 -->
-          <a href="/articles" class="dan-card dan-article">
-            <div class="dan-stamp">勝手に</div>
-            <div class="dan-icon">🗞</div>
-            <h3 class="dan-name">記事団</h3>
-            <p class="dan-desc">地元ライター5名が函館・道南の魅力を勝手にリサーチして執筆。毎日3本更新中。</p>
-            <span class="dan-btn">記事を読む →</span>
+          <!-- 情報収集 -->
+          <a href="/news" class="axis-card axis-info">
+            <div class="card-stamp">勝手に</div>
+            <div class="card-num">01</div>
+            <div class="card-icon">📋</div>
+            <h3 class="card-name">情報収集</h3>
+            <p class="card-desc">
+              開店・閉店・工事中の謎スポット。函館の「今」を勝手にキャッチしてお届けします。
+            </p>
+            <span class="card-link">情報を見る →</span>
           </a>
 
-          <!-- 勝手に応援団 -->
-          <a href="/crowdfunding" class="dan-card dan-cf">
-            <div class="dan-stamp">勝手に</div>
-            <div class="dan-icon">💰</div>
-            <h3 class="dan-name">勝手に<br>応援団</h3>
-            <p class="dan-desc">道南エリアのクラウドファンディング案件を勝手に発掘・紹介。応援したいから応援する。</p>
-            <span class="dan-btn">応援案件を見る →</span>
+          <!-- 応援 -->
+          <a href="/crowdfunding" class="axis-card axis-ouen">
+            <div class="card-stamp">勝手に</div>
+            <div class="card-num">02</div>
+            <div class="card-icon">💰</div>
+            <h3 class="card-name">応援</h3>
+            <p class="card-desc">
+              頑張ってるのに目につかないクラファン・プロジェクト・お店を勝手に発掘して応援します。
+            </p>
+            <span class="card-link">応援中を見る →</span>
           </a>
 
-          <!-- イベント情報団 -->
-          <a href="/events" class="dan-card dan-ev">
-            <div class="dan-stamp">勝手に</div>
-            <div class="dan-icon">🎉</div>
-            <h3 class="dan-name">イベント<br>情報団</h3>
-            <p class="dan-desc">函館・北斗・七飯のイベント情報を勝手にまとめます。近日公開予定！</p>
-            <span class="dan-btn dan-soon">近日公開 ✦</span>
+          <!-- 調べた -->
+          <a href="/articles" class="axis-card axis-shira">
+            <div class="card-stamp">勝手に</div>
+            <div class="card-num">03</div>
+            <div class="card-icon">🔍</div>
+            <h3 class="card-name">調べた</h3>
+            <p class="card-desc">
+              函館市民なら誰でも気になるアレ、ちゃんと調べました。ローカルあるある・検証・まとめ。
+            </p>
+            <span class="card-link">調べた記事を読む →</span>
           </a>
 
         </div>
@@ -106,48 +110,54 @@ function percent(current: number, goal: number) {
     </section>
 
 
-    <!-- クラファン応援団 ピックアップ -->
+    <!-- 勝手に応援中 -->
     {featuredCF.length > 0 && (
-      <section class="cf-section">
+      <section class="ouen-section">
         <div class="wrap">
           <header class="sec-head sec-head--row">
             <div>
-              <p class="sec-eye">💰 Crowdfunding</p>
-              <h2 class="sec-title">勝手に応援団</h2>
+              <p class="sec-eye">💰 勝手に応援中</p>
+              <h2 class="sec-title">今、応援したいのはコレ</h2>
             </div>
             <a href="/crowdfunding" class="sec-more">もっと見る →</a>
           </header>
 
           <div class="cf-grid">
             {featuredCF.map(cf => {
-              const pct = percent(cf.data.currentAmount, cf.data.goalAmount);
+              const p = pct(cf.data.currentAmount, cf.data.goalAmount);
               const days = daysLeft(cf.data.endDate);
+              const ended = days === 0;
+              const isPurchase = !cf.data.goalAmount;
               return (
-                <a href={cf.data.url} target="_blank" rel="noopener" class="cf-card">
-                  <div class="cf-head">
+                <a href={cf.data.url} target="_blank" rel="noopener" class={`cf-card ${ended ? 'cf-card--ended' : ''}`}>
+                  <div class="cf-tags">
                     <span class="cf-area">{cf.data.area}</span>
                     <span class="cf-cat">{cf.data.category}</span>
-                    {days <= 7 && <span class="cf-urgent">残り{days}日</span>}
+                    {!ended && days <= 7 && <span class="cf-urgent">🔥 残り{days}日</span>}
                   </div>
                   <h3 class="cf-title">{cf.data.title}</h3>
                   <p class="cf-summary">{cf.data.summary}</p>
-                  <div class="cf-bar-wrap">
-                    <div class="cf-bar">
-                      <div class="cf-fill" style={`--pct: ${pct}%`}></div>
+                  {p !== null ? (
+                    <>
+                      <div class="cf-bar-row">
+                        <div class="cf-bar"><div class="cf-fill" style={`--pct: ${p}%`}></div></div>
+                        <span class="cf-pct">{p}%</span>
+                      </div>
+                      <div class="cf-nums">
+                        <b>{fmtYen(cf.data.currentAmount)}</b>
+                        <span>/ 目標 {fmtYen(cf.data.goalAmount)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div class="cf-purchase-row">
+                      <span class="cf-purchase-badge">🎫 応援購入型</span>
+                      <b>{fmtYen(cf.data.currentAmount)} 集まってます</b>
                     </div>
-                    <span class="cf-pct">{pct}%</span>
+                  )}
+                  <div class="cf-foot">
+                    <span>👥 {cf.data.supporterCount}人が支援</span>
+                    <span class="cf-cta">詳細を見る ↗</span>
                   </div>
-                  <div class="cf-stats">
-                    <div class="cf-stat">
-                      <b>{cf.data.currentAmount.toLocaleString()}円</b>
-                      <span>/ {cf.data.goalAmount.toLocaleString()}円</span>
-                    </div>
-                    <div class="cf-stat-right">
-                      <span>👥 {cf.data.supporterCount}人</span>
-                      <span class="cf-days">{days > 0 ? `残り${days}日` : '終了'}</span>
-                    </div>
-                  </div>
-                  <div class="cf-cta">CAMPfireで応援する ↗</div>
                 </a>
               );
             })}
@@ -157,30 +167,13 @@ function percent(current: number, goal: number) {
     )}
 
 
-    <!-- カテゴリ -->
-    <section class="cat-section">
-      <div class="wrap">
-        <div class="cat-row">
-          {categories.map(cat => (
-            <a href={cat.href} class="cat-icon-item">
-              <div class="cat-circle" style={`background: ${cat.light};`}>
-                <img src={cat.img} alt={cat.name} class="cat-img" loading="lazy" />
-              </div>
-              <span class="cat-label">{cat.name}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-
-    <!-- 最新記事 -->
+    <!-- 勝手に調べた -->
     <section class="articles-section">
       <div class="wrap">
         <header class="sec-head sec-head--row">
           <div>
-            <p class="sec-eye">🗞 Articles</p>
-            <h2 class="sec-title">勝手に記事団</h2>
+            <p class="sec-eye">🔍 勝手に調べた</p>
+            <h2 class="sec-title">気になったから調べた</h2>
           </div>
           <a href="/articles" class="sec-more">すべて見る →</a>
         </header>
@@ -202,24 +195,23 @@ function percent(current: number, goal: number) {
     </section>
 
 
-    <!-- JOIN US -->
-    <section class="join-section">
+    <!-- 情報投稿 CTA -->
+    <section class="submit-section">
       <div class="wrap">
-        <div class="join-card">
-          <div class="join-dots" aria-hidden="true"></div>
-          <img src="/images/kacchin-nightview.png" alt="" aria-hidden="true" class="join-mascot-bg" />
-          <div class="join-content">
-            <p class="join-eye">Join Us</p>
-            <h2 class="join-title">あなたも勝手に<br>仕掛け人になりませんか？</h2>
-            <p class="join-body">
-              条件はひとつ、「道南が好き」なこと。<br>
-              地域のクラファン・イベント・お店情報、<br>
-              何でも教えてください。一緒に盛り上げましょう。
+        <div class="submit-board">
+          <div class="board-tape bt1" aria-hidden="true"></div>
+          <div class="board-tape bt2" aria-hidden="true"></div>
+          <div class="submit-content">
+            <p class="submit-eye">あなたの情報が函館を動かす</p>
+            <h2 class="submit-title">「そういえばあのお店が…」<br>その情報、教えてください。</h2>
+            <p class="submit-body">
+              新しくできそうなお店、閉まってたお店、気になる工事現場、頑張ってる人やプロジェクト。<br>
+              なんでも投稿してください。勝手に記事にします。
             </p>
           </div>
-          <div class="join-btns">
-            <a href="/submit" class="jbtn jbtn--primary">情報を投稿する</a>
-            <a href="/members" class="jbtn jbtn--ghost">仕掛け人を見る</a>
+          <div class="submit-actions">
+            <a href="/submit" class="sbtn sbtn--primary">情報を投稿する ＋</a>
+            <a href="/members" class="sbtn sbtn--ghost">仕掛け人を見る</a>
           </div>
         </div>
       </div>
@@ -231,160 +223,207 @@ function percent(current: number, goal: number) {
 
 
 <style>
-.main-page { background: #faf7f0; }
+.main-page { background: #F5EDD8; }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 
 /* Ticker */
-.ticker-wrap { display: flex; align-items: center; background: #fff; border-top: 2px solid #e8734a; border-bottom: 1px solid #e8eef2; height: 46px; overflow: hidden; }
-.ticker-tag { flex-shrink: 0; background: #e8734a; color: #fff; font-size: 9.5px; font-weight: 700; letter-spacing: 0.26em; padding: 0 18px; height: 100%; display: flex; align-items: center; }
-.ticker-track { flex: 1; overflow: hidden; mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%); }
-.ticker-run { display: flex; animation: tickRoll 30s linear infinite; white-space: nowrap; }
+.ticker-wrap {
+  display: flex; align-items: center;
+  background: #2A2420; height: 44px; overflow: hidden;
+}
+.ticker-tag {
+  flex-shrink: 0; background: #9E3D26; color: #F5EDD8;
+  font-size: 9px; font-weight: 900; letter-spacing: 0.3em;
+  padding: 0 18px; height: 100%; display: flex; align-items: center;
+  font-family: 'Shippori Mincho', serif; border-right: 2px solid #D4A02A;
+}
+.ticker-track {
+  flex: 1; overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+}
+.ticker-run { display: flex; animation: tickRoll 32s linear infinite; white-space: nowrap; }
 @keyframes tickRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 28px; font-size: 12px; color: #3a5060; font-weight: 500; }
-.t-sep { font-size: 5px; color: #e8734a; margin-left: 10px; }
+.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 24px; font-size: 12px; color: #8A7A6A; font-weight: 500; }
+.t-sep { font-size: 5px; color: #9E3D26; margin-left: 10px; }
 
 /* Section headers */
-.sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; margin-bottom: 40px; flex-wrap: wrap; }
+.sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; margin-bottom: 36px; flex-wrap: wrap; }
 .sec-head--row { align-items: flex-end; }
-.sec-eye { font-size: 10px; letter-spacing: 0.3em; color: #e8734a; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-.sec-eye::before { content: ''; display: inline-block; width: 20px; height: 2px; background: #e8734a; border-radius: 1px; }
-.sec-title { font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: #0d2d52; letter-spacing: 0.03em; }
-.sec-note { font-size: 13px; color: #7a9aaa; line-height: 1.8; text-align: right; }
-.sec-more { font-size: 13px; color: #e8734a; font-weight: 600; border-bottom: 1px solid currentColor; padding-bottom: 2px; white-space: nowrap; flex-shrink: 0; margin-bottom: 6px; transition: opacity 0.2s; }
+.sec-eye {
+  font-size: 11px; letter-spacing: 0.2em; color: #9E3D26;
+  font-weight: 800; font-family: 'Shippori Mincho', serif;
+  margin-bottom: 6px;
+}
+.sec-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 26px; font-weight: 900; color: #2A2420;
+  letter-spacing: 0.04em;
+}
+.sec-note { font-size: 13px; color: #8A7A6A; line-height: 1.8; text-align: right; font-style: italic; }
+.sec-more {
+  font-size: 13px; color: #9E3D26; font-weight: 700;
+  border-bottom: 1.5px solid currentColor; padding-bottom: 2px;
+  white-space: nowrap; flex-shrink: 0; margin-bottom: 6px;
+  transition: opacity 0.2s; font-family: 'Shippori Mincho', serif;
+}
 .sec-more:hover { opacity: 0.7; }
 
-/* 3団 */
-.dan-section { padding: 80px 0 88px; background: #fff; border-bottom: 1px solid #edf2f6; }
-.dan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.dan-card {
-  position: relative; border-radius: 16px; padding: 36px 28px 28px;
-  text-decoration: none; display: flex; flex-direction: column; gap: 12px;
-  overflow: hidden; transition: transform 0.28s ease, box-shadow 0.28s ease;
+/* 3軸 */
+.axes-section {
+  padding: 72px 0 80px;
+  background: #FBF7EF;
+  border-bottom: 3px solid #EDE3CC;
 }
-.dan-card:hover { transform: translateY(-6px); box-shadow: 0 20px 56px rgba(13,45,82,0.14); }
-.dan-article { background: linear-gradient(145deg, #0d6b68, #0d8a87); color: white; }
-.dan-cf     { background: linear-gradient(145deg, #c04a28, #e8734a); color: white; }
-.dan-ev     { background: linear-gradient(145deg, #0d2040, #0d2d52); color: white; }
+.axes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.axis-card {
+  position: relative; border-radius: 0;
+  padding: 32px 24px 28px;
+  text-decoration: none; display: flex; flex-direction: column; gap: 10px;
+  border: 2px solid #2A2420;
+  box-shadow: 4px 4px 0 #2A2420;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  overflow: hidden;
+}
+.axis-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #2A2420; }
+.axis-info  { background: #F7E8E2; }
+.axis-ouen  { background: #FBF3DB; }
+.axis-shira { background: #E8F0E8; }
 
-.dan-stamp {
-  position: absolute; top: 14px; right: -6px;
-  background: rgba(255,255,255,0.22); color: white;
+.card-stamp {
+  position: absolute; top: 12px; right: -4px;
+  background: #9E3D26; color: #F5EDD8;
   font-size: 9px; font-weight: 900; letter-spacing: 0.2em;
-  padding: 4px 14px; transform: rotate(3deg);
-  border-radius: 2px;
-}
-.dan-icon { font-size: 36px; line-height: 1; }
-.dan-name {
+  padding: 3px 14px; transform: rotate(2deg);
   font-family: 'Shippori Mincho', serif;
-  font-size: 22px; font-weight: 800; color: white; line-height: 1.3; letter-spacing: 0.03em;
 }
-.dan-desc { font-size: 13px; color: rgba(255,255,255,0.82); line-height: 1.8; flex: 1; }
-.dan-btn {
+.card-num {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 36px; font-weight: 900; color: rgba(42,36,32,0.12);
+  line-height: 1; margin-bottom: -4px;
+}
+.card-icon { font-size: 32px; line-height: 1; }
+.card-name {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 22px; font-weight: 900; color: #2A2420;
+  letter-spacing: 0.04em;
+}
+.card-desc { font-size: 13px; color: #5A4A3A; line-height: 1.85; flex: 1; }
+.card-link {
   display: inline-block; margin-top: 8px;
-  font-size: 12px; font-weight: 700; color: white;
-  letter-spacing: 0.08em; opacity: 0.9;
-  transition: letter-spacing 0.2s, opacity 0.2s;
+  font-size: 12px; font-weight: 800;
+  color: #9E3D26; letter-spacing: 0.08em;
+  font-family: 'Shippori Mincho', serif;
+  transition: letter-spacing 0.2s;
 }
-.dan-soon { opacity: 0.6; cursor: default; }
-.dan-card:hover .dan-btn { letter-spacing: 0.14em; opacity: 1; }
+.axis-card:hover .card-link { letter-spacing: 0.14em; }
 
-/* クラファン */
-.cf-section { padding: 80px 0 88px; background: #faf7f0; }
-.cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+/* 応援 */
+.ouen-section { padding: 72px 0 80px; background: #F5EDD8; }
+.cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .cf-card {
-  background: white; border-radius: 14px; padding: 24px;
-  border: 1.5px solid #e8eef4; text-decoration: none; color: inherit;
-  display: flex; flex-direction: column; gap: 12px;
-  transition: transform 0.25s, box-shadow 0.25s;
+  background: #FBF7EF;
+  border: 2px solid #2A2420;
+  box-shadow: 3px 3px 0 #2A2420;
+  padding: 20px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.cf-card:hover { transform: translateY(-4px); box-shadow: 0 14px 44px rgba(13,45,82,0.10); }
-.cf-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cf-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #2A2420; }
+.cf-card--ended { opacity: 0.6; }
+.cf-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .cf-area {
-  font-size: 11px; font-weight: 700; padding: 3px 10px;
-  border-radius: 4px; background: #fff3e0; color: #e8734a; letter-spacing: 0.08em;
+  font-size: 10px; font-weight: 800; padding: 2px 8px;
+  background: #F7E8E2; color: #9E3D26; border: 1px solid #9E3D26;
+  font-family: 'Shippori Mincho', serif;
 }
-.cf-cat { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #e4f5f4; color: #0d8a87; letter-spacing: 0.06em; }
-.cf-urgent { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; background: #fde; color: #c0304a; margin-left: auto; }
+.cf-cat { font-size: 10px; font-weight: 600; padding: 2px 8px; background: #EDE3CC; color: #5A4A3A; border: 1px solid #8A7A6A; }
+.cf-urgent { font-size: 10px; font-weight: 700; padding: 2px 8px; background: #2A2420; color: #D4A02A; margin-left: auto; }
 .cf-title {
   font-family: 'Shippori Mincho', serif;
-  font-size: 15px; font-weight: 700; color: #0d2d52; line-height: 1.6;
+  font-size: 15px; font-weight: 800; color: #2A2420; line-height: 1.65;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
-.cf-summary { font-size: 12.5px; color: #5a7080; line-height: 1.75; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.cf-bar-wrap { display: flex; align-items: center; gap: 10px; }
-.cf-bar { flex: 1; height: 8px; background: #edf2f6; border-radius: 4px; overflow: hidden; }
-.cf-fill { height: 100%; background: linear-gradient(90deg, #e8734a, #f0a070); border-radius: 4px; width: 0; animation: fillBar 1.2s 0.3s ease-out forwards; }
+.cf-summary { font-size: 12.5px; color: #5A4A3A; line-height: 1.75; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cf-bar-row { display: flex; align-items: center; gap: 8px; }
+.cf-bar { flex: 1; height: 8px; background: #EDE3CC; border: 1px solid #8A7A6A; }
+.cf-fill { height: 100%; background: #9E3D26; width: 0; animation: fillBar 1s 0.3s ease-out forwards; }
 @keyframes fillBar { to { width: var(--pct); } }
-.cf-pct { font-size: 13px; font-weight: 800; color: #e8734a; min-width: 36px; text-align: right; }
-.cf-stats { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-.cf-stat b { font-size: 16px; font-weight: 800; color: #0d2d52; }
-.cf-stat span { font-size: 12px; color: #9ab8c8; }
-.cf-stat-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 12px; color: #7a9aaa; }
-.cf-days { font-weight: 700; color: #e8734a; }
-.cf-cta { padding: 11px 0 0; border-top: 1px solid #edf2f6; font-size: 13px; font-weight: 700; color: #e8734a; letter-spacing: 0.04em; transition: letter-spacing 0.2s; }
-.cf-card:hover .cf-cta { letter-spacing: 0.08em; }
-
-/* Categories */
-.cat-section { padding: 48px 0; background: #fff; border-top: 1px solid #edf2f6; border-bottom: 1px solid #edf2f6; }
-.cat-row { display: flex; justify-content: center; gap: 0; }
-.cat-icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 20px; border-radius: 12px; text-decoration: none; transition: background 0.22s, transform 0.22s; flex: 1; max-width: 140px; }
-.cat-icon-item:hover { background: #fff3e0; transform: translateY(-3px); }
-.cat-circle { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: box-shadow 0.22s; }
-.cat-icon-item:hover .cat-circle { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-.cat-img { width: 56px; height: 56px; object-fit: contain; transition: transform 0.35s; }
-.cat-icon-item:hover .cat-img { transform: scale(1.1); }
-.cat-label { font-size: 12px; font-weight: 700; color: #0d2d52; letter-spacing: 0.02em; }
+.cf-pct { font-size: 13px; font-weight: 900; color: #9E3D26; min-width: 36px; text-align: right; font-family: 'Shippori Mincho', serif; }
+.cf-nums { font-size: 12px; color: #5A4A3A; }
+.cf-nums b { font-size: 15px; font-weight: 800; color: #2A2420; margin-right: 4px; }
+.cf-purchase-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cf-purchase-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; background: #FBF3DB; color: #D4A02A; border: 1px solid #D4A02A; }
+.cf-purchase-row b { font-size: 14px; font-weight: 800; color: #2A2420; }
+.cf-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid #EDE3CC; font-size: 12px; color: #8A7A6A; }
+.cf-cta { font-weight: 800; color: #9E3D26; font-family: 'Shippori Mincho', serif; }
 
 /* Articles */
-.articles-section { padding: 80px 0 88px; background: #faf7f0; }
-.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; }
-
-/* JOIN */
-.join-section { padding: 80px 0 96px; background: #fff; border-top: 1px solid #edf2f6; }
-.join-card {
-  position: relative;
-  background: linear-gradient(120deg,#0d2d52 0%,#0d4870 38%,#0d6070 68%,#0d7a80 100%);
-  border-radius: 20px; padding: 72px 64px;
-  display: grid; grid-template-columns: 1fr auto;
-  gap: 48px; align-items: center; overflow: hidden;
+.articles-section {
+  padding: 72px 0 80px;
+  background: #FBF7EF;
+  border-top: 3px solid #EDE3CC;
+  border-bottom: 3px solid #EDE3CC;
 }
-.join-dots { position: absolute; inset: 0; border-radius: 20px; background-image: radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none; }
-.join-mascot-bg { position: absolute; right: 240px; bottom: -24px; width: 200px; opacity: 0.07; pointer-events: none; filter: grayscale(1); }
-.join-content { position: relative; z-index: 1; }
-.join-eye { font-size: 10px; letter-spacing: 0.4em; color: rgba(255,255,255,0.5); font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
-.join-title { font-family: 'Shippori Mincho', serif; font-size: 28px; font-weight: 800; color: #fff; line-height: 1.5; margin-bottom: 16px; }
-.join-body { font-size: 14px; color: rgba(255,255,255,0.62); line-height: 2; max-width: 480px; }
-.join-btns { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; position: relative; z-index: 1; }
-.jbtn { padding: 14px 32px; border-radius: 6px; font-size: 13px; font-weight: 700; text-align: center; white-space: nowrap; letter-spacing: 0.05em; transition: all 0.22s; }
-.jbtn--primary { background: #e8734a; color: #fff; box-shadow: 0 4px 18px rgba(232,115,74,0.38); }
-.jbtn--primary:hover { background: #f0845a; transform: translateY(-2px); }
-.jbtn--ghost { border: 1.5px solid rgba(255,255,255,0.32); color: rgba(255,255,255,0.85); }
-.jbtn--ghost:hover { border-color: rgba(255,255,255,0.7); color: #fff; background: rgba(255,255,255,0.08); }
+.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+/* Submit CTA */
+.submit-section { padding: 72px 0 88px; background: #F5EDD8; }
+.submit-board {
+  position: relative;
+  background: #2A2420;
+  border: 3px solid #2A2420;
+  padding: 56px 64px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 48px; align-items: center;
+  box-shadow: 6px 6px 0 #9E3D26;
+}
+.board-tape {
+  position: absolute;
+  width: 60px; height: 18px;
+  background: rgba(212,160,42,0.75);
+  border: 1px solid rgba(212,160,42,0.4);
+}
+.bt1 { top: -9px; left: 32px; transform: rotate(-1.5deg); }
+.bt2 { top: -9px; right: 80px; transform: rotate(1.5deg); }
+.submit-eye { font-size: 10px; letter-spacing: 0.3em; color: #D4A02A; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; font-family: 'Shippori Mincho', serif; }
+.submit-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 24px; font-weight: 900; color: #F5EDD8;
+  line-height: 1.6; margin-bottom: 14px;
+}
+.submit-body { font-size: 13.5px; color: #8A7A6A; line-height: 2; max-width: 480px; }
+.submit-actions { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
+.sbtn {
+  padding: 14px 28px; font-size: 13px; font-weight: 800;
+  text-align: center; white-space: nowrap; letter-spacing: 0.06em;
+  font-family: 'Shippori Mincho', serif;
+  transition: all 0.2s;
+}
+.sbtn--primary { background: #D4A02A; color: #2A2420; border: 2px solid #D4A02A; box-shadow: 3px 3px 0 #9E3D26; }
+.sbtn--primary:hover { background: #E0AD30; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #9E3D26; }
+.sbtn--ghost { border: 2px solid #5A4A3A; color: #8A7A6A; }
+.sbtn--ghost:hover { border-color: #F5EDD8; color: #F5EDD8; }
 
 /* Responsive */
 @media (max-width: 768px) {
   .wrap { padding: 0 16px; }
-  .dan-section { padding: 56px 0 64px; }
-  .dan-grid { grid-template-columns: 1fr; }
-  .cf-section { padding: 56px 0 64px; }
+  .axes-section { padding: 52px 0 60px; }
+  .axes-grid { grid-template-columns: 1fr; }
+  .ouen-section { padding: 52px 0 60px; }
   .cf-grid { grid-template-columns: 1fr; }
-  .cat-row { flex-wrap: wrap; gap: 4px; }
-  .cat-icon-item { max-width: 31%; min-width: 80px; padding: 10px 6px; }
-  .cat-circle { width: 52px; height: 52px; }
-  .cat-img { width: 44px; height: 44px; }
-  .articles-section { padding: 56px 0 64px; }
+  .articles-section { padding: 52px 0 60px; }
   .article-grid { grid-template-columns: 1fr; }
-  .join-card { padding: 40px 20px; grid-template-columns: 1fr; gap: 24px; }
-  .join-title { font-size: 22px; }
-  .join-btns { flex-direction: row; flex-wrap: wrap; }
-  .jbtn { padding: 12px 20px; font-size: 12px; }
+  .submit-section { padding: 52px 0 64px; }
+  .submit-board { padding: 36px 24px; grid-template-columns: 1fr; gap: 24px; }
   .sec-head { gap: 12px; }
   .sec-note { text-align: left; }
-  .sec-title { font-size: 22px; }
-  .ticker-tag { padding: 0 10px; font-size: 8.5px; }
+  .sec-title { font-size: 21px; }
+  .ticker-tag { font-size: 8px; padding: 0 10px; }
 }
 @media (max-width: 480px) {
-  .cat-icon-item { max-width: 48%; }
-  .dan-name { font-size: 18px; }
+  .submit-actions { flex-direction: row; flex-wrap: wrap; }
+  .sbtn { padding: 12px 20px; font-size: 12px; }
+  .card-name { font-size: 18px; }
 }
 </style>
