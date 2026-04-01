@@ -872,4 +872,60 @@ const ticks = [
   color: #fff;
   background: rgba(255,255,255,0.08);
 }
+
+/* ──────────────────────────────────────────
+   RESPONSIVE
+────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .wrap { padding: 0 16px; }
+
+  /* Category */
+  .cat-row { flex-wrap: wrap; gap: 4px; }
+  .cat-icon-item { max-width: 31%; min-width: 80px; padding: 12px 6px; }
+  .cat-circle { width: 56px; height: 56px; }
+  .cat-img { width: 48px; height: 48px; }
+
+  /* Section headers */
+  .sec-head { gap: 12px; }
+  .sec-note { text-align: left; font-size: 12px; }
+  .sec-title { font-size: 22px; }
+  .tiles-section { padding: 56px 0 64px; }
+  .articles-section { padding: 56px 0 64px; }
+
+  /* Life tiles */
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+  .tile--hero { grid-column: auto; grid-row: auto; }
+  .tile--wide {
+    grid-column: auto;
+    flex-direction: column;
+  }
+  .tile--wide .tile-top { width: 100%; min-height: 160px; }
+  .tile--hero .tile-top { min-height: 200px; }
+
+  /* Feature card */
+  .feature-card { grid-template-columns: 1fr; }
+  .feature-thumb { min-height: 200px; }
+  .feature-body { padding: 20px; }
+  .feature-title { font-size: 17px; }
+
+  /* Article grid */
+  .article-grid { grid-template-columns: 1fr; }
+
+  /* JOIN */
+  .join-card {
+    padding: 40px 20px;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .join-title { font-size: 22px; }
+  .join-btns { flex-direction: row; flex-wrap: wrap; }
+  .jbtn { padding: 12px 20px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .cat-icon-item { max-width: 48%; }
+  .ticker-tag { padding: 0 10px; font-size: 8.5px; }
+}
 </style>

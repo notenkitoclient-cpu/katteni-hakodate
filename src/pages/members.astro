@@ -5,36 +5,49 @@ import Footer from '../components/Footer.astro';
 
 const members = [
   {
-    name: '田中 健太',
-    role: 'グルメ担当',
-    img: '/images/kacchin-gourmet.png',
-    bio: '函館生まれ函館育ち。「本当においしい店は路地裏にある」が信条。朝市から屋台まで、函館のグルメを食べ歩き20年。',
-    tags: ['朝市', '海鮮', 'ラーメン'],
+    name: '霧野 しずく',
+    role: '暮らし・移住担当',
+    emoji: '🌫',
+    img: '/images/kacchin-tram.png',
+    bio: '32歳。神奈川出身、元グラフィックデザイナー。7年前に函館へIターン。朝は必ず函館港をひとりで歩く。霧の多い函館が好き。移住のリアルを、自分の言葉で届けます。',
+    tags: ['移住', 'Iターン', 'デザイン', '港町'],
     color: '#0d8a87',
   },
   {
-    name: '佐藤 みき',
-    role: 'イベント・観光担当',
-    img: '/images/kacchin-goryokaku.png',
-    bio: '函館の魅力を発信したくてUターン。バル街の運営スタッフとしても活動中。地元民だからこそ知る「本物の函館」を届けます。',
-    tags: ['バル街', '元町', 'イベント'],
-    color: '#0d2d52',
-  },
-  {
-    name: '木村 亮',
-    role: '移住・暮らし担当',
-    img: '/images/kacchin-tram.png',
-    bio: '東京から函館に移住して3年。リモートワーカーとして働きながら、移住のリアルな体験を発信。移住希望者の相談にも乗ります。',
-    tags: ['移住', 'リモートワーク', '子育て'],
+    name: '港 まさあき',
+    role: 'グルメ・特産品担当',
+    emoji: '🐟',
+    img: '/images/kacchin-asaichi.png',
+    bio: '41歳。函館生まれ函館育ち。漁師の息子で朝市歴35年。妻と娘ふたり。休日は磯釣り。「函館のうまいもん」なら誰にも負けない。地元民の本音でグルメをお届け。',
+    tags: ['朝市', '海鮮', 'グルメ', '地元民'],
     color: '#1a7fc0',
   },
   {
-    name: '山田 花子',
-    role: '温泉・特産品担当',
-    img: '/images/kacchin-asaichi.png',
-    bio: '湯の川温泉の近くに住む温泉マニア。函館の海産物と温泉をこよなく愛す。地元の事業者さんとの繋がりを大切にしています。',
-    tags: ['温泉', '海産物', '特産品'],
+    name: '坂本 颯',
+    role: '観光・イベント担当',
+    emoji: '🚲',
+    img: '/images/kacchin-slope.png',
+    bio: '28歳。函館市民歴28年（生え抜き）。フリーライター兼自転車愛好家。ネタのためなら坂道も厭わない。函館の変化を誰よりも早くキャッチするのが生きがい。',
+    tags: ['観光', 'イベント', '自転車', '地元情報'],
     color: '#c05a3a',
+  },
+  {
+    name: '深海 凛',
+    role: '人・ビジネス担当',
+    emoji: '📊',
+    img: '/images/kacchin-nightview.png',
+    bio: '38歳。函館市出身、東京のシンクタンク勤務を経て7年前にUターン。地域経済とまちづくりの研究をしながら執筆。「函館の今」を構造的に読み解くことが使命。',
+    tags: ['まちづくり', 'Uターン', '地域経済', 'ビジネス'],
+    color: '#7a50b8',
+  },
+  {
+    name: '西野 そら',
+    role: '若者目線・発見担当',
+    emoji: '🌟',
+    img: '/images/kacchin-goryokaku.png',
+    bio: '21歳。神奈川県横浜市出身。函館の大学に進学して2年目。水産系の学部で海について学んでいる。函館に来て「当たり前」が全然違うことに毎日驚いている。',
+    tags: ['大学生', '道外出身', '新発見', 'Gen-Z'],
+    color: '#1a9a6a',
   },
 ];
 ---
@@ -60,8 +73,9 @@ const members = [
           onmouseover="this.style.transform='translateY(-4px)'"
           onmouseout="this.style.transform=''">
           <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
-            <div style={`width: 64px; height: 64px; border-radius: 50%; background: ${member.color}18; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid ${member.color}30; overflow: hidden; padding: 6px;`}>
+            <div style={`width: 64px; height: 64px; border-radius: 50%; background: ${member.color}18; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid ${member.color}30; overflow: hidden; padding: 6px; position: relative;`}>
               <img src={member.img} alt={member.role} style="width: 100%; height: 100%; object-fit: contain;" />
+              <span style={`position: absolute; bottom: -4px; right: -4px; font-size: 18px; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.12);`}>{member.emoji}</span>
             </div>
             <div>
               <h3 style="font-size: 16px; font-weight: 700; color: #0d2d52; margin-bottom: 2px;">{member.name}</h3>

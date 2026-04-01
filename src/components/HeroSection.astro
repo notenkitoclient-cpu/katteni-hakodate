@@ -55,6 +55,18 @@
           <b>毎週</b><span>更新</span>
         </div>
       </div>
+
+      <!-- Weather badge -->
+      <div class="weather-badge" id="weather-badge" style="display:none">
+        <span class="w-icon" id="w-icon">🌤</span>
+        <div class="w-info">
+          <span class="w-temp" id="w-temp">--°C</span>
+          <span class="w-label">函館の今の天気</span>
+        </div>
+        <span class="w-sep"></span>
+        <span class="w-city">函館市</span>
+      </div>
+
     </div>
 
     <!-- Right: Mascot scene -->
@@ -89,6 +101,31 @@
     </div>
     <span>SCROLL</span>
   </div>
+
+  <!-- Weather script -->
+  <script>
+  (async () => {
+    try {
+      const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=41.7686&longitude=140.7288&current=temperature_2m,weather_code&timezone=Asia/Tokyo');
+      const d = await res.json();
+      const temp = Math.round(d.current.temperature_2m);
+      const code = d.current.weather_code;
+      const icons = {
+        0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+        45:'🌫',48:'🌫',
+        51:'🌦',53:'🌦',55:'🌧',
+        61:'🌧',63:'🌧',65:'🌧',
+        71:'🌨',73:'🌨',75:'❄️',77:'❄️',
+        80:'🌦',81:'🌧',82:'⛈',
+        95:'⛈',96:'⛈',99:'⛈',
+      };
+      const icon = icons[code] ?? '🌤';
+      document.getElementById('w-icon').textContent = icon;
+      document.getElementById('w-temp').textContent = `${temp}°C`;
+      document.getElementById('weather-badge').style.display = 'flex';
+    } catch(e) {}
+  })();
+  </script>
 
   <!-- Wave to page -->
   <div class="hero-wave" aria-hidden="true">
@@ -455,9 +492,55 @@
 }
 .hero-wave svg { width: 100%; display: block; }
 
+/* ──── Weather badge ──── */
+.weather-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(13,138,135,0.18);
+  border-radius: 30px;
+  padding: 8px 16px;
+  width: fit-content;
+  box-shadow: 0 2px 12px rgba(0,60,90,0.08);
+}
+.w-icon { font-size: 22px; line-height: 1; }
+.w-info { display: flex; flex-direction: column; gap: 1px; }
+.w-temp { font-size: 16px; font-weight: 800; color: #0d2d52; line-height: 1; }
+.w-label { font-size: 9px; color: #9ab8c8; letter-spacing: 0.1em; }
+.w-sep { width: 1px; height: 24px; background: #d0e8f0; margin: 0 4px; }
+.w-city { font-size: 11px; font-weight: 600; color: #4a7080; }
+
 /* ──── Animation ──── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ──── Responsive ──── */
+@media (max-width: 768px) {
+  .hero { min-height: auto; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    padding: 80px 20px 24px;
+    text-align: center;
+  }
+  .hero-left { padding-right: 0; align-items: center; }
+  .hero-right { min-height: 260px; }
+  .r1 { width: 260px; height: 260px; }
+  .r2 { width: 320px; height: 320px; }
+  .mascot { width: clamp(180px, 55vw, 260px); }
+  .fb1, .fb2 { display: none; }
+  .hero-ctas { justify-content: center; }
+  .hero-stats { justify-content: center; }
+  .weather-badge { align-self: center; }
+}
+@media (max-width: 480px) {
+  .hl-lg { font-size: 30px; }
+  .hero-right { min-height: 200px; }
+  .mascot { width: 160px; }
 }
 </style>
