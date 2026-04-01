@@ -13,6 +13,7 @@ function daysLeft(dateStr: string) {
   return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86400000));
 }
 function pct(current: number, goal: number) {
+  if (!goal) return null;
   return Math.min(100, Math.round((current / goal) * 100));
 }
 function fmtYen(n: number) {
@@ -20,7 +21,7 @@ function fmtYen(n: number) {
 }
 ---
 
-<BaseLayout title="勝手にクラファン応援団" description="道南エリアのクラウドファンディング案件を勝手に紹介・応援します！">
+<BaseLayout title="勝手に応援団" description="道南エリアのクラウドファンディング・地域プロジェクトを勝手に紹介・応援します！">
   <Header />
 
   <main class="cf-page">
@@ -30,11 +31,11 @@ function fmtYen(n: number) {
       <div class="page-hero-bg" aria-hidden="true"></div>
       <div class="page-hero-inner wrap">
         <div class="stamp-label">勝手に</div>
-        <p class="page-eye">💰 Crowdfunding</p>
-        <h1 class="page-title">クラファン応援団</h1>
+        <p class="page-eye">💰 Support Projects</p>
+        <h1 class="page-title">勝手に応援団</h1>
         <p class="page-sub">
-          道南エリア（函館・北斗・七飯ほか）のクラウドファンディングを<br>
-          勝手に発掘して、勝手に応援します。
+          道南エリア（函館・北斗・七飯ほか）の<br>
+          クラウドファンディング・地域プロジェクトを勝手に発掘して応援します。
         </p>
         <div class="page-tags">
           <span class="ptag">函館</span>
@@ -59,6 +60,7 @@ function fmtYen(n: number) {
         const p = pct(cf.data.currentAmount, cf.data.goalAmount);
         const days = daysLeft(cf.data.endDate);
         const ended = days === 0;
+        const isPurchaseType = !cf.data.goalAmount;
         return (
           <article class={`cf-card ${ended ? 'cf-card--ended' : ''}`}>
             <div class="cf-card-inner">
@@ -68,28 +70,37 @@ function fmtYen(n: number) {
                 <div class="cf-meta">
                   <span class="cf-area">{cf.data.area}</span>
                   <span class="cf-cat">{cf.data.category}</span>
+                  {isPurchaseType && <span class="cf-purchase">応援購入型</span>}
                   {!ended && days <= 7 && <span class="cf-urgent">🔥 残り{days}日</span>}
                   {ended && <span class="cf-ended">終了</span>}
                 </div>
                 <h2 class="cf-title">{cf.data.title}</h2>
                 <p class="cf-summary">{cf.data.summary}</p>
-                <p class="cf-owner">プロジェクトオーナー：{cf.data.owner}</p>
+                <p class="cf-owner">主催：{cf.data.owner}</p>
               </div>
 
               <!-- Right: Progress -->
               <div class="cf-progress">
-                <div class="cf-pct-num">{p}<span>%</span></div>
-                <div class="cf-bar-wrap">
-                  <div class="cf-bar">
-                    <div class="cf-fill" style={`--pct: ${p}%`}></div>
+                {p !== null ? (
+                  <>
+                    <div class="cf-pct-num">{p}<span>%</span></div>
+                    <div class="cf-bar-wrap">
+                      <div class="cf-bar">
+                        <div class="cf-fill" style={`--pct: ${p}%`}></div>
+                      </div>
+                    </div>
+                    <div class="cf-amounts">
+                      <p class="cf-current">{fmtYen(cf.data.currentAmount)}</p>
+                      <p class="cf-goal">目標 {fmtYen(cf.data.goalAmount)}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div class="cf-purchase-info">
+                    <p class="cf-purchase-icon">🎫</p>
+                    <p class="cf-purchase-label">応援購入型</p>
+                    <p class="cf-current">{fmtYen(cf.data.currentAmount)} 集まっています</p>
                   </div>
-                </div>
-                <div class="cf-amounts">
-                  <div>
-                    <p class="cf-current">{fmtYen(cf.data.currentAmount)}</p>
-                    <p class="cf-goal">目標 {fmtYen(cf.data.goalAmount)}</p>
-                  </div>
-                </div>
+                )}
                 <div class="cf-sub-stats">
                   <div class="cf-sub-stat">
                     <b>{cf.data.supporterCount}</b>
@@ -102,7 +113,7 @@ function fmtYen(n: number) {
                 </div>
                 {!ended && (
                   <a href={cf.data.url} target="_blank" rel="noopener" class="cf-link-btn">
-                    CAMPfireで応援する ↗
+                    詳細を見て応援する ↗
                   </a>
                 )}
               </div>
@@ -172,6 +183,10 @@ function fmtYen(n: number) {
 .cf-cat { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #e4f5f4; color: #0d8a87; }
 .cf-urgent { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; background: #fde; color: #c0304a; }
 .cf-ended { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; background: #f0f0f0; color: #888; }
+.cf-purchase { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; background: #fff0e8; color: #e8734a; }
+.cf-purchase-info { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; }
+.cf-purchase-icon { font-size: 32px; line-height: 1; }
+.cf-purchase-label { font-size: 11px; font-weight: 700; color: #e8734a; letter-spacing: 0.05em; }
 .cf-title { font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 800; color: #0d2d52; line-height: 1.65; margin-bottom: 12px; }
 .cf-summary { font-size: 13.5px; color: #5a7080; line-height: 1.8; margin-bottom: 16px; }
 .cf-owner { font-size: 12px; color: #9ab8c8; }
