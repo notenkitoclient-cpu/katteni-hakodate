@@ -1,0 +1,99 @@
+name: 記事自動生成
+
+on:
+  schedule:
+    # 毎日 8:00 JST (= 23:00 UTC 前日)
+    - cron: '0 23 * * *'
+    # 毎日 12:00 JST (= 03:00 UTC)
+    - cron: '0 3 * * *'
+    # 毎日 20:00 JST (= 11:00 UTC)
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-article:
+    name: 記事生成
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Anthropic SDK をインストール
+        run: npm install @anthropic-ai/sdk
+
+      - name: 記事を生成
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/generate-article.mjs
+
+      - name: 記事をコミット＆プッシュ
+        id: commit
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/content/articles/
+          if git diff --staged --quiet; then
+            echo "published=false" >> $GITHUB_OUTPUT
+            echo "新しい記事はありませんでした"
+          else
+            git commit -m "content: 自動生成記事 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+            git push
+            echo "published=true" >> $GITHUB_OUTPUT
+            echo "✅ プッシュ完了"
+          fi
+
+      - name: Discord に新着記事を通知
+        if: steps.commit.outputs.published == 'true'
+        env:
+          DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          node - <<'EOF'
+          import fs from 'fs';
+          import https from 'https';
+
+          const result = JSON.parse(fs.readFileSync('/tmp/article-result.json', 'utf-8'));
+          const siteUrl = process.env.SITE_URL?.replace(/\/$/, '') || 'https://katteni-hakodate.vercel.app';
+          const articleUrl = `${siteUrl}/articles/${result.slug}`;
+
+          const categoryEmoji = {
+            'グルメ': '🍜', '観光': '🗺', '暮らし': '🏡',
+            'イベント': '🎉', '特産品': '🦑', '人・ビジネス': '🤝',
+          };
+          const emoji = categoryEmoji[result.category] || '📝';
+
+          const writerEmoji = {
+            'shizuku': '🌫', 'masaru': '🐟', 'taro': '🚲', 'rin': '📊', 'kacchin': '⚓',
+          };
+          const wEmoji = writerEmoji[result.writerId] || '✍️';
+
+          const message = [
+            `📝 **新着記事が公開されました** | カッテニハコダテ`,
+            ``,
+            `${emoji} **${result.title}**`,
+            `> ${result.description}`,
+            ``,
+            `🏷 カテゴリ: ${result.category}`,
+            `${wEmoji} 執筆: ${result.writer}`,
+            `🔗 ${articleUrl}`,
+          ].join('\n');
+
+          const body = JSON.stringify({ content: message });
+          const url = new URL(process.env.DISCORD_ARTICLE_WEBHOOK_URL);
+          const req = https.request({
+            hostname: url.hostname, path: url.pathname,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+          }, res => { console.log(`✅ Discord 通知完了 (HTTP ${res.statusCode})`); });
+          req.on('error', e => { console.error(e.message); process.exit(1); });
+          req.write(body); req.end();
+          EOF
