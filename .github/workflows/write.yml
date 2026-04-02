@@ -1,0 +1,57 @@
+name: 記事下書き生成
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'ネタ（URLまたは説明文。例: https://... または「函館駅前に新しいカフェ」）'
+        required: true
+        type: string
+      writer:
+        description: 'ライターID（空欄で自動選定）: shizuku / masaru / taro / rin / sora'
+        required: false
+        type: string
+
+jobs:
+  write:
+    name: 下書き生成
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 依存パッケージをインストール
+        run: npm install @anthropic-ai/sdk exa-js
+
+      - name: 下書きを生成
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
+          DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          TOPIC: ${{ inputs.topic }}
+          WRITER_ID: ${{ inputs.writer }}
+        run: node scripts/write.mjs --topic "${{ inputs.topic }}" --writer "${{ inputs.writer }}"
+
+      - name: 下書きをコミット＆プッシュ
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/content/drafts/
+          if git diff --staged --quiet; then
+            echo "下書きなし（既存スラッグと重複した可能性があります）"
+          else
+            RESULT=$(cat /tmp/draft-result.json 2>/dev/null || echo '{}')
+            SLUG=$(echo "$RESULT" | node -e "process.stdin||(process.stdin=require('fs').createReadStream('/tmp/draft-result.json'));let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).slug||'draft'))" 2>/dev/null || echo "draft")
+            git commit -m "draft: 下書き追加 [$SLUG]"
+            git push
+            echo "✅ プッシュ完了 → Cloudflare が自動ビルド開始"
+          fi

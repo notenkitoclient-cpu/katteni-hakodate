@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const drafts = await getCollection('drafts');
+  return drafts.map(d => ({ params: { slug: d.id }, props: { draft: d } }));
+}
+
+const { draft } = Astro.props;
+const { Content } = await render(draft);
+
+const writerEmoji: Record<string, string> = {
+  shizuku: '🌫', masaru: '🐟', taro: '🚲', rin: '📊', sora: '🌟',
+};
+const emoji = writerEmoji[draft.data.writerId] ?? '✍️';
+---
+
+<BaseLayout title={`[下書き] ${draft.data.title}`} description={draft.data.description}>
+  <!-- noindex: 検索エンジン・サイト内のどこにも出てこない -->
+  <meta name="robots" content="noindex, nofollow" slot="head" />
+  <Header />
+
+  <!-- 下書きバナー -->
+  <div class="draft-banner">
+    <div class="draft-banner-inner">
+      <div class="draft-badge">📝 下書き確認ページ</div>
+      <p class="draft-note">このページは公開されていません。URLを知っている人だけが閲覧できます。</p>
+      <div class="draft-actions">
+        <div class="action-block action-ok">
+          <p class="action-label">✅ 公開する</p>
+          <code class="action-cmd">npm run publish {draft.id}</code>
+        </div>
+        <div class="action-block action-ng">
+          <p class="action-label">❌ ボツにする</p>
+          <code class="action-cmd">npm run reject {draft.id}</code>
+        </div>
+      </div>
+      {draft.data.sourceUrl && (
+        <p class="draft-source">
+          📎 出典: <a href={draft.data.sourceUrl} target="_blank" rel="noopener">{draft.data.sourceUrl}</a>
+        </p>
+      )}
+    </div>
+  </div>
+
+  <main class="article-page">
+
+    <!-- Hero -->
+    <div class="article-hero">
+      <div class="hero-texture" aria-hidden="true"></div>
+      <div class="hero-inner wrap">
+        <div class="article-meta">
+          <span class="cat-badge">{draft.data.category}</span>
+          <span class="writer-badge">{emoji} {draft.data.author}</span>
+          <span class="date-badge">📅 {draft.data.date}</span>
+        </div>
+        <h1 class="article-title">{draft.data.title}</h1>
+        <p class="article-desc">{draft.data.description}</p>
+      </div>
+    </div>
+
+    <!-- 本文 -->
+    <div class="article-body wrap">
+      <div class="article-content">
+        <Content />
+      </div>
+
+      {draft.data.tags && draft.data.tags.length > 0 && (
+        <div class="article-tags">
+          {draft.data.tags.map((tag: string) => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <div class="article-back">
+        <a href="/" class="back-btn">← トップページへ</a>
+      </div>
+    </div>
+
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+/* ── Draft Banner ── */
+.draft-banner {
+  background: #D4A02A;
+  border-bottom: 3px solid #2A2420;
+  padding: 20px 24px;
+}
+.draft-banner-inner {
+  max-width: 760px; margin: 0 auto;
+}
+.draft-badge {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 14px; font-weight: 900;
+  color: #2A2420; margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+.draft-note {
+  font-size: 12px; color: rgba(42,36,32,0.65);
+  margin-bottom: 14px;
+}
+.draft-actions {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.action-block {
+  padding: 10px 16px;
+  border: 2px solid #2A2420;
+  flex: 1; min-width: 220px;
+}
+.action-ok { background: #FBF7EF; }
+.action-ng { background: #F7E8E2; }
+.action-label {
+  font-size: 11px; font-weight: 800;
+  color: #2A2420; margin-bottom: 6px;
+  font-family: 'Shippori Mincho', serif;
+}
+.action-cmd {
+  display: block;
+  font-family: monospace; font-size: 13px;
+  background: #2A2420; color: #D4A02A;
+  padding: 6px 10px;
+  user-select: all; cursor: text;
+}
+.draft-source { font-size: 11px; color: rgba(42,36,32,0.6); }
+.draft-source a { color: #9E3D26; text-decoration: underline; }
+
+/* ── Article Page ── */
+.article-page { background: #F5EDD8; min-height: 60vh; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.article-hero {
+  position: relative; overflow: hidden;
+  background: #9E3D26;
+  padding: 64px 0 52px;
+}
+.hero-texture {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.07) 28px, rgba(0,0,0,0.07) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 56px, rgba(0,0,0,0.05) 56px, rgba(0,0,0,0.05) 58px);
+  background-size: 58px 30px;
+}
+.hero-inner { position: relative; z-index: 1; }
+.article-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.cat-badge {
+  font-size: 10px; font-weight: 800; padding: 3px 10px;
+  background: #D4A02A; color: #2A2420;
+  border: 1px solid #2A2420;
+  font-family: 'Shippori Mincho', serif;
+}
+.writer-badge { font-size: 12px; color: rgba(245,237,216,0.8); font-weight: 600; }
+.date-badge { font-size: 11px; color: rgba(245,237,216,0.6); }
+.article-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(22px, 4vw, 32px); font-weight: 900;
+  color: #F5EDD8; line-height: 1.5; margin-bottom: 14px;
+  letter-spacing: 0.03em;
+}
+.article-desc {
+  font-size: 14px; color: rgba(245,237,216,0.72);
+  line-height: 1.9;
+}
+
+/* Body */
+.article-body { padding: 48px 0 88px; }
+.article-content {
+  font-size: 16px; line-height: 2;
+  color: #2A2420;
+  background: #FBF7EF;
+  border: 2px solid #2A2420;
+  padding: 40px 44px;
+  box-shadow: 4px 4px 0 #9E3D26;
+  margin-bottom: 32px;
+}
+.article-content :global(h2) {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 20px; font-weight: 800;
+  color: #9E3D26; margin: 32px 0 14px;
+  padding-bottom: 8px; border-bottom: 2px solid #EDE3CC;
+  letter-spacing: 0.04em;
+}
+.article-content :global(p) { margin-bottom: 18px; color: #2A2420; }
+.article-content :global(a) { color: #9E3D26; text-decoration: underline; }
+.article-content :global(strong) { font-weight: 800; color: #2A2420; }
+
+.article-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 40px; }
+.tag {
+  font-size: 12px; padding: 4px 12px;
+  background: #EDE3CC; color: #5A4A3A;
+  border: 1px solid #8A7A6A;
+  font-family: 'Shippori Mincho', serif;
+}
+.article-back { text-align: center; }
+.back-btn {
+  display: inline-block; padding: 12px 28px;
+  border: 2px solid #2A2420; color: #2A2420;
+  font-size: 13px; font-weight: 700;
+  font-family: 'Shippori Mincho', serif;
+  transition: all 0.2s;
+}
+.back-btn:hover { background: #2A2420; color: #F5EDD8; }
+
+@media (max-width: 768px) {
+  .article-content { padding: 24px 20px; }
+  .draft-actions { flex-direction: column; }
+  .article-hero { padding: 48px 0 36px; }
+}
+</style>

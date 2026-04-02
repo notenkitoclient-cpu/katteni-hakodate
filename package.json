@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "research": "node scripts/research.mjs",
+    "write": "node scripts/write.mjs",
+    "publish": "node scripts/publish.mjs publish",
+    "reject": "node scripts/publish.mjs reject"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.0",

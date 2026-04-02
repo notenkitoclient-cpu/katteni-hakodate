@@ -47,4 +47,19 @@ const events = defineCollection({
   }),
 });
 
-export const collections = { articles, crowdfunding, events };
+const drafts = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/drafts' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    category: z.enum(['グルメ', '暮らし', 'イベント', '人・ビジネス', '特産品']),
+    date: z.string(),
+    author: z.string(),
+    writerId: z.string(),
+    sourceUrl: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    featured: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = { articles, crowdfunding, events, drafts };
