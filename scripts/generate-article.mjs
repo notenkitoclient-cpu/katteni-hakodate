@@ -4,6 +4,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import Exa from 'exa-js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -287,10 +288,59 @@ function selectWriter(existing) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  Exa でリアルタイムリサーチ
+// ═══════════════════════════════════════════════════════════════
+
+async function researchHakodate(today) {
+  if (!process.env.EXA_API_KEY) {
+    console.log('⚠️  EXA_API_KEY未設定 — リサーチなしで生成します');
+    return null;
+  }
+
+  const exa = new Exa(process.env.EXA_API_KEY);
+  const yyyy = today.slice(0, 4);
+  const yyyymm = today.slice(0, 7);
+
+  const queries = [
+    `函館 新店 グルメ ${yyyymm}`,
+    `函館 イベント ${yyyymm}`,
+    `函館 暮らし 生活 地域 ${yyyy}`,
+    `北斗市 七飯町 ニュース ${yyyy}`,
+    `函館 お店 オープン クローズ ${yyyy}`,
+  ];
+
+  const seen = new Set();
+  const results = [];
+
+  for (const query of queries) {
+    try {
+      const res = await exa.searchAndContents(query, {
+        numResults: 3,
+        type: 'neural',
+        useAutoprompt: true,
+        startPublishedDate: `${yyyy}-01-01`,
+        text: { maxCharacters: 600 },
+      });
+      for (const r of res.results) {
+        if (!seen.has(r.url)) {
+          seen.add(r.url);
+          results.push({ title: r.title, url: r.url, text: (r.text || '').trim() });
+        }
+      }
+    } catch (e) {
+      console.warn(`  検索スキップ (${query}): ${e.message}`);
+    }
+  }
+
+  console.log(`🔍 リサーチ完了: ${results.length}件の情報を取得`);
+  return results.slice(0, 10); // 最大10件
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  Claude API で記事生成
 // ═══════════════════════════════════════════════════════════════
 
-async function generateArticle(writer, existing, today) {
+async function generateArticle(writer, existing, today, research) {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const existingList = existing
@@ -306,13 +356,29 @@ ${writer.profile}
 ${writer.voice}
 `;
 
+  const researchSection = research && research.length > 0
+    ? `## 今日リサーチした函館のリアルな情報（必ずこれを参考にしてください）
+以下はウェブから取得した実際の情報です。この中から記事にできそうなネタを選んで執筆してください。
+
+${research.map((r, i) => `### [${i + 1}] ${r.title}
+出典: ${r.url}
+${r.text}`).join('\n\n')}
+
+`
+    : `## ⚠️ 今日はリサーチ情報なし
+リサーチ情報が取得できなかったため、以下のルールで書いてください：
+- 特定の現在の状況（桜が咲いている、新店がオープンした等）は書かない
+- 函館の食・暮らし・人に関する普遍的なテーマに絞る
+
+`;
+
   const userPrompt = `今日は ${today} です。
 
-## 既存記事（重複禁止）
+${researchSection}## 既存記事（重複禁止）
 ${existingList || '（まだ記事はありません）'}
 
 ## 執筆依頼
-上記と重複しない、函館・道南の市民生活に関する記事を1本、**あなた（${writer.name}）らしい文体・口癖・クセを必ず使って**執筆してください。
+上記のリサーチ情報をベースに、函館・道南の市民生活に関する記事を1本、**あなた（${writer.name}）らしい文体・口癖・クセを必ず使って**執筆してください。
 
 カテゴリ（以下から1つ選択）:
 グルメ / 暮らし / イベント / 特産品 / 人・ビジネス
@@ -320,9 +386,9 @@ ${existingList || '（まだ記事はありません）'}
 ⚠️ 絶対に守ること:
 - あなたの「口癖」「書き出しパターン」「締めの型」を必ず守ること
 - 観光客向けの内容は一切禁止。函館市民の日常目線で書くこと
-- 「桜が咲いた」「紅葉が見頃」「雪が積もった」など、現地確認できない自然・季節の現状描写は禁止
-- 実際に起きたかどうか確認できないイベントや体験を「行ってきた」と書くことは禁止
-- 書けるのは：地元の食・店・人・コミュニティ・移住・暮らしの知恵など、事実として成立する内容のみ
+- リサーチ情報にある事実のみ書くこと。情報にない現状（桜が咲いた等）は絶対に書かない
+- 出典URLがある場合は記事末尾に「参考：URL」として必ず記載する
+- 実際に起きたかどうか確認できない体験を「行ってきた」と書くことは禁止
 
 ## 出力形式（JSONのみ。前後のテキスト不要）
 {
@@ -403,9 +469,13 @@ async function main() {
   console.log(`📚 既存記事数  : ${existing.length}`);
   console.log(`🤖 使用モデル  : ${process.env.ARTICLE_MODEL || 'claude-sonnet-4-6'}`);
   console.log('──────────────────────────');
-  console.log('記事を生成中...');
+  console.log('🔍 函館情報をリサーチ中...');
 
-  const article            = await generateArticle(writer, existing, today);
+  const research           = await researchHakodate(today);
+
+  console.log('✍️  記事を生成中...');
+
+  const article            = await generateArticle(writer, existing, today, research);
   const { filePath, slug } = saveArticle(article, writer, today);
   writeResult(slug, article, writer);
 
