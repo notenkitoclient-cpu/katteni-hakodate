@@ -2,75 +2,327 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-
-const categories = ['グルメ', '観光', '暮らし', 'イベント', '人・ビジネス', '特産品'];
 ---
 
-<BaseLayout title="情報を投稿する" description="函館の情報をカッテニハコダテに投稿しよう">
+<BaseLayout title="情報を投稿する" description="函館の開店・閉店・イベント・街の変化など、あなたが見た情報をカッテニハコダテに投稿してください。">
   <Header />
-  <main style="max-width: 720px; margin: 0 auto; padding: 48px 16px 80px;">
 
-    <div style="text-align: center; margin-bottom: 40px;">
-      <p style="font-size: 12px; letter-spacing: 3px; color: #0d8a87; font-weight: 700; margin-bottom: 12px;">📝 SHARE YOUR HAKODATE</p>
-      <h1 style="font-size: 28px; font-weight: 900; color: #0d2d52; margin-bottom: 14px; font-family: 'Noto Serif JP', serif;">あなたの函館を教えてください</h1>
-      <p style="font-size: 14px; color: #4a6a8a; line-height: 1.7;">
-        おすすめのお店、知られていないスポット、移住してわかったこと。<br>
-        なんでもOK。あなたの「函館」をシェアしてください。
-      </p>
+  <main class="submit-page">
+
+    <div class="page-hero">
+      <div class="hero-texture" aria-hidden="true"></div>
+      <div class="page-hero-inner wrap">
+        <span class="hero-stamp">市民投稿</span>
+        <p class="hero-eye">📮 情報を投稿する</p>
+        <h1 class="hero-title">あなたの「見た！」が函館を動かす</h1>
+        <p class="hero-sub">
+          開店・閉店・工事中の謎スポット・気になる出来事など、<br>
+          函館市民なら気になる情報をお気軽にどうぞ。
+        </p>
+      </div>
     </div>
 
-    <div style="background: white; border-radius: 16px; padding: 36px; box-shadow: 0 2px 16px rgba(13,45,82,0.08);">
-      <form name="submit" method="POST" data-netlify="true" style="display: flex; flex-direction: column; gap: 20px;">
-        <input type="hidden" name="form-name" value="submit" />
+    <div class="wrap">
 
-        <div>
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">カテゴリ <span style="color: #c05a3a;">*</span></label>
-          <select name="category" required style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; background: white; outline: none;">
-            <option value="">選択してください</option>
-            {categories.map(cat => <option value={cat}>{cat}</option>)}
-          </select>
-        </div>
+      <div class="form-board" id="form-board">
+        <div class="board-tape t1" aria-hidden="true"></div>
+        <div class="board-tape t2" aria-hidden="true"></div>
 
-        <div>
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">タイトル・スポット名 <span style="color: #c05a3a;">*</span></label>
-          <input type="text" name="title" required placeholder="例：地元民しか知らない絶品ランチの店" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
-        </div>
+        <form id="submit-form" novalidate>
 
-        <div>
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">詳細・おすすめポイント <span style="color: #c05a3a;">*</span></label>
-          <textarea name="content" required rows="5" placeholder="どんなお店・スポットですか？おすすめポイントをできるだけ詳しく教えてください。" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; resize: vertical; box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif;"></textarea>
-        </div>
-
-        <div>
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">場所・住所（わかれば）</label>
-          <input type="text" name="location" placeholder="例：函館市元町○○番地 / 函館駅から徒歩5分" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <div>
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">お名前（ニックネームOK）</label>
-            <input type="text" name="name" placeholder="函館太郎" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
+          <div class="field">
+            <label class="label" for="title">
+              件名・店名 <span class="required">必須</span>
+            </label>
+            <input
+              type="text" id="title" name="title"
+              placeholder="例：五稜郭に新しいカフェができそう"
+              maxlength="80"
+            />
           </div>
-          <div>
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #0d2d52; margin-bottom: 6px;">メールアドレス</label>
-            <input type="email" name="email" placeholder="hakodate@example.com" style="width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 10px; font-size: 14px; color: #0d1b2a; outline: none; box-sizing: border-box;" />
-          </div>
-        </div>
 
-        <div style="background: #e8eef2; border-radius: 10px; padding: 14px 16px;">
-          <p style="font-size: 12px; color: #5a7a9a; line-height: 1.6; margin: 0;">
-            ✉️ 投稿いただいた情報は編集部で確認後、記事として掲載させていただく場合があります。掲載の際は事前にご連絡します。
+          <div class="field-row">
+            <div class="field">
+              <label class="label" for="type">
+                種類 <span class="required">必須</span>
+              </label>
+              <select id="type" name="type">
+                <option value="">選んでください</option>
+                <option value="開店">🟢 開店</option>
+                <option value="閉店">⚫ 閉店</option>
+                <option value="工事中">🟡 工事中（何になるの？）</option>
+                <option value="イベント">🔴 イベント</option>
+                <option value="目撃情報">🔵 目撃情報</option>
+                <option value="その他">⚪ その他</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label" for="area">
+                エリア <span class="required">必須</span>
+              </label>
+              <input
+                type="text" id="area" name="area"
+                placeholder="例：五稜郭、駅前、湯の川"
+                maxlength="30"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="detail">詳細（任意）</label>
+            <textarea
+              id="detail" name="detail"
+              placeholder="わかっていることを自由に。「〇〇の場所に工事フェンスが出た」「張り紙に〇〇と書いてあった」など"
+              rows="4"
+              maxlength="500"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label class="label" for="sourceUrl">情報元URL（任意）</label>
+            <input
+              type="url" id="sourceUrl" name="sourceUrl"
+              placeholder="https://..."
+            />
+          </div>
+
+          <div class="field">
+            <label class="label" for="reporter">お名前・ニックネーム（任意）</label>
+            <input
+              type="text" id="reporter" name="reporter"
+              placeholder="掲載時に「〇〇さん情報」と表示します（省略で匿名）"
+              maxlength="30"
+            />
+          </div>
+
+          <p class="notice">
+            ※ 投稿内容は編集部が確認後、掲載判断します。すべての投稿が掲載されるわけではありません。<br>
+            ※ 個人情報・誹謗中傷を含む投稿は掲載しません。
           </p>
+
+          <button type="submit" class="submit-btn" id="submit-btn">
+            投稿する ＋
+          </button>
+
+        </form>
+
+        <div class="success-msg" id="success-msg" hidden>
+          <p class="success-icon">📬</p>
+          <p class="success-title">投稿ありがとうございます！</p>
+          <p class="success-sub">
+            編集部が確認次第、掲載を検討します。<br>
+            情報提供のご協力に感謝します。
+          </p>
+          <a href="/news" class="back-link">← 情報収集ページへ戻る</a>
         </div>
 
-        <button type="submit" style="padding: 14px; background: #0d2d52; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; transition: background 0.2s;"
-          onmouseover="this.style.background='#0d4a72'"
-          onmouseout="this.style.background='#0d2d52'">
-          ⚓ 投稿する
-        </button>
-      </form>
-    </div>
+        <div class="error-msg" id="error-msg" hidden>
+          <p>送信に失敗しました。時間をおいて再度お試しください。</p>
+        </div>
 
+      </div>
+
+      <div class="guide-board">
+        <h2 class="guide-title">どんな情報が役立つ？</h2>
+        <ul class="guide-list">
+          <li>「〇〇の場所に工事フェンスが出た — 何になるの？」</li>
+          <li>「いつも行ってたお店に張り紙が…」</li>
+          <li>「〇〇に新しいお店ができてた！」</li>
+          <li>「函館でこんなイベントがあるよ」</li>
+          <li>「地元ならではのあるある・発見」</li>
+        </ul>
+      </div>
+
+    </div>
   </main>
+
   <Footer />
 </BaseLayout>
+
+<style>
+.submit-page { background: #F5EDD8; min-height: 100vh; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 40px; }
+
+.page-hero {
+  position: relative; overflow: hidden;
+  background: #9E3D26; padding: 96px 0 64px;
+}
+.hero-texture {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.07) 28px, rgba(0,0,0,0.07) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 56px, rgba(0,0,0,0.05) 56px, rgba(0,0,0,0.05) 58px);
+  background-size: 58px 30px;
+}
+.page-hero-inner { position: relative; z-index: 1; }
+.hero-stamp {
+  display: inline-block; background: #D4A02A; color: #2A2420;
+  font-size: 10px; font-weight: 900; letter-spacing: 0.3em;
+  padding: 4px 16px; transform: rotate(-1.5deg);
+  font-family: 'Shippori Mincho', serif;
+  border: 2px solid #2A2420; margin-bottom: 16px;
+}
+.hero-eye { font-size: 11px; letter-spacing: 0.3em; color: rgba(245,237,216,0.6); font-weight: 700; margin-bottom: 10px; }
+.hero-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(20px, 4vw, 34px); font-weight: 900;
+  color: #F5EDD8; letter-spacing: 0.04em; margin-bottom: 16px;
+}
+.hero-sub { font-size: 14px; color: rgba(245,237,216,0.75); line-height: 2; }
+
+.form-board {
+  position: relative;
+  background: #FBF7EF;
+  border: 2px solid #2A2420;
+  box-shadow: 5px 5px 0 #9E3D26;
+  margin: 48px 0 32px;
+  padding: 40px 40px 48px;
+}
+.board-tape {
+  position: absolute; height: 18px;
+  background: rgba(212,160,42,0.75);
+  border: 1px solid rgba(42,36,32,0.25);
+}
+.t1 { width: 52px; top: -9px; left: 32px; transform: rotate(-1.5deg); }
+.t2 { width: 44px; top: -9px; right: 56px; transform: rotate(1.5deg); }
+
+.field { margin-bottom: 24px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field-row .field { margin-bottom: 24px; }
+
+.label {
+  display: block; margin-bottom: 8px;
+  font-family: 'Shippori Mincho', serif;
+  font-size: 13px; font-weight: 800;
+  color: #2A2420; letter-spacing: 0.04em;
+}
+.required {
+  display: inline-block; margin-left: 6px;
+  background: #9E3D26; color: #F5EDD8;
+  font-size: 9px; font-weight: 700;
+  padding: 2px 6px; letter-spacing: 0.1em;
+  vertical-align: middle;
+}
+
+input[type="text"],
+input[type="url"],
+select,
+textarea {
+  width: 100%; padding: 10px 14px;
+  background: #FBF7EF;
+  border: 2px solid #2A2420;
+  font-size: 14px; font-family: inherit;
+  color: #2A2420;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none; appearance: none;
+  border-radius: 0;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #9E3D26;
+  box-shadow: 3px 3px 0 #9E3D26;
+}
+textarea { resize: vertical; line-height: 1.7; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%232A2420' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.notice { font-size: 11px; color: #8A7A6A; line-height: 1.8; margin-bottom: 28px; }
+
+.submit-btn {
+  display: block; width: 100%; padding: 16px;
+  background: #9E3D26; color: #F5EDD8;
+  border: 2px solid #2A2420;
+  box-shadow: 4px 4px 0 #2A2420;
+  font-size: 16px; font-weight: 900;
+  font-family: 'Shippori Mincho', serif;
+  letter-spacing: 0.1em; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+}
+.submit-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #2A2420; background: #B84A2E;
+}
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.success-msg, .error-msg { text-align: center; padding: 20px 0; }
+.success-icon { font-size: 56px; margin-bottom: 16px; }
+.success-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 24px; font-weight: 900; color: #2A2420; margin-bottom: 12px;
+}
+.success-sub { font-size: 14px; color: #5A4A3A; line-height: 2; margin-bottom: 24px; }
+.back-link {
+  display: inline-block; padding: 10px 24px;
+  background: #2A2420; color: #F5EDD8;
+  font-size: 13px; font-weight: 700; font-family: 'Shippori Mincho', serif;
+}
+.error-msg { color: #9E3D26; font-weight: 700; font-size: 14px; }
+
+.guide-board {
+  background: #EDE3CC; border: 2px solid #2A2420;
+  padding: 28px 32px; margin-bottom: 64px;
+}
+.guide-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 13px; font-weight: 800; color: #9E3D26;
+  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px;
+}
+.guide-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.guide-list li { font-size: 13px; color: #2A2420; line-height: 1.7; padding-left: 20px; position: relative; }
+.guide-list li::before { content: '→'; position: absolute; left: 0; color: #9E3D26; font-weight: 700; }
+
+@media (max-width: 768px) {
+  .wrap { padding: 0 16px; }
+  .page-hero { padding: 88px 0 48px; }
+  .form-board { padding: 28px 20px 36px; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+  const form = document.getElementById('submit-form') as HTMLFormElement | null;
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const successMsg = document.getElementById('success-msg');
+  const errorMsg = document.getElementById('error-msg');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = (document.getElementById('title') as HTMLInputElement).value.trim();
+    const type  = (document.getElementById('type') as HTMLSelectElement).value;
+    const area  = (document.getElementById('area') as HTMLInputElement).value.trim();
+
+    if (!title || !type || !area) {
+      alert('件名・種類・エリアは必須です。');
+      return;
+    }
+
+    const detail    = (document.getElementById('detail') as HTMLTextAreaElement).value.trim();
+    const sourceUrl = (document.getElementById('sourceUrl') as HTMLInputElement).value.trim();
+    const reporter  = (document.getElementById('reporter') as HTMLInputElement).value.trim();
+
+    if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
+
+    try {
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, type, area, detail, sourceUrl, reporter }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        form?.setAttribute('hidden', 'true');
+        successMsg?.removeAttribute('hidden');
+      } else {
+        throw new Error(data.error);
+      }
+    } catch {
+      errorMsg?.removeAttribute('hidden');
+      if (btn) { btn.disabled = false; btn.textContent = '投稿する ＋'; }
+    }
+  });
+</script>
