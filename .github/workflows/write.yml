@@ -16,6 +16,7 @@ jobs:
   write:
     name: 下書き生成
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
 
@@ -28,7 +29,15 @@ jobs:
         with:
           node-version: '20'
 
+      - name: キャッシュ（node_modules）
+        id: cache-node
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-write-${{ hashFiles('package.json') }}
+
       - name: 依存パッケージをインストール
+        if: steps.cache-node.outputs.cache-hit != 'true'
         run: npm install @anthropic-ai/sdk exa-js
 
       - name: 下書きを生成
@@ -53,5 +62,5 @@ jobs:
             SLUG=$(echo "$RESULT" | node -e "process.stdin||(process.stdin=require('fs').createReadStream('/tmp/draft-result.json'));let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).slug||'draft'))" 2>/dev/null || echo "draft")
             git commit -m "draft: 下書き追加 [$SLUG]"
             git push
-            echo "✅ プッシュ完了 → Cloudflare が自動ビルド開始"
+            echo "プッシュ完了 → Cloudflare が自動ビルド開始"
           fi

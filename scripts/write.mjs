@@ -166,7 +166,11 @@ async function deepResearch(topic) {
 // ── Claude で記事生成 ─────────────────────────────────────────
 
 async function generateDraft(writer, topic, research, existingTitles, today) {
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const client = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    timeout: 60_000,  // 60秒でタイムアウト
+    maxRetries: 0,    // リトライなし（ハング防止）
+  });
 
   const researchSection = research && research.length > 0
     ? `## リサーチ情報（これをもとに書いてください）
