@@ -8,7 +8,7 @@ on:
 
 jobs:
   post:
-    name: X・Threadsに投稿
+    name: Threadsに投稿
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -34,39 +34,6 @@ jobs:
           echo "title=$TITLE" >> $GITHUB_OUTPUT
           echo "desc=$DESC" >> $GITHUB_OUTPUT
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
-
-      - name: X（Twitter）に投稿
-        if: steps.detect.outputs.file != ''
-        env:
-          TITLE: ${{ steps.meta.outputs.title }}
-          DESC: ${{ steps.meta.outputs.desc }}
-          SLUG: ${{ steps.meta.outputs.slug }}
-          API_KEY: ${{ secrets.TWITTER_API_KEY }}
-          API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
-          ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
-          SITE_URL: ${{ secrets.SITE_URL }}
-        run: |
-          pip install -q requests requests-oauthlib
-          python3 - <<'EOF'
-          import os, requests
-          from requests_oauthlib import OAuth1
-
-          title = os.environ['TITLE']
-          desc  = os.environ['DESC']
-          slug  = os.environ['SLUG']
-          site  = os.environ.get('SITE_URL', 'https://katteni-hakodate.pages.dev')
-
-          text = f"【新着】{title}\n\n{desc[:60]}{'...' if len(desc)>60 else ''}\n\n{site}/articles/{slug}\n\n#函館 #函館グルメ #カッテニハコダテ"
-
-          auth = OAuth1(
-            os.environ['API_KEY'],
-            os.environ['API_SECRET'],
-            os.environ['ACCESS_TOKEN'],
-            os.environ['ACCESS_TOKEN_SECRET']
-          )
-          res = requests.post('https://api.twitter.com/2/tweets', json={'text': text}, auth=auth)
-          print(f"X: {res.status_code} {res.text}")
 
       - name: Threadsに投稿
         if: steps.detect.outputs.file != ''
