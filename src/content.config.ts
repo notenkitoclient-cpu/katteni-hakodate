@@ -62,4 +62,16 @@ const drafts = defineCollection({
   }),
 });
 
-export const collections = { articles, crowdfunding, events, drafts };
+const news = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(['開店', '閉店', '工事中', 'イベント', '目撃情報', 'その他']),
+    date: z.string(),
+    area: z.string(),
+    reporter: z.string().default('編集部'),
+    source: z.string().optional(),
+  }),
+});
+
+export const collections = { articles, crowdfunding, events, drafts, news };
