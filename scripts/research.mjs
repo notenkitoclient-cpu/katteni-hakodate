@@ -103,30 +103,25 @@ function sendDiscord(webhookUrl, message) {
   });
 }
 
-function buildDiscordMessage(today, topics) {
-  const lines = [
+function buildDiscordMessages(today, topics) {
+  // 1通目：ヘッダー
+  const header = [
     `🔍 **${today} 朝のネタ候補** | カッテニハコダテ`,
-    '',
-    `${topics.length}件の情報が見つかりました。記事にしたいネタを選んで \`write.yml\` を実行してください。`,
-    '',
-  ];
+    `${topics.length}件見つかりました。記事化したいネタは Actions → 記事下書き生成 で実行。`,
+  ].join('\n');
 
-  topics.forEach((t, i) => {
-    lines.push(`**${i + 1}. ${t.title}**`);
-    if (t.summary) lines.push(`> ${t.summary}`);
-    lines.push(`🔗 ${t.url}`);
-    lines.push(`→ ${t.writer.emoji} **${t.writer.name}** (ID: \`${t.writer.id}\`) 向き`);
-    lines.push('');
+  // 2通目以降：トピックを1件ずつ
+  const topicMessages = topics.map((t, i) => {
+    const lines = [
+      `**${i + 1}. ${t.title}**`,
+      t.summary ? `> ${t.summary.slice(0, 100)}${t.summary.length > 100 ? '…' : ''}` : '',
+      `🔗 ${t.url}`,
+      `→ ${t.writer.emoji} ${t.writer.name}（\`${t.writer.id}\`）向き`,
+    ].filter(Boolean);
+    return lines.join('\n');
   });
 
-  lines.push('---');
-  lines.push('**記事を書かせる方法（GitHubの Actions → 記事下書き生成 から実行）**');
-  lines.push('```');
-  lines.push('ネタ: URLまたは説明文');
-  lines.push('ライターID: masaru / taro / rin / sora / shizuku（空欄で自動）');
-  lines.push('```');
-
-  return lines.join('\n');
+  return [header, ...topicMessages];
 }
 
 // ── メイン ────────────────────────────────────────────────────
@@ -144,8 +139,10 @@ async function main() {
     return;
   }
 
-  const message = buildDiscordMessage(today, topics);
-  await sendDiscord(process.env.DISCORD_ARTICLE_WEBHOOK_URL, message);
+  const messages = buildDiscordMessages(today, topics);
+  for (const msg of messages) {
+    await sendDiscord(process.env.DISCORD_ARTICLE_WEBHOOK_URL, msg);
+  }
   console.log('✅ Discord通知完了');
 }
 
