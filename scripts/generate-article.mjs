@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ARTICLES_DIR = path.join(__dirname, '../src/content/articles');
+const DRAFTS_DIR   = path.join(__dirname, '../src/content/drafts');
 
 // ═══════════════════════════════════════════════════════════════
 //  4名の架空ライター定義
@@ -418,7 +419,7 @@ ${existingList || '（まだ記事はありません）'}
 
 function saveArticle(article, writer, today) {
   let slug = article.slug.replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
-  if (fs.existsSync(path.join(ARTICLES_DIR, `${slug}.md`))) {
+  if (fs.existsSync(path.join(DRAFTS_DIR, `${slug}.md`))) {
     slug = `${slug}-${today.replace(/-/g, '')}`;
   }
 
@@ -428,13 +429,14 @@ description: "${article.description.replace(/"/g, '\\"')}"
 category: "${article.category}"
 date: "${today}"
 author: "${writer.name}"
+writerId: "${writer.id}"
 featured: false
 ---
 
 ${article.content.trim()}
 `;
 
-  const filePath = path.join(ARTICLES_DIR, `${slug}.md`);
+  const filePath = path.join(DRAFTS_DIR, `${slug}.md`);
   fs.writeFileSync(filePath, md, 'utf-8');
   return { filePath, slug };
 }

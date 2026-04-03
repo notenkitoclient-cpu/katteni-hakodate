@@ -41,12 +41,12 @@ jobs:
         run: |
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
-          git add src/content/articles/
+          git add src/content/drafts/
           if git diff --staged --quiet; then
             echo "published=false" >> $GITHUB_OUTPUT
-            echo "新しい記事はありませんでした"
+            echo "新しい下書きはありませんでした"
           else
-            git commit -m "content: 自動生成記事 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+            git commit -m "draft: 自動生成下書き [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
             git push
             echo "published=true" >> $GITHUB_OUTPUT
             echo "✅ プッシュ完了"
@@ -77,15 +77,17 @@ jobs:
           };
           const wEmoji = writerEmoji[result.writerId] || '✍️';
 
+          const draftUrl = `${siteUrl}/drafts/${result.slug}`;
           const message = [
-            `📝 **新着記事が公開されました** | カッテニハコダテ`,
+            `✏️ **下書きが生成されました（要確認）** | カッテニハコダテ`,
             ``,
             `${emoji} **${result.title}**`,
             `> ${result.description}`,
             ``,
             `🏷 カテゴリ: ${result.category}`,
             `${wEmoji} 執筆: ${result.writer}`,
-            `🔗 ${articleUrl}`,
+            `🔍 確認: ${draftUrl}`,
+            `✅ 公開する場合: \`npm run publish ${result.slug}\``,
           ].join('\n');
 
           const body = JSON.stringify({ content: message });
