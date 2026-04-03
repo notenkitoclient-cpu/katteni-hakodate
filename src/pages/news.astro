@@ -43,13 +43,20 @@ function formatDate(dateStr: string) {
 
     <div class="wrap">
 
-      <!-- 件数バー -->
-      <div class="count-bar">
-        <span class="count-num">{sorted.length}</span>
-        <span class="count-label">件の情報</span>
-        <div class="type-legend">
+      <!-- フィルターバー -->
+      <div class="filter-bar">
+        <div class="filter-count">
+          <span class="count-num" id="count-num">{sorted.length}</span>
+          <span class="count-label">件</span>
+        </div>
+        <div class="filter-btns">
+          <button class="filter-btn active" data-type="all">すべて</button>
           {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-            <span class="legend-item" style={`background:${cfg.bg}; color:${cfg.color}`}>{cfg.label}</span>
+            <button
+              class="filter-btn"
+              data-type={key}
+              style={`--badge-bg:${cfg.bg}; --badge-color:${cfg.color}`}
+            >{cfg.label}</button>
           ))}
         </div>
       </div>
@@ -67,7 +74,7 @@ function formatDate(dateStr: string) {
             const { Content } = await render(item);
             const cfg = TYPE_CONFIG[item.data.type] ?? TYPE_CONFIG['その他'];
             return (
-              <article class="news-card" onclick={`location.href='/news/${item.id}'`} style="cursor:pointer;">
+              <article class="news-card" data-type={item.data.type} onclick={`location.href='/news/${item.id}'`} style="cursor:pointer;">
                 <div class="card-left">
                   <span class="type-badge" style={`background:${cfg.bg}; color:${cfg.color}`}>
                     {cfg.label}
@@ -149,24 +156,36 @@ function formatDate(dateStr: string) {
 }
 .hero-sub { font-size: 14px; color: rgba(245,237,216,0.75); line-height: 2; }
 
-/* 件数バー */
-.count-bar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 24px 0 16px;
+/* フィルターバー */
+.filter-bar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 0 16px;
   border-bottom: 2px solid #2A2420;
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
+.filter-count { display: flex; align-items: baseline; gap: 4px; flex-shrink: 0; }
 .count-num {
   font-family: 'Shippori Mincho', serif;
   font-size: 28px; font-weight: 900; color: #9E3D26;
 }
-.count-label { font-size: 12px; color: #8A7A6A; margin-right: 8px; }
-.type-legend { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
-.legend-item {
-  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
-  padding: 3px 8px;
+.count-label { font-size: 12px; color: #8A7A6A; }
+.filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+  padding: 5px 12px; cursor: pointer;
+  border: 2px solid #2A2420;
+  background: transparent; color: #2A2420;
+  font-family: 'Shippori Mincho', serif;
+  transition: background 0.15s, color 0.15s;
 }
+.filter-btn:hover { background: #EDE3CC; }
+.filter-btn.active {
+  background: var(--badge-bg, #2A2420);
+  color: var(--badge-color, #F5EDD8);
+}
+.filter-btn[data-type="all"].active { background: #2A2420; color: #F5EDD8; }
+.news-card.hidden { display: none; }
 
 /* ニュースリスト */
 .news-list { display: flex; flex-direction: column; gap: 0; margin-bottom: 56px; }
@@ -272,6 +291,28 @@ function formatDate(dateStr: string) {
   .wrap { padding: 0 16px; }
   .page-hero { padding: 88px 0 48px; }
   .cta-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
-  .type-legend { display: none; }
+  .filter-bar { gap: 12px; }
 }
 </style>
+
+<script>
+  const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.news-card');
+  const countEl = document.getElementById('count-num');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const type = btn.dataset.type;
+      let visible = 0;
+      cards.forEach(card => {
+        const match = type === 'all' || card.dataset.type === type;
+        card.classList.toggle('hidden', !match);
+        if (match) visible++;
+      });
+      if (countEl) countEl.textContent = String(visible);
+    });
+  });
+</script>
