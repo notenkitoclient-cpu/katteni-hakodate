@@ -48,6 +48,7 @@ async function runResearch(today) {
     `北斗市 七飯町 ニュース ${yyyy}`,
     `函館 お店 開店 閉店 ${yyyymm}`,
     `函館 ビジネス 起業 地域経済 ${yyyy}`,
+    `site:dateper.net 函館 ${yyyymm}`,
   ];
 
   const seen = new Set();
