@@ -67,7 +67,7 @@ function formatDate(dateStr: string) {
             const { Content } = await render(item);
             const cfg = TYPE_CONFIG[item.data.type] ?? TYPE_CONFIG['その他'];
             return (
-              <article class="news-card">
+              <article class="news-card" onclick={`location.href='/news/${item.id}'`} style="cursor:pointer;">
                 <div class="card-left">
                   <span class="type-badge" style={`background:${cfg.bg}; color:${cfg.color}`}>
                     {cfg.label}
@@ -79,7 +79,7 @@ function formatDate(dateStr: string) {
                     <span class="card-area">📍 {item.data.area}</span>
                     <span class="card-reporter">by {item.data.reporter}</span>
                   </div>
-                  <h2 class="card-title">{item.data.title}</h2>
+                  <h2 class="card-title"><a href={`/news/${item.id}`}>{item.data.title}</a></h2>
                   <div class="card-content">
                     <Content />
                   </div>
@@ -207,6 +207,8 @@ function formatDate(dateStr: string) {
   color: #2A2420; line-height: 1.5;
   margin-bottom: 8px;
 }
+.card-title a { color: inherit; }
+.card-title a:hover { color: #9E3D26; }
 .card-content {
   font-size: 13px; color: #5A4A3A; line-height: 1.8;
 }
