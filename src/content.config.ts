@@ -71,6 +71,7 @@ const news = defineCollection({
     area: z.string(),
     reporter: z.string().default('編集部'),
     source: z.string().optional(),
+    image: z.string().optional(),
   }),
 });
 

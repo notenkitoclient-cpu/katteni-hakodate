@@ -30,6 +30,7 @@ function parseArgs() {
     body:     get('--body') || '',
     source:   get('--source') || '',
     reporter: get('--reporter') || '編集部',
+    image:    get('--image') || '',
   };
 }
 
@@ -70,12 +71,13 @@ if (fs.existsSync(filePath)) {
 }
 
 const sourceLine = args.source ? `\nsource: "${args.source}"` : '';
+const imageLine  = args.image  ? `\nimage: "${args.image}"`   : '';
 const content = `---
 title: "${args.title}"
 type: "${args.type}"
 date: "${today}"
 area: "${args.area}"
-reporter: "${args.reporter}"${sourceLine}
+reporter: "${args.reporter}"${sourceLine}${imageLine}
 ---
 
 ${args.body}

@@ -88,6 +88,24 @@ import Footer from '../components/Footer.astro';
           </div>
 
           <div class="field">
+            <label class="label" for="image">
+              写真（任意）
+              <span class="field-hint">JPEG / PNG / GIF / WebP・8MB以内</span>
+            </label>
+            <div class="image-drop" id="image-drop">
+              <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="image-input" />
+              <div class="image-drop-inner" id="image-drop-inner">
+                <span class="image-drop-icon">📷</span>
+                <span class="image-drop-text">クリックまたはドラッグ＆ドロップ</span>
+              </div>
+              <div class="image-preview" id="image-preview" hidden>
+                <img id="preview-img" src="" alt="プレビュー" />
+                <button type="button" class="image-remove" id="image-remove">✕ 削除</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
             <label class="label" for="reporter">お名前・ニックネーム（任意）</label>
             <input
               type="text" id="reporter" name="reporter"
@@ -230,6 +248,29 @@ select {
   padding-right: 36px;
 }
 
+.field-hint { font-size: 10px; color: #8A7A6A; font-weight: 400; margin-left: 8px; letter-spacing: 0; }
+
+.image-drop {
+  border: 2px dashed #8A7A6A; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.image-drop:hover, .image-drop.dragover { border-color: #9E3D26; }
+.image-input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.image-drop-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 28px 16px; color: #8A7A6A;
+}
+.image-drop-icon { font-size: 28px; }
+.image-drop-text { font-size: 12px; }
+.image-preview { position: relative; }
+.image-preview img { width: 100%; max-height: 240px; object-fit: cover; display: block; }
+.image-remove {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(42,36,32,0.75); color: #F5EDD8;
+  border: none; padding: 4px 10px; font-size: 11px; font-weight: 700;
+  cursor: pointer;
+}
+
 .notice { font-size: 11px; color: #8A7A6A; line-height: 1.8; margin-bottom: 28px; }
 
 .submit-btn {
@@ -288,6 +329,45 @@ select {
   const successMsg = document.getElementById('success-msg');
   const errorMsg = document.getElementById('error-msg');
 
+  // 画像ドロップUI
+  const imageDrop = document.getElementById('image-drop');
+  const imageInput = document.getElementById('image') as HTMLInputElement;
+  const imageDropInner = document.getElementById('image-drop-inner');
+  const imagePreview = document.getElementById('image-preview');
+  const previewImg = document.getElementById('preview-img') as HTMLImageElement;
+  const imageRemove = document.getElementById('image-remove');
+
+  function showPreview(file: File) {
+    const url = URL.createObjectURL(file);
+    if (previewImg) previewImg.src = url;
+    imageDropInner?.setAttribute('hidden', 'true');
+    imagePreview?.removeAttribute('hidden');
+  }
+  function clearImage() {
+    if (imageInput) imageInput.value = '';
+    imageDropInner?.removeAttribute('hidden');
+    imagePreview?.setAttribute('hidden', 'true');
+    if (previewImg) previewImg.src = '';
+  }
+
+  imageDrop?.addEventListener('click', () => imageInput?.click());
+  imageInput?.addEventListener('change', () => {
+    if (imageInput.files?.[0]) showPreview(imageInput.files[0]);
+  });
+  imageRemove?.addEventListener('click', (e) => { e.stopPropagation(); clearImage(); });
+  imageDrop?.addEventListener('dragover', (e) => { e.preventDefault(); imageDrop.classList.add('dragover'); });
+  imageDrop?.addEventListener('dragleave', () => imageDrop.classList.remove('dragover'));
+  imageDrop?.addEventListener('drop', (e) => {
+    e.preventDefault(); imageDrop.classList.remove('dragover');
+    const file = e.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      if (imageInput) imageInput.files = dt.files;
+      showPreview(file);
+    }
+  });
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -307,11 +387,17 @@ select {
     if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
 
     try {
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, type, area, detail, sourceUrl, reporter }),
-      });
+      const fd = new FormData();
+      fd.append('title', title);
+      fd.append('type', type);
+      fd.append('area', area);
+      if (detail) fd.append('detail', detail);
+      if (sourceUrl) fd.append('sourceUrl', sourceUrl);
+      if (reporter) fd.append('reporter', reporter);
+      const imageInput = document.getElementById('image') as HTMLInputElement;
+      if (imageInput?.files?.[0]) fd.append('image', imageInput.files[0]);
+
+      const res = await fetch('/api/submit', { method: 'POST', body: fd });
       const data = await res.json();
 
       if (data.ok) {
