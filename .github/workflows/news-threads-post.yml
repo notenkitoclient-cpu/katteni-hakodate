@@ -32,7 +32,7 @@ jobs:
           echo "投稿対象: $(echo "$FILES" | wc -l)件"
           pip install -q requests
 
-          # fd3 でファイルリストを読む（stdin=fd0 はヒアドキュメント用に残す）
+          # fd3 でファイルリストを読む（stdin=fd0 はヒアドキュメント用に確保）
           while IFS= read -r FILE <&3; do
             [ -z "$FILE" ] && continue
             echo "処理中: $FILE"
@@ -42,44 +42,44 @@ jobs:
             SLUG=$(basename "$FILE" .md)
 
             python3 - <<PYEOF
-import os, requests, time
+          import os, requests, time
 
-title = """$TITLE"""
-type_ = """$TYPE"""
-area  = """$AREA"""
-slug  = """$SLUG"""
-site  = os.environ.get('SITE_URL', 'https://kattenihakodate.com')
-token = os.environ['THREADS_ACCESS_TOKEN']
-uid   = os.environ['THREADS_USER_ID']
+          title = """$TITLE"""
+          type_ = """$TYPE"""
+          area  = """$AREA"""
+          slug  = """$SLUG"""
+          site  = os.environ.get('SITE_URL', 'https://kattenihakodate.com')
+          token = os.environ['THREADS_ACCESS_TOKEN']
+          uid   = os.environ['THREADS_USER_ID']
 
-TYPE_EMOJI = {
-  '開店': '🟢', '閉店': '⚫', '工事中': '🟡',
-  'イベント': '🔴', '目撃情報': '🔵', 'その他': '⚪',
-}
-emoji = TYPE_EMOJI.get(type_, '📋')
+          TYPE_EMOJI = {
+            '開店': '🟢', '閉店': '⚫', '工事中': '🟡',
+            'イベント': '🔴', '目撃情報': '🔵', 'その他': '⚪',
+          }
+          emoji = TYPE_EMOJI.get(type_, '📋')
 
-text = (
-  f"{emoji}【{type_}】{title}\n\n"
-  f"📍 {area}\n\n"
-  f"詳細はこちら→ {site}/news/{slug}\n\n"
-  f"#函館 #函館情報 #函館開店 #函館閉店 #カッテニハコダテ"
-)
+          text = (
+            f"{emoji}【{type_}】{title}\n\n"
+            f"📍 {area}\n\n"
+            f"詳細はこちら→ {site}/news/{slug}\n\n"
+            f"#函館 #函館情報 #函館開店 #函館閉店 #カッテニハコダテ"
+          )
 
-res1 = requests.post(
-  f'https://graph.threads.net/v1.0/{uid}/threads',
-  params={'media_type': 'TEXT', 'text': text, 'access_token': token}
-)
-print(f"container {slug}: {res1.status_code}")
-container_id = res1.json().get('id')
-if container_id:
-  time.sleep(3)
-  res2 = requests.post(
-    f'https://graph.threads.net/v1.0/{uid}/threads_publish',
-    params={'creation_id': container_id, 'access_token': token}
-  )
-  print(f"publish {slug}: {res2.status_code}")
-else:
-  print(f"ERROR: container作成失敗 {res1.text}")
-PYEOF
+          res1 = requests.post(
+            f'https://graph.threads.net/v1.0/{uid}/threads',
+            params={'media_type': 'TEXT', 'text': text, 'access_token': token}
+          )
+          print(f"container {slug}: {res1.status_code}")
+          container_id = res1.json().get('id')
+          if container_id:
+            time.sleep(3)
+            res2 = requests.post(
+              f'https://graph.threads.net/v1.0/{uid}/threads_publish',
+              params={'creation_id': container_id, 'access_token': token}
+            )
+            print(f"publish {slug}: {res2.status_code}")
+          else:
+            print(f"ERROR: container作成失敗 {res1.text}")
+          PYEOF
 
           done 3< <(echo "$FILES")
