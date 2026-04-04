@@ -29,6 +29,9 @@ featured: false
 
 **店舗情報**
 - 店名：ENERGY LIFE × Comfy Life
-- 住所：函館市山の手1丁目（旧とろり天使のわらびもち函館店跡地）
-- オープン日：2026年4月5日
-- [地図で見る](https://maps.google.com/?q=函館市山の手1丁目)
+- 住所：函館市山の手1丁目1-10 アシストビル函館ヒルズB館104
+- オープン日：2026年4月5日（ENERGY LIFE先行）※Comfy Lifeは準備中
+- 公式サイト：[energylifefitbody.my.canva.site](https://energylifefitbody.my.canva.site/comfy-life)
+- Instagram（ジム）：[@energylife_fitbody](https://www.instagram.com/energylife_fitbody/)
+- Instagram（カフェ）：[@comfylife_carrot](https://www.instagram.com/comfylife_carrot/)
+- [地図で見る](https://maps.google.com/?q=北海道函館市山の手1丁目1-10+アシストビル函館ヒルズ)

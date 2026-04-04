@@ -25,6 +25,9 @@ featured: false
 
 **店舗情報**
 - 店名：五漁活（ごりょうかつ）
-- 住所：函館市富岡町（セイコーマート函館富岡1丁目店隣、旧たこ丸テナント跡）
+- 住所：函館市富岡1丁目20-12（セイコーマート函館富岡1丁目店隣）
+- 営業時間：10:00〜17:00
+- 定休日：水曜日
 - オープン日：2026年3月5日
-- [地図で見る](https://maps.google.com/?q=セイコーマート函館富岡1丁目店+函館市富岡)
+- Instagram：[@hakodate_goryokatsu](https://www.instagram.com/hakodate_goryokatsu/)
+- [地図で見る](https://maps.google.com/?q=北海道函館市富岡1丁目20-12)
