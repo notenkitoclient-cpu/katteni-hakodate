@@ -115,7 +115,7 @@ function buildDiscordMessages(today, topics) {
     const lines = [
       `**${i + 1}. ${t.title}**`,
       t.summary ? `> ${t.summary.slice(0, 100)}${t.summary.length > 100 ? '…' : ''}` : '',
-      `🔗 ${t.url}`,
+      `🔗 <${t.url}>`,
       `→ ${t.writer.emoji} ${t.writer.name}（\`${t.writer.id}\`）向き`,
     ].filter(Boolean);
     return lines.join('\n');

@@ -86,7 +86,7 @@ jobs:
             ``,
             `🏷 カテゴリ: ${result.category}`,
             `${wEmoji} 執筆: ${result.writer}`,
-            `🔍 確認: ${draftUrl}`,
+            `🔍 確認: <${draftUrl}>`,
             `✅ 公開する場合: \`npm run publish ${result.slug}\``,
           ].join('\n');
 
