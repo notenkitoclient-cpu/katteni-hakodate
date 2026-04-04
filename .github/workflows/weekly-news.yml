@@ -1,0 +1,80 @@
+name: 週刊まとめ記事を自動生成・公開
+
+on:
+  schedule:
+    # 毎週土曜 7:00 JST (= 金曜 22:00 UTC)
+    - cron: '0 22 * * 5'
+  workflow_dispatch:
+
+jobs:
+  weekly:
+    name: 週刊まとめ生成
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 依存パッケージをインストール
+        run: npm install @anthropic-ai/sdk
+
+      - name: 週刊まとめ記事を生成
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/weekly-news.mjs
+
+      - name: 記事をコミット＆プッシュ
+        id: commit
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/content/articles/
+          if git diff --staged --quiet; then
+            echo "published=false" >> $GITHUB_OUTPUT
+            echo "今週のニュースがなかったためスキップ"
+          else
+            git commit -m "content: 週刊まとめ記事 [$(TZ=Asia/Tokyo date +'%Y-%m-%d')]"
+            git push
+            echo "published=true" >> $GITHUB_OUTPUT
+            echo "✅ プッシュ完了 → Cloudflare が自動デプロイ開始"
+          fi
+
+      - name: Discordに通知
+        if: steps.commit.outputs.published == 'true'
+        env:
+          DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          node - <<'EOF'
+          import fs from 'fs';
+          import https from 'https';
+
+          const result = JSON.parse(fs.readFileSync('/tmp/weekly-result.json', 'utf-8'));
+          const site   = process.env.SITE_URL?.replace(/\/$/, '') || 'https://kattenihakodate.com';
+          const url    = `${site}/articles/${result.slug}`;
+
+          const message = [
+            `📰 **週刊まとめ記事が公開されました** | カッテニハコダテ`,
+            ``,
+            `📋 **${result.title}**`,
+            `> ${result.description}`,
+            ``,
+            `🔗 ${url}`,
+          ].join('\n');
+
+          const body = JSON.stringify({ content: message });
+          const u = new URL(process.env.DISCORD_ARTICLE_WEBHOOK_URL);
+          const req = https.request({
+            hostname: u.hostname, path: u.pathname,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+          }, res => { res.resume(); console.log(`✅ Discord通知完了 (HTTP ${res.statusCode})`); });
+          req.on('error', e => { console.error(e.message); process.exit(1); });
+          req.write(body); req.end();
+          EOF
