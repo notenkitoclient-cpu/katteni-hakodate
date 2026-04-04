@@ -1,15 +1,19 @@
-name: 朝のリサーチ
+name: リサーチ＆情報収集自動追加
 
 on:
   schedule:
-    # 毎朝 7:00 JST (= 22:00 UTC 前日)
+    # 毎朝  7:00 JST (= 22:00 UTC 前日)
     - cron: '0 22 * * *'
+    # 毎夕 17:00 JST (= 08:00 UTC)
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
   research:
-    name: 函館ネタリサーチ
+    name: 函館ネタリサーチ＆情報収集更新
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: リポジトリをチェックアウト
@@ -23,9 +27,23 @@ jobs:
       - name: 依存パッケージをインストール
         run: npm install exa-js
 
-      - name: リサーチ実行 → Discord に通知
+      - name: リサーチ実行 → 情報収集に追加 → Discord に通知
         env:
           EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
           DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
           SITE_URL: ${{ secrets.SITE_URL }}
         run: node scripts/research.mjs
+
+      - name: 新規ニュースをコミット＆プッシュ
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/content/news/
+          if git diff --staged --quiet; then
+            echo "新規ニュースなし。コミットをスキップ。"
+          else
+            COUNT=$(git diff --staged --name-only | wc -l | tr -d ' ')
+            git commit -m "news: リサーチから${COUNT}件を情報収集に自動追加 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+            git push
+            echo "✅ ${COUNT}件をプッシュ完了"
+          fi
