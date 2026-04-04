@@ -9,7 +9,9 @@
     "research": "node scripts/research.mjs",
     "write": "node scripts/write.mjs",
     "publish": "node scripts/publish.mjs publish",
-    "reject": "node scripts/publish.mjs reject"
+    "reject": "node scripts/publish.mjs reject",
+    "news": "node scripts/news.mjs",
+    "discord-check": "node scripts/discord-screenshot-check.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
