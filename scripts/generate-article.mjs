@@ -270,19 +270,57 @@ function todayJST() {
 }
 
 function loadExistingArticles() {
-  const files = fs.readdirSync(ARTICLES_DIR).filter(f => f.endsWith('.md'));
-  return files.map(file => {
+  // 公開済み記事
+  const articleFiles = fs.readdirSync(ARTICLES_DIR).filter(f => f.endsWith('.md'));
+  const articles = articleFiles.map(file => {
     const raw = fs.readFileSync(path.join(ARTICLES_DIR, file), 'utf-8');
     const title    = (raw.match(/^title:\s*["']?(.+?)["']?\s*$/m)    || [])[1] || file;
     const category = (raw.match(/^category:\s*["']?(.+?)["']?\s*$/m) || [])[1] || '不明';
     const author   = (raw.match(/^author:\s*["']?(.+?)["']?\s*$/m)   || [])[1] || '';
     return { file, title, category, author };
   });
+
+  // 下書き記事も重複チェック対象に含める
+  if (fs.existsSync(DRAFTS_DIR)) {
+    const draftFiles = fs.readdirSync(DRAFTS_DIR).filter(f => f.endsWith('.md'));
+    for (const file of draftFiles) {
+      const raw = fs.readFileSync(path.join(DRAFTS_DIR, file), 'utf-8');
+      const title    = (raw.match(/^title:\s*["']?(.+?)["']?\s*$/m)    || [])[1] || file;
+      const category = (raw.match(/^category:\s*["']?(.+?)["']?\s*$/m) || [])[1] || '不明';
+      const author   = (raw.match(/^author:\s*["']?(.+?)["']?\s*$/m)   || [])[1] || '';
+      articles.push({ file: `drafts/${file}`, title, category, author });
+    }
+  }
+
+  return articles;
 }
 
-// 直近5記事と被らないようにライターを選ぶ
-function selectWriter(existing) {
-  const recent = existing.slice(-5).map(a => a.author);
+// ライター選定：キーワードマッチ優先 → 直近ローテーションフォールバック
+const WRITER_KEYWORDS = {
+  masaru:  ['グルメ', '食', '飲食', '居酒屋', '海鮮', '朝市', 'ラーメン', 'カフェ', '料理'],
+  taro:    ['開店', 'オープン', '閉店', '工事', '新しい', '変化', 'リニューアル', 'できた'],
+  rin:     ['移住', '経済', 'ビジネス', '行政', '起業', '企業', 'まちづくり', '人口'],
+  sora:    ['イベント', '祭り', 'フェス', '体験', '若者', '大学', 'マルシェ', '周年'],
+  shizuku: ['暮らし', '日常', '散歩', '季節', '港', '朝', '風景', 'エッセイ'],
+};
+
+function selectWriter(existing, researchTopics) {
+  // リサーチ結果のタイトルを結合してキーワードマッチ
+  if (researchTopics && researchTopics.length > 0) {
+    const combined = researchTopics.map(r => r.title + ' ' + (r.text || '')).join(' ');
+    for (const [id, keywords] of Object.entries(WRITER_KEYWORDS)) {
+      if (keywords.some(kw => combined.includes(kw))) {
+        const writer = WRITERS.find(w => w.id === id);
+        if (writer) {
+          console.log(`🎯 キーワードマッチでライター選定: ${writer.name}`);
+          return writer;
+        }
+      }
+    }
+  }
+
+  // フォールバック：直近5記事と被らないローテーション
+  const recent = existing.filter(a => !a.file.startsWith('drafts/')).slice(-5).map(a => a.author);
   const available = WRITERS.filter(w => !recent.includes(w.name));
   const pool = available.length > 0 ? available : WRITERS;
   return pool[Math.floor(Math.random() * pool.length)];
@@ -464,17 +502,17 @@ async function main() {
 
   const today    = todayJST();
   const existing = loadExistingArticles();
-  const writer   = selectWriter(existing);
 
   console.log(`📅 日付        : ${today}`);
-  console.log(`${writer.emoji}  担当ライター  : ${writer.name}`);
-  console.log(`📚 既存記事数  : ${existing.length}`);
+  console.log(`📚 既存記事数  : ${existing.length}（公開済み＋下書き）`);
   console.log(`🤖 使用モデル  : ${process.env.ARTICLE_MODEL || 'claude-sonnet-4-6'}`);
   console.log('──────────────────────────');
   console.log('🔍 函館情報をリサーチ中...');
 
-  const research           = await researchHakodate(today);
+  const research = await researchHakodate(today);
+  const writer   = selectWriter(existing, research);
 
+  console.log(`${writer.emoji}  担当ライター  : ${writer.name}`);
   console.log('✍️  記事を生成中...');
 
   const article            = await generateArticle(writer, existing, today, research);
