@@ -186,8 +186,16 @@ async function main() {
   const created = [];
 
   for (const msg of messages) {
+    // デバッグ: メッセージ構造を出力
+    console.log(`\n[DEBUG] msg.id=${msg.id} content="${msg.content?.slice(0,50)}" attachments=${msg.attachments?.length ?? 0} embeds=${msg.embeds?.length ?? 0}`);
+    if (msg.attachments?.length) {
+      msg.attachments.forEach(a => console.log(`  [ATTACH] filename=${a.filename} content_type=${a.content_type} url=${a.url?.slice(0,60)}`));
+    }
+
     const attachments = (msg.attachments || []).filter(a =>
-      a.content_type?.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(a.filename)
+      a.content_type?.startsWith('image/') ||
+      a.content_type?.startsWith('application/octet-stream') ||
+      /\.(jpg|jpeg|png|webp|gif|heic|heif)$/i.test(a.filename ?? '')
     );
 
     if (attachments.length === 0) continue;
