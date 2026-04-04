@@ -1,10 +1,7 @@
-name: ニュース情報をThreadsに自動投稿
+name: ニュース情報をThreadsに自動投稿（※時間差投稿に移行済み・無効）
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/content/news/**.md'
+  workflow_dispatch:  # 手動実行のみ（通常はenqueue+scheduleを使用）
 
 jobs:
   post:
