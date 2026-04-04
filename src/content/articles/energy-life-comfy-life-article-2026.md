@@ -2,7 +2,7 @@
 title: "パーソナルジム＋キャロットケーキ専門店の複合店「ENERGY LIFE × Comfy Life」が山の手にオープン"
 description: "山の手1丁目にパーソナルジム「ENERGY LIFE」とキャロットケーキ専門店「Comfy Life」の珍しい複合店舗が2026年4月5日にオープン。旧「とろり天使のわらびもち」跡地。"
 category: "暮らし"
-date: "2026-04-05"
+date: "2026-04-04"
 author: "編集部"
 featured: false
 ---
