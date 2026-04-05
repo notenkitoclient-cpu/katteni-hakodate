@@ -96,18 +96,23 @@ function parseRow(row) {
   const isNewFormat = /^\d{8}-[A-Z]+-\d+$/.test(colB);
 
   if (isNewFormat) {
+    // IDの先頭8桁（例: "20240505"）を YYYY-MM-DD に変換して記事日付として使う
+    const d = colB.slice(0, 8);
+    const itemDate = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
     return {
       rawId:     colB,
       title:     (row[2] || '').trim(),
       sourceUrl: (row[9] || '').trim(),
       status:    (row[11] || '').trim(),
+      itemDate,  // ID埋め込み日付
     };
   } else {
     return {
-      rawId:     colB,                        // "タイトル - ソース名" をIDに使用
+      rawId:     colB,
       title:     cleanTitle(colB),
       sourceUrl: (row[3] || '').trim(),
       status:    (row[11] || '').trim(),
+      itemDate:  (row[0] || '').trim(), // 旧フォーマットは列A（取得日）
     };
   }
 }
@@ -279,7 +284,14 @@ async function main() {
   for (const row of filteredRows) {
     if (saved.length >= BATCH_SIZE) break;
 
-    const { rawId, title: parsedTitle, sourceUrl } = parseRow(row);
+    const { rawId, title: parsedTitle, sourceUrl, itemDate } = parseRow(row);
+
+    // ID埋め込み日付が cutoff より古ければスキップ（2024年記事の混入防止）
+    if (itemDate && itemDate < cutoff) {
+      processedIds.add(rawId);
+      skipped++;
+      continue;
+    }
 
     if (!rawId) continue;
     if (processedIds.has(rawId)) continue;
