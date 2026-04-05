@@ -12,6 +12,7 @@ jobs:
   research:
     name: 函館ネタリサーチ＆情報収集更新
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
 
