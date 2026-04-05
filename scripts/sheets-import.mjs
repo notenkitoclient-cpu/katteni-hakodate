@@ -289,6 +289,37 @@ async function main() {
   const remaining = filteredRows.filter(r => !processedIds.has((r[1] || '').trim())).length;
   console.log(`\n完了: ${saved.length}件追加 / ${skipped}件スキップ / 残り約${remaining}件（次回以降）`);
   fs.writeFileSync('/tmp/sheets-result.json', JSON.stringify({ saved }), 'utf-8');
+
+  // ── スプレッドシートのステータスを「処理済み」に更新 ──────────
+  await updateSheetStatus([...processedIds]);
+}
+
+/**
+ * Apps Script ウェブアプリ経由でステータスを「処理済み」に更新する。
+ * SHEETS_WEBHOOK_URL が未設定の場合はスキップ。
+ */
+async function updateSheetStatus(processedRawIds) {
+  const webhookUrl = process.env.SHEETS_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.log('ℹ️  SHEETS_WEBHOOK_URL未設定 — スプレッドシートのステータス更新をスキップ');
+    return;
+  }
+  try {
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: processedRawIds }),
+      redirect: 'follow',
+    });
+    const result = await res.json();
+    if (result.updated !== undefined) {
+      console.log(`📝 スプレッドシート更新: ${result.updated}件を「処理済み」に変更`);
+    } else {
+      console.warn('⚠️  Sheets更新レスポンス異常:', JSON.stringify(result));
+    }
+  } catch (err) {
+    console.warn('⚠️  Sheets更新失敗（インポート結果には影響なし）:', err.message);
+  }
 }
 
 main().catch(err => {
