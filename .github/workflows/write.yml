@@ -1,14 +1,12 @@
 name: 記事下書き生成
 
 on:
+  # 架空ライターによる自動記事生成を停止（2026-04 ブランド方針変更）
+  # 記事はすべて一次取材ベースで手動制作
   workflow_dispatch:
     inputs:
-      topic:
-        description: 'ネタ（URLまたは説明文。例: https://... または「函館駅前に新しいカフェ」）'
-        required: true
-        type: string
-      writer:
-        description: 'ライターID（空欄で自動選定）: shizuku / masaru / taro / rin / sora'
+      _disabled:
+        description: 'このワークフローは現在停止中です'
         required: false
         type: string
 
