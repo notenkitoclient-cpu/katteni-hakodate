@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ARTICLES_DIR = path.join(__dirname, '../src/content/articles');
 const DRAFTS_DIR   = path.join(__dirname, '../src/content/drafts');
+const NEWS_DIR     = path.join(__dirname, '../src/content/news');
 
 // ═══════════════════════════════════════════════════════════════
 //  4名の架空ライター定義
@@ -327,10 +328,40 @@ function selectWriter(existing, researchTopics) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  news/*.md から最近のニュースを読み込む
+// ═══════════════════════════════════════════════════════════════
+
+function loadRecentNews(daysBack = 14) {
+  if (!fs.existsSync(NEWS_DIR)) return [];
+
+  const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
+  const files = fs.readdirSync(NEWS_DIR).filter(f => f.endsWith('.md'));
+
+  const news = [];
+  for (const file of files) {
+    const raw = fs.readFileSync(path.join(NEWS_DIR, file), 'utf-8');
+    const dateStr = (raw.match(/^date:\s*["']?(.+?)["']?\s*$/m) || [])[1] || '';
+    if (!dateStr) continue;
+    const d = new Date(dateStr);
+    if (isNaN(d) || d < cutoff) continue;
+
+    const title = (raw.match(/^title:\s*["']?(.+?)["']?\s*$/m) || [])[1] || file;
+    const type  = (raw.match(/^type:\s*["']?(.+?)["']?\s*$/m)  || [])[1] || '';
+    const area  = (raw.match(/^area:\s*["']?(.+?)["']?\s*$/m)  || [])[1] || '';
+    const body  = raw.split(/^---\s*$/m).slice(2).join('---').trim();
+    news.push({ title, type, area, body, date: dateStr });
+  }
+
+  // 新しい順にソート
+  news.sort((a, b) => b.date.localeCompare(a.date));
+  return news.slice(0, 10);
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  Exa でリアルタイムリサーチ
 // ═══════════════════════════════════════════════════════════════
 
-async function researchHakodate(today) {
+async function researchHakodate(today, recentNews = []) {
   if (!process.env.EXA_API_KEY) {
     console.log('⚠️  EXA_API_KEY未設定 — リサーチなしで生成します');
     return null;
@@ -340,13 +371,17 @@ async function researchHakodate(today) {
   const yyyy = today.slice(0, 4);
   const yyyymm = today.slice(0, 7);
 
-  const queries = [
-    `函館 新店 グルメ ${yyyymm}`,
-    `函館 イベント ${yyyymm}`,
-    `函館 暮らし 生活 地域 ${yyyy}`,
-    `北斗市 七飯町 ニュース ${yyyy}`,
-    `函館 お店 オープン クローズ ${yyyy}`,
-  ];
+  // ニュースがあれば、その話題に絞って深掘りクエリを生成
+  const queries = recentNews.length > 0
+    ? recentNews.slice(0, 3).map(n => `函館 ${n.area || ''} ${n.title}`.trim())
+        .concat([`函館 ${yyyymm} 地域ニュース`])
+    : [
+      `函館 新店 グルメ ${yyyymm}`,
+      `函館 イベント ${yyyymm}`,
+      `函館 暮らし 生活 地域 ${yyyy}`,
+      `北斗市 七飯町 ニュース ${yyyy}`,
+      `函館 お店 オープン クローズ ${yyyy}`,
+    ];
 
   const seen = new Set();
   const results = [];
@@ -379,7 +414,7 @@ async function researchHakodate(today) {
 //  Claude API で記事生成
 // ═══════════════════════════════════════════════════════════════
 
-async function generateArticle(writer, existing, today, research) {
+async function generateArticle(writer, existing, today, research, recentNews = []) {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const existingList = existing
@@ -395,25 +430,39 @@ ${writer.profile}
 ${writer.voice}
 `;
 
+  // ニュース収集部からのネタを最優先トピックとして提示
+  const newsSection = recentNews.length > 0
+    ? `## 【優先】収集部からの最新ニュース（このネタを記事化してください）
+以下は収集部が集めた函館の最新情報です。**この中から1件を選んで記事にしてください**。
+
+${recentNews.map((n, i) => `### [${i + 1}] ${n.type ? `[${n.type}]` : ''} ${n.title}（${n.area || 'エリア不明'}）
+日付: ${n.date}
+${n.body}`).join('\n\n')}
+
+`
+    : '';
+
   const researchSection = research && research.length > 0
-    ? `## 今日リサーチした函館のリアルな情報（必ずこれを参考にしてください）
-以下はウェブから取得した実際の情報です。この中から記事にできそうなネタを選んで執筆してください。
+    ? `## ${recentNews.length > 0 ? '補足' : '今日リサーチした'}函館の情報
+${recentNews.length > 0 ? '上記ニュースを深掘りするための補足情報です。' : 'この中から記事にできそうなネタを選んで執筆してください。'}
 
 ${research.map((r, i) => `### [${i + 1}] ${r.title}
 出典: ${r.url}
 ${r.text}`).join('\n\n')}
 
 `
-    : `## ⚠️ 今日はリサーチ情報なし
+    : recentNews.length === 0
+      ? `## ⚠️ 今日はリサーチ情報なし
 リサーチ情報が取得できなかったため、以下のルールで書いてください：
 - 特定の現在の状況（桜が咲いている、新店がオープンした等）は書かない
 - 函館の食・暮らし・人に関する普遍的なテーマに絞る
 
-`;
+`
+      : '';
 
   const userPrompt = `今日は ${today} です。
 
-${researchSection}## 既存記事（重複禁止）
+${newsSection}${researchSection}## 既存記事（重複禁止）
 ${existingList || '（まだ記事はありません）'}
 
 ## 執筆依頼
@@ -500,22 +549,29 @@ async function main() {
     throw new Error('ANTHROPIC_API_KEY が設定されていません');
   }
 
-  const today    = todayJST();
-  const existing = loadExistingArticles();
+  const today      = todayJST();
+  const existing   = loadExistingArticles();
+  const recentNews = loadRecentNews(14);
 
   console.log(`📅 日付        : ${today}`);
   console.log(`📚 既存記事数  : ${existing.length}（公開済み＋下書き）`);
+  console.log(`📰 最新ニュース: ${recentNews.length}件（収集部より）`);
   console.log(`🤖 使用モデル  : ${process.env.ARTICLE_MODEL || 'claude-sonnet-4-6'}`);
   console.log('──────────────────────────');
-  console.log('🔍 函館情報をリサーチ中...');
 
-  const research = await researchHakodate(today);
-  const writer   = selectWriter(existing, research);
+  if (recentNews.length > 0) {
+    console.log('📌 収集部ニュースをベースにリサーチ中...');
+  } else {
+    console.log('🔍 函館情報をリサーチ中...');
+  }
+
+  const research = await researchHakodate(today, recentNews);
+  const writer   = selectWriter(existing, recentNews.length > 0 ? recentNews : research);
 
   console.log(`${writer.emoji}  担当ライター  : ${writer.name}`);
   console.log('✍️  記事を生成中...');
 
-  const article            = await generateArticle(writer, existing, today, research);
+  const article            = await generateArticle(writer, existing, today, research, recentNews);
   const { filePath, slug } = saveArticle(article, writer, today);
   writeResult(slug, article, writer);
 

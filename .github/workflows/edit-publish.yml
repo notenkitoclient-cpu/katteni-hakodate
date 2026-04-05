@@ -1,0 +1,75 @@
+name: 【編集部】下書きを公開 / ボツ
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'スラッグ（例: hakodate-new-cafe-2026）'
+        required: true
+        type: string
+      action:
+        description: '操作'
+        required: true
+        default: 'publish'
+        type: choice
+        options:
+          - publish
+          - reject
+
+jobs:
+  publish:
+    name: 下書きを${{ inputs.action == 'publish' && '公開' || 'ボツ' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 下書きを確認
+        run: |
+          if [ ! -f "src/content/drafts/${{ inputs.slug }}.md" ]; then
+            echo "❌ 下書きが見つかりません: src/content/drafts/${{ inputs.slug }}.md"
+            ls src/content/drafts/ | grep -i "${{ inputs.slug }}" || echo "（候補なし）"
+            exit 1
+          fi
+          TITLE=$(grep '^title:' "src/content/drafts/${{ inputs.slug }}.md" | head -1 | sed 's/title: *"//' | sed 's/"$//')
+          echo "対象: 『${TITLE}』(${{ inputs.slug }})"
+
+      - name: ${{ inputs.action == 'publish' && '公開' || 'ボツ' }}処理
+        run: node scripts/publish.mjs ${{ inputs.action }} ${{ inputs.slug }}
+
+      - name: コミット＆プッシュ
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/content/articles/ src/content/drafts/
+          if git diff --staged --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "${{ inputs.action == 'publish' && 'content' || 'reject' }}: ${{ inputs.action == 'publish' && '記事を公開' || '下書きをボツ' }} [${{ inputs.slug }}]"
+            git push
+            echo "✅ プッシュ完了 → Cloudflare が自動デプロイ開始"
+          fi
+
+      - name: Discordに通知
+        if: inputs.action == 'publish'
+        env:
+          DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          TITLE=$(grep '^title:' "src/content/articles/${{ inputs.slug }}.md" 2>/dev/null | head -1 | sed 's/title: *"//' | sed 's/"$//' || echo "${{ inputs.slug }}")
+          SITE="${SITE_URL:-https://kattenihakodate.com}"
+          node - <<EOF
+          import https from 'https';
+          const title = "${TITLE}";
+          const url   = "${SITE}/articles/${{ inputs.slug }}";
+          const body  = JSON.stringify({ content: "✅ **記事を公開しました**\n**${TITLE}**\n${SITE}/articles/${{ inputs.slug }}" });
+          const u = new URL(process.env.DISCORD_ARTICLE_WEBHOOK_URL);
+          const req = https.request({ hostname: u.hostname, path: u.pathname, method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }}, res => { res.resume(); });
+          req.write(body); req.end();
+          EOF
