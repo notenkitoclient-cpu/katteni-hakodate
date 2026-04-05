@@ -11,10 +11,11 @@
  *  12: 備考
  *
  * 動作:
- *   - 取得日が DAYS_LOOKBACK 日以内の行のみ対象
+ *   - EARLIEST_DATE 以降の行のみ対象（古い記事を完全排除）
+ *   - Google News RSS URL（news.google.com）はソースとして使用不可のためスキップ
+ *   - タイトルに古い年（～2025年以前）が含まれる場合はスキップ
+ *   - 会社名を正規化してから重複チェック（ヨーカドー系などを統一）
  *   - 1回の実行で最大 BATCH_SIZE 件まで追加（古い順）
- *   - タイトル類似チェックで既存newsとの重複を防止
- *   - 函館・道南に無関係な内容はスキップ
  */
 
 import fs from 'fs';
@@ -27,8 +28,8 @@ const PROCESSED_FILE  = path.join(__dirname, '../src/data/sheets-processed-ids.j
 
 const SHEET_ID      = '1pahfD31CQu4Gk3-DO_Oski001F6n_givsfg0KMjS_AA';
 const GID           = '754262894';
-const DAYS_LOOKBACK = 60;   // 何日前までの行を対象にするか
-const BATCH_SIZE    = 30;   // 1回の実行で追加する最大件数
+const EARLIEST_DATE = '2026-01-01'; // これより古い記事は一切取り込まない
+const BATCH_SIZE    = 20;   // 1回の実行で追加する最大件数
 
 // ── ユーティリティ ─────────────────────────────────────────────
 
@@ -150,6 +151,51 @@ function cleanTitle(raw) {
     .trim();
 }
 
+// ── 古い年が含まれているタイトルを排除 ──────────────────────
+// 例: "22年7月オープン", "2024年1月閉店" → スキップ
+
+function titleHasOldEventDate(title) {
+  // "2020年〜2025年" を含む表記
+  if (/201[0-9]年|202[0-5]年/.test(title)) return true;
+  // "22年" "23年" "24年" など2桁年号（2桁数字＋年）
+  if (/\b(1[0-9]|2[0-4])年/.test(title)) return true;
+  return false;
+}
+
+// ── Google News RSS URL チェック ─────────────────────────────
+// news.google.com/rss/ のURLは実際のページに直接アクセスできないため不可
+
+function isGoogleNewsRssUrl(url) {
+  return /news\.google\.com\/(rss|articles)/.test(url);
+}
+
+// ── 会社名・店名の正規化（重複排除用） ──────────────────────
+// 同じ企業・店舗を複数表記でインポートするのを防ぐ
+
+const COMPANY_NORMALIZE = {
+  'イトーヨーカドー': 'ヨーカドー',
+  'Ito Yokado':      'ヨーカドー',
+  'マクドナルド':    'マクド',
+  'McDonald\'s':     'マクド',
+  'スターバックス':  'スタバ',
+  'Starbucks':       'スタバ',
+  'セブン-イレブン': 'セブンイレブン',
+  'セブン－イレブン': 'セブンイレブン',
+  '7-Eleven':        'セブンイレブン',
+  'ファミリーマート': 'ファミマ',
+  'ローソン函館':    'ローソン',
+  'ツルハドラッグ':  'ツルハ',
+  'ツルハ薬局':      'ツルハ',
+};
+
+function normalizeCompany(title) {
+  let t = title;
+  for (const [from, to] of Object.entries(COMPANY_NORMALIZE)) {
+    t = t.replaceAll(from, to);
+  }
+  return t;
+}
+
 // ── 函館・道南関連チェック ────────────────────────────────────
 
 const HAKODATE_AREA_WORDS = [
@@ -258,7 +304,7 @@ source: "${sourceUrl}"
 
 async function main() {
   const today  = todayJST();
-  const cutoff = cutoffDate(DAYS_LOOKBACK);
+  const cutoff = EARLIEST_DATE;
   console.log(`📊 Sheetsインポート開始 (${today}) | 対象: ${cutoff} 以降 | 上限: ${BATCH_SIZE}件`);
 
   const csvText = await fetchSheetCSV();
@@ -269,7 +315,7 @@ async function main() {
   const allDataRows = rows.slice(1);
   console.log(`📋 総行数: ${allDataRows.length}`);
 
-  // 取得日でフィルタ（新しい順 → 古い順に並び替えて処理）
+  // 取得日でフィルタ（古い順に並び替えて処理）
   const filteredRows = allDataRows
     .filter(r => (r[0] || '') >= cutoff)
     .sort((a, b) => (a[0] || '') > (b[0] || '') ? 1 : -1); // 古い順
@@ -286,7 +332,7 @@ async function main() {
 
     const { rawId, title: parsedTitle, sourceUrl, itemDate } = parseRow(row);
 
-    // ID埋め込み日付が cutoff より古ければスキップ（2024年記事の混入防止）
+    // ID埋め込み日付が cutoff より古ければスキップ（2024年以前の記事の混入防止）
     if (itemDate && itemDate < cutoff) {
       processedIds.add(rawId);
       skipped++;
@@ -298,6 +344,22 @@ async function main() {
 
     const title = parsedTitle;
     if (!title) { processedIds.add(rawId); skipped++; continue; }
+
+    // Google News RSS URLはソース確認不可のためスキップ
+    if (isGoogleNewsRssUrl(sourceUrl)) {
+      console.log(`⏭  RSS不可: ${title.slice(0, 40)}`);
+      processedIds.add(rawId);
+      skipped++;
+      continue;
+    }
+
+    // タイトルに古い年が含まれているものはスキップ
+    if (titleHasOldEventDate(title)) {
+      console.log(`⏭  古い年: ${title.slice(0, 40)}`);
+      processedIds.add(rawId);
+      skipped++;
+      continue;
+    }
 
     // 函館・道南関連チェック
     if (!isHakodateRelated(title)) {
@@ -314,8 +376,9 @@ async function main() {
       continue;
     }
 
-    // タイトル重複チェック
-    const duplicate = [...existingTitles].find(t => isSimilarTitle(title, t));
+    // 会社名を正規化してからタイトル重複チェック
+    const normalizedTitle = normalizeCompany(title);
+    const duplicate = [...existingTitles].find(t => isSimilarTitle(normalizedTitle, normalizeCompany(t)));
     if (duplicate) {
       console.log(`⏭  重複: ${title.slice(0, 40)}`);
       processedIds.add(rawId);
