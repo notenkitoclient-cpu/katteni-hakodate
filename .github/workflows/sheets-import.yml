@@ -1,0 +1,41 @@
+name: Sheetsからニュースをインポート
+
+on:
+  schedule:
+    # 毎朝 7:15 JST (= 22:15 UTC 前日)  ← research.yml より少し後に実行
+    - cron: '15 22 * * *'
+    # 毎夕 17:15 JST (= 08:15 UTC)
+    - cron: '15 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  import:
+    name: スプレッドシートからニュースをインポート
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: スプレッドシートからインポート
+        run: node scripts/sheets-import.mjs
+
+      - name: 新規ニュースをコミット＆プッシュ
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/content/news/ src/data/sheets-processed-ids.json
+          if git diff --staged --quiet; then
+            echo "新規ニュースなし"
+          else
+            COUNT=$(git diff --staged --name-only -- 'src/content/news/*.md' | wc -l | tr -d ' ')
+            git commit -m "news: Sheetsから${COUNT}件をインポート [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+            git push
+            echo "✅ ${COUNT}件をプッシュ完了"
+          fi

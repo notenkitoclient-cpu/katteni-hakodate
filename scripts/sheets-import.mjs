@@ -1,0 +1,297 @@
+/**
+ * カッテニハコダテ — Google Sheetsインポートスクリプト
+ * スプレッドシートの未処理行を取得し、src/content/news/ に自動追加する。
+ *
+ * 列マッピング（実測）:
+ *   0: 取得日（YYYY-MM-DD）
+ *   1: 共通ID（= "タイトル - ソース名"）
+ *   2: 求人タイトル（= ソース名）
+ *   3: 会社名/店名（= Google News URL）
+ *  11: ステータス
+ *  12: 備考
+ *
+ * 動作:
+ *   - 取得日が DAYS_LOOKBACK 日以内の行のみ対象
+ *   - 1回の実行で最大 BATCH_SIZE 件まで追加（古い順）
+ *   - タイトル類似チェックで既存newsとの重複を防止
+ *   - 函館・道南に無関係な内容はスキップ
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const NEWS_DIR        = path.join(__dirname, '../src/content/news');
+const PROCESSED_FILE  = path.join(__dirname, '../src/data/sheets-processed-ids.json');
+
+const SHEET_ID      = '1pahfD31CQu4Gk3-DO_Oski001F6n_givsfg0KMjS_AA';
+const GID           = '754262894';
+const DAYS_LOOKBACK = 60;   // 何日前までの行を対象にするか
+const BATCH_SIZE    = 30;   // 1回の実行で追加する最大件数
+
+// ── ユーティリティ ─────────────────────────────────────────────
+
+function todayJST() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+}
+
+function cutoffDate(days) {
+  const d = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  return d.toISOString().split('T')[0];
+}
+
+// ── CSV パーサー（RFC4180準拠）────────────────────────────────
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = [];
+    let col = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuote && line[i + 1] === '"') { col += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        cols.push(col); col = '';
+      } else {
+        col += ch;
+      }
+    }
+    cols.push(col);
+    rows.push(cols);
+  }
+  return rows;
+}
+
+// ── Google Sheets CSV 取得 ────────────────────────────────────
+
+async function fetchSheetCSV() {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+  const res = await fetch(url, { redirect: 'follow' });
+  if (!res.ok) throw new Error(`Sheets取得失敗: HTTP ${res.status}`);
+  return res.text();
+}
+
+// ── 処理済みID管理 ───────────────────────────────────────────
+
+function loadProcessedIds() {
+  try { return new Set(JSON.parse(fs.readFileSync(PROCESSED_FILE, 'utf-8'))); }
+  catch { return new Set(); }
+}
+
+function saveProcessedIds(ids) {
+  fs.mkdirSync(path.dirname(PROCESSED_FILE), { recursive: true });
+  fs.writeFileSync(PROCESSED_FILE, JSON.stringify([...ids], null, 2), 'utf-8');
+}
+
+// ── 既存newsタイトル一覧 ──────────────────────────────────────
+
+function loadExistingTitles() {
+  if (!fs.existsSync(NEWS_DIR)) return new Set();
+  const titles = new Set();
+  for (const file of fs.readdirSync(NEWS_DIR).filter(f => f.endsWith('.md'))) {
+    const raw = fs.readFileSync(path.join(NEWS_DIR, file), 'utf-8');
+    const m = raw.match(/^title:\s*["']?(.+?)["']?\s*$/m);
+    if (m) titles.add(m[1].trim());
+  }
+  return titles;
+}
+
+// ── タイトル正規化 ───────────────────────────────────────────
+
+function cleanTitle(raw) {
+  return raw
+    .replace(/\s*[-–]\s*(北海道新聞デジタル|Yahoo!ニュース|PR TIMES|流通ニュース|sasaru\.media|函館新聞デジタル|[^\s-–]{1,30})\s*$/, '')
+    .trim();
+}
+
+// ── 函館・道南関連チェック ────────────────────────────────────
+
+const HAKODATE_AREA_WORDS = [
+  '函館', '北斗', '七飯', '松前', '江差', '八雲', '長万部', '今金', '森町',
+  '五稜郭', '湯川', '末広', '大門', '本町', '元町', '棒二', 'シエスタ',
+  '西部地区', 'ベイエリア', '函館駅', '亀田', '桔梗',
+];
+
+// 函館以外の地名を含み、かつ函館が店名・ブランド名として使われている可能性がある表現
+const NON_HAKODATE_AREAS = [
+  '新潟', '神保町', '東京', '大阪', '札幌', '仙台', '名古屋', '福岡',
+  '横浜', '埼玉', '千葉', '京都', '広島', '沖縄', '旭川', '帯広',
+  '藤沢', '宇治', '八戸', '青森', '秋田', '盛岡', '山形', '仙台',
+  '那覇', '熊本', '鹿児島', '長崎', '静岡', '浜松', '金沢', '富山',
+  '高松', '松山', '岡山', '姫路', '奈良', '和歌山', '岐阜', '津市',
+  '北谷', // 沖縄北谷（アメリカンビレッジ周辺）
+];
+
+// 「／地名」「（地名）」で他都市店舗を示すパターン
+const OUT_OF_TOWN_PATTERN = /[\/／]\s*(八戸|青森|札幌|仙台|東京|大阪|神戸|京都|福岡|那覇|新潟)[\s　】）]|【(藤沢市|宇治市|北谷町|新潟市)/;
+
+function isHakodateRelated(title) {
+  // 函館・道南キーワードを含むか
+  const hasHakodate = HAKODATE_AREA_WORDS.some(w => title.includes(w));
+  if (!hasHakodate) return false;
+
+  // 「／八戸」「【藤沢市】」など明示的な他都市パターンがあれば除外
+  if (OUT_OF_TOWN_PATTERN.test(title)) return false;
+
+  // 他都市名が函館より先に出てくる場合は除外（例:「新潟に函館ラーメン出店」）
+  const firstNonHakodate = Math.min(
+    ...NON_HAKODATE_AREAS.map(w => title.indexOf(w)).filter(i => i >= 0),
+    Infinity
+  );
+  const firstHakodate = Math.min(
+    ...HAKODATE_AREA_WORDS.map(w => title.indexOf(w)).filter(i => i >= 0),
+    Infinity
+  );
+  return firstHakodate <= firstNonHakodate;
+}
+
+// ── タイトル類似チェック ──────────────────────────────────────
+
+function extractKeyTerms(title) {
+  const ja = title.match(/[\u3040-\u9fff\uff01-\uff60]{2,}/g) || [];
+  const en = title.match(/[a-zA-Z0-9]{3,}/g) || [];
+  return [...ja, ...en];
+}
+
+function isSimilarTitle(titleA, titleB) {
+  const setA = new Set(extractKeyTerms(titleA));
+  const overlap = extractKeyTerms(titleB).filter(t => setA.has(t));
+  return overlap.length >= 2;
+}
+
+// ── ニュース分類・エリア抽出 ─────────────────────────────────
+
+function classifyType(title) {
+  if (/開店|オープン|新店|ニューオープン|grand open/i.test(title)) return '開店';
+  if (/閉店|クローズ|撤退|終了|破産|廃業|営業終了/.test(title))   return '閉店';
+  if (/イベント|祭り|まつり|フェス|マルシェ|開催|コンサート|展示/.test(title)) return 'イベント';
+  if (/工事|建設|リニューアル|改装|解体/.test(title))              return '工事中';
+  return null;
+}
+
+function extractArea(title) {
+  // 固定エリア名を優先（誤マッチ防止）
+  const named = title.match(/(函館駅前|ベイエリア|五稜郭|湯川|元町|西部地区|末広町|大門|本町|棒二|シエスタ|亀田|桔梗|松風|美原|昭和|杉並|石川町|鍛治|港町|田家|鱒川)/);
+  if (named) return named[1];
+  // 「XX町」「XX丁目」「XX区」にマッチ（数字のみや長すぎるものは除外）
+  const m = title.match(/([^\s　、。「」【】\d]{1,6}(?:丁目|[町区]))/);
+  return m ? m[1] : '函館市内';
+}
+
+// ── newsファイル保存 ──────────────────────────────────────────
+
+function saveNewsFile(title, type, area, date, sourceUrl) {
+  if (!fs.existsSync(NEWS_DIR)) fs.mkdirSync(NEWS_DIR, { recursive: true });
+  const usedSlugs = new Set(fs.readdirSync(NEWS_DIR).map(f => f.replace('.md', '')));
+
+  let base = title
+    .replace(/[^\w\s]/g, ' ').toLowerCase().trim()
+    .split(/\s+/).filter(w => /^[a-z][a-z0-9]{1,}$/.test(w))
+    .slice(0, 3).join('-');
+  if (base.length < 3) base = 'news';
+
+  let slug = `${date}-sheets-${base}`.slice(0, 55);
+  const orig = slug; let i = 2;
+  while (usedSlugs.has(slug)) slug = `${orig}-${i++}`;
+
+  const md = `---
+title: "${title.replace(/"/g, '\\"')}"
+type: "${type}"
+date: "${date}"
+area: "${area}"
+reporter: "編集部"
+source: "${sourceUrl}"
+---
+`.trimEnd() + '\n';
+
+  fs.writeFileSync(path.join(NEWS_DIR, `${slug}.md`), md, 'utf-8');
+  return slug;
+}
+
+// ── メイン ────────────────────────────────────────────────────
+
+async function main() {
+  const today  = todayJST();
+  const cutoff = cutoffDate(DAYS_LOOKBACK);
+  console.log(`📊 Sheetsインポート開始 (${today}) | 対象: ${cutoff} 以降 | 上限: ${BATCH_SIZE}件`);
+
+  const csvText = await fetchSheetCSV();
+  const rows = parseCSV(csvText);
+
+  if (rows.length < 2) { console.log('データなし'); return; }
+
+  const allDataRows = rows.slice(1);
+  console.log(`📋 総行数: ${allDataRows.length}`);
+
+  // 取得日でフィルタ（新しい順 → 古い順に並び替えて処理）
+  const filteredRows = allDataRows
+    .filter(r => (r[0] || '') >= cutoff)
+    .sort((a, b) => (a[0] || '') > (b[0] || '') ? 1 : -1); // 古い順
+
+  console.log(`📋 ${cutoff}以降の行数: ${filteredRows.length}`);
+
+  const processedIds   = loadProcessedIds();
+  const existingTitles = loadExistingTitles();
+  const saved = [];
+  let skipped = 0;
+
+  for (const row of filteredRows) {
+    if (saved.length >= BATCH_SIZE) break;
+
+    const rawId     = (row[1] || '').trim();
+    const sourceUrl = (row[3] || '').trim();
+
+    if (!rawId) continue;
+    if (processedIds.has(rawId)) continue;
+
+    const title = cleanTitle(rawId);
+
+    // 函館・道南関連チェック
+    if (!isHakodateRelated(title)) {
+      processedIds.add(rawId);
+      skipped++;
+      continue;
+    }
+
+    // ニュースタイプ分類
+    const type = classifyType(title);
+    if (!type) {
+      processedIds.add(rawId);
+      skipped++;
+      continue;
+    }
+
+    // タイトル重複チェック
+    const duplicate = [...existingTitles].find(t => isSimilarTitle(title, t));
+    if (duplicate) {
+      console.log(`⏭  重複: ${title.slice(0, 40)}`);
+      processedIds.add(rawId);
+      skipped++;
+      continue;
+    }
+
+    const area = extractArea(title);
+    const slug = saveNewsFile(title, type, area, today, sourceUrl);
+
+    processedIds.add(rawId);
+    existingTitles.add(title);
+    saved.push({ slug, title, type, area });
+    console.log(`✅ [${type}][${area}] ${title.slice(0, 45)}`);
+  }
+
+  saveProcessedIds(processedIds);
+
+  const remaining = filteredRows.filter(r => !processedIds.has((r[1] || '').trim())).length;
+  console.log(`\n完了: ${saved.length}件追加 / ${skipped}件スキップ / 残り約${remaining}件（次回以降）`);
+  fs.writeFileSync('/tmp/sheets-result.json', JSON.stringify({ saved }), 'utf-8');
+}
+
+main().catch(err => {
+  console.error('❌ エラー:', err.message);
+  process.exit(1);
+});
