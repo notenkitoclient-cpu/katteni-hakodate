@@ -97,43 +97,55 @@ function downloadImageAsBase64(url) {
   });
 }
 
-// ── Claude Vision で情報抽出 ───────────────────────────────────
+// ── Claude Vision で情報抽出（複数画像バッチ対応）────────────
 
-async function analyzeImage(base64Image, messageText) {
+/**
+ * 同一メッセージの画像をまとめて1リクエストで解析する。
+ * 返り値: 各画像に対応する結果オブジェクトの配列
+ */
+async function analyzeImages(base64Images, messageText) {
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
+  const imageCount = base64Images.length;
   const prompt = `あなたは函館ローカル情報サイト「カッテニハコダテ」の編集スタッフです。
-送られてきた画像（店舗の看板・お知らせ・SNSのスクリーンショットなど）から、
+${imageCount > 1 ? `${imageCount}枚の画像が` : '画像が'}送られてきました（店舗の看板・お知らせ・SNSのスクリーンショットなど）。
 函館の開店・閉店・その他街の変化に関する情報を読み取ってください。
 
 ${messageText ? `投稿者のコメント: "${messageText}"` : ''}
 
-以下のJSON形式で返してください（コードブロック不要）:
-{
-  "type": "開店" | "閉店" | "工事中" | "イベント" | "目撃情報" | "その他",
-  "title": "簡潔なニュースタイトル（40文字以内）",
-  "area": "場所・エリア（例: 五稜郭、末広町、湯川など）",
-  "body": "詳細内容（2〜3文。わかる範囲で）",
-  "confidence": "high" | "medium" | "low"
-}
+各画像について以下のJSON形式で返してください。配列で返し、画像と同じ順番にしてください（コードブロック不要）:
+[
+  {
+    "type": "開店" | "閉店" | "工事中" | "イベント" | "目撃情報" | "その他",
+    "title": "簡潔なニュースタイトル（40文字以内）",
+    "area": "場所・エリア（例: 五稜郭、末広町、湯川など）",
+    "body": "詳細内容（2〜3文。わかる範囲で）",
+    "confidence": "high" | "medium" | "low"
+  }
+]
 
-情報が読み取れない・函館と無関係な場合は {"skip": true} を返してください。`;
+情報が読み取れない・函館と無関係な画像は {"skip": true} を入れてください。`;
+
+  const imageBlocks = base64Images.map(b64 => ({
+    type: 'image',
+    source: { type: 'base64', media_type: 'image/jpeg', data: b64 },
+  }));
 
   const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 512,
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: [
-        { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64Image } },
-        { type: 'text', text: prompt },
-      ],
+      content: [...imageBlocks, { type: 'text', text: prompt }],
     }],
   });
 
   const text = res.content[0].text.trim();
-  const json = text.startsWith('{') ? text : text.match(/\{[\s\S]+\}/)?.[0];
-  return JSON.parse(json);
+  // 配列JSON を抽出
+  const json = text.startsWith('[') ? text : text.match(/\[[\s\S]+\]/)?.[0];
+  const results = JSON.parse(json);
+  // 1枚のとき配列でなくオブジェクトが返る場合も吸収
+  return Array.isArray(results) ? results : [results];
 }
 
 // ── news ファイル生成 ──────────────────────────────────────────
@@ -186,12 +198,6 @@ async function main() {
   const created = [];
 
   for (const msg of messages) {
-    // デバッグ: メッセージ構造を出力
-    console.log(`\n[DEBUG] msg.id=${msg.id} content="${msg.content?.slice(0,50)}" attachments=${msg.attachments?.length ?? 0} embeds=${msg.embeds?.length ?? 0}`);
-    if (msg.attachments?.length) {
-      msg.attachments.forEach(a => console.log(`  [ATTACH] filename=${a.filename} content_type=${a.content_type} url=${a.url?.slice(0,60)}`));
-    }
-
     const attachments = (msg.attachments || []).filter(a =>
       a.content_type?.startsWith('image/') ||
       a.content_type?.startsWith('application/octet-stream') ||
@@ -200,32 +206,36 @@ async function main() {
 
     if (attachments.length === 0) continue;
 
-    console.log(`\n🖼  メッセージ ${msg.id} に画像 ${attachments.length}件`);
+    console.log(`\n🖼  メッセージ ${msg.id} に画像 ${attachments.length}件 → まとめて解析`);
 
-    for (const attachment of attachments) {
-      try {
-        console.log(`  ダウンロード中: ${attachment.filename}`);
-        const base64 = await downloadImageAsBase64(attachment.url);
-        const info = await analyzeImage(base64, msg.content || '');
+    try {
+      // 全画像を並列ダウンロード
+      const base64Images = await Promise.all(
+        attachments.map(a => downloadImageAsBase64(a.url))
+      );
+
+      // 1リクエストでまとめて解析
+      const results = await analyzeImages(base64Images, msg.content || '');
+
+      for (let i = 0; i < results.length; i++) {
+        const info = results[i];
+        const filename = attachments[i]?.filename || `image${i + 1}`;
 
         if (info.skip) {
-          console.log('  → スキップ（情報なし）');
+          console.log(`  [${filename}] → スキップ（情報なし）`);
           continue;
         }
         if (info.confidence === 'low') {
-          console.log(`  → 信頼度低のためスキップ: ${info.title}`);
+          console.log(`  [${filename}] → 信頼度低のためスキップ: ${info.title}`);
           continue;
         }
 
-        console.log(`  → ${info.type}「${info.title}」（${info.area}）`);
+        console.log(`  [${filename}] → ${info.type}「${info.title}」（${info.area}）`);
         const slug = saveNewsFile(info, todayJST());
         created.push(slug);
-
-        // API制限対策
-        await new Promise(r => setTimeout(r, 1000));
-      } catch (err) {
-        console.error(`  ❌ エラー: ${err.message}`);
       }
+    } catch (err) {
+      console.error(`  ❌ エラー: ${err.message}`);
     }
   }
 
