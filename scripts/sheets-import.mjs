@@ -12,13 +12,15 @@
  *
  * 動作:
  *   - EARLIEST_DATE 以降の行のみ対象（古い記事を完全排除）
- *   - Google News RSS URL（news.google.com）はソースとして使用不可のためスキップ
+ *   - Google News RSS URL（news.google.com）はリダイレクト先の実URLに解決（失敗時スキップ）
  *   - タイトルに古い年（～2025年以前）が含まれる場合はスキップ
  *   - 会社名を正規化してから重複チェック（ヨーカドー系などを統一）
  *   - 1回の実行で最大 BATCH_SIZE 件まで追加（古い順）
  */
 
 import fs from 'fs';
+import https from 'https';
+import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -162,8 +164,34 @@ function titleHasOldEventDate(title) {
   return false;
 }
 
-// ── Google News RSS URL チェック ─────────────────────────────
-// news.google.com/rss/ のURLは実際のページに直接アクセスできないため不可
+// ── Google News RSS URL → 実URLへのリダイレクト解決 ─────────
+// news.google.com/rss/articles/... はリダイレクトで実際の記事URLに辿り着く
+// タイムアウト3秒、失敗したらnullを返す（→その行はスキップ）
+
+function resolveGoogleNewsUrl(rssUrl) {
+  return new Promise(resolve => {
+    const timeout = setTimeout(() => resolve(null), 3000);
+    try {
+      const req = https.get(rssUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, res => {
+        clearTimeout(timeout);
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          const loc = res.headers.location;
+          // Google Newsの中間URLの場合はさらに解決（最大1回）
+          if (loc.includes('news.google.com')) {
+            resolve(null); // 解決できなかった
+          } else {
+            resolve(loc);
+          }
+        } else {
+          resolve(null); // リダイレクトなし = RSS URLのまま = 使えない
+        }
+        res.resume();
+      });
+      req.on('error', () => { clearTimeout(timeout); resolve(null); });
+      req.end();
+    } catch { clearTimeout(timeout); resolve(null); }
+  });
+}
 
 function isGoogleNewsRssUrl(url) {
   return /news\.google\.com\/(rss|articles)/.test(url);
@@ -345,12 +373,17 @@ async function main() {
     const title = parsedTitle;
     if (!title) { processedIds.add(rawId); skipped++; continue; }
 
-    // Google News RSS URLはソース確認不可のためスキップ
+    // Google News RSS URLはリダイレクト先の実URLを取得して置き換え
+    let resolvedUrl = sourceUrl;
     if (isGoogleNewsRssUrl(sourceUrl)) {
-      console.log(`⏭  RSS不可: ${title.slice(0, 40)}`);
-      processedIds.add(rawId);
-      skipped++;
-      continue;
+      resolvedUrl = await resolveGoogleNewsUrl(sourceUrl);
+      if (!resolvedUrl) {
+        console.log(`⏭  RSS解決失敗: ${title.slice(0, 40)}`);
+        processedIds.add(rawId);
+        skipped++;
+        continue;
+      }
+      console.log(`🔗 RSS→実URL: ${resolvedUrl.slice(0, 60)}`);
     }
 
     // タイトルに古い年が含まれているものはスキップ
@@ -387,7 +420,7 @@ async function main() {
     }
 
     const area = extractArea(title);
-    const slug = saveNewsFile(title, type, area, today, sourceUrl);
+    const slug = saveNewsFile(title, type, area, today, resolvedUrl);
 
     processedIds.add(rawId);
     existingTitles.add(title);
