@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import InvestigationLayout from '../../layouts/InvestigationLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
@@ -11,6 +12,7 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 const { Content } = await render(article);
+const isInvestigation = article.data.investigation === true;
 
 const categoryColors: Record<string, string> = {
   'グルメ': '#0d8a87', '観光': '#0d2d52', '暮らし': '#1a7fc0',
@@ -28,6 +30,21 @@ const catColor = categoryColors[article.data.category] || '#0d8a87';
 const catBg = categoryBg[article.data.category] || 'linear-gradient(135deg,#0d2d52,#0d8a87)';
 ---
 
+{isInvestigation ? (
+  <InvestigationLayout
+    title={article.data.title}
+    description={article.data.description}
+    category={article.data.category}
+    date={article.data.date}
+    author={article.data.author}
+    experimentNo={article.data.experimentNo}
+    finding={article.data.finding}
+    findingLabel={article.data.findingLabel}
+    tags={article.data.tags}
+  >
+    <Content />
+  </InvestigationLayout>
+) : (
 <BaseLayout title={article.data.title} description={article.data.description}>
   <Header />
 
@@ -93,3 +110,4 @@ const catBg = categoryBg[article.data.category] || 'linear-gradient(135deg,#0d2d
   </main>
   <Footer />
 </BaseLayout>
+)}

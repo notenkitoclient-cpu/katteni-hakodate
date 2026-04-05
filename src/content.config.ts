@@ -12,6 +12,11 @@ const articles = defineCollection({
     image: z.string().optional(),
     tags: z.array(z.string()).optional(),
     featured: z.boolean().optional().default(false),
+    // 調査報告（実験記事）用フィールド
+    investigation: z.boolean().optional().default(false),
+    finding: z.string().optional(),      // 主要な発見・数値（例: "127g"）
+    findingLabel: z.string().optional(), // 発見のラベル（例: "平均チキン重量"）
+    experimentNo: z.string().optional(), // 実験番号（例: "001"）
   }),
 });
 
