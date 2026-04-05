@@ -76,6 +76,42 @@ async function fetchSheetCSV() {
   return res.text();
 }
 
+// ── カラムレイアウト検出＆行パース ───────────────────────────
+//
+// Apps Script 03_jobs.gs が書く「新フォーマット」:
+//   B(1): 生成ID (例: "20260402-NEWS-001")
+//   C(2): タイトル
+//   I(8): ソース名
+//   J(9): URL
+//   L(11): ステータス
+//
+// それ以前に蓄積された「旧フォーマット」:
+//   B(1): "タイトル - ソース名"
+//   C(2): ソース名
+//   D(3): URL
+//   L(11): ステータス
+
+function parseRow(row) {
+  const colB = (row[1] || '').trim();
+  const isNewFormat = /^\d{8}-[A-Z]+-\d+$/.test(colB);
+
+  if (isNewFormat) {
+    return {
+      rawId:     colB,
+      title:     (row[2] || '').trim(),
+      sourceUrl: (row[9] || '').trim(),
+      status:    (row[11] || '').trim(),
+    };
+  } else {
+    return {
+      rawId:     colB,                        // "タイトル - ソース名" をIDに使用
+      title:     cleanTitle(colB),
+      sourceUrl: (row[3] || '').trim(),
+      status:    (row[11] || '').trim(),
+    };
+  }
+}
+
 // ── 処理済みID管理 ───────────────────────────────────────────
 
 function loadProcessedIds() {
@@ -243,13 +279,13 @@ async function main() {
   for (const row of filteredRows) {
     if (saved.length >= BATCH_SIZE) break;
 
-    const rawId     = (row[1] || '').trim();
-    const sourceUrl = (row[3] || '').trim();
+    const { rawId, title: parsedTitle, sourceUrl } = parseRow(row);
 
     if (!rawId) continue;
     if (processedIds.has(rawId)) continue;
 
-    const title = cleanTitle(rawId);
+    const title = parsedTitle;
+    if (!title) { processedIds.add(rawId); skipped++; continue; }
 
     // 函館・道南関連チェック
     if (!isHakodateRelated(title)) {
