@@ -5,182 +5,157 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout
-  title="このメディアについて"
-  description="函館の当たり前を、勝手に測って証明するデータ・ジャーナリズム・メディア「カッテニハコダテ」のコンセプト。">
+  title="カッテニハコダテとは"
+  description="港町・函館の魅力を、地元目線でかってに発信するコミュニティメディアのコンセプトページ"
+>
   <Header />
 
-  <!-- HERO -->
-  <section class="concept-hero">
-    <div class="concept-hero-grid" aria-hidden="true"></div>
-    <div class="ch-inner">
-      <p class="ch-label">KATTENI HAKODATE — CITY EXPERIMENT REPORT</p>
-      <h1 class="ch-title">
-        私たちは、<br>
-        <em>函館を測る</em>ために<br>
-        存在します。
-      </h1>
-      <p class="ch-sub">データ・ジャーナリズム × ローカル × ユーモア</p>
+  <!-- Hero -->
+  <section style="
+    padding: 120px 24px 100px;
+    background: linear-gradient(160deg, #0d2d52 0%, #0d5a7a 60%, #0d8a87 100%);
+    text-align: center; position: relative; overflow: hidden;
+  ">
+    <div style="position: absolute; bottom: -1px; left: 0; right: 0; opacity: 0.12;">
+      <svg viewBox="0 0 1200 80" style="width:100%; display:block;">
+        <path d="M0,40 C300,70 600,10 900,40 C1050,55 1150,45 1200,40 L1200,80 L0,80Z" fill="white"/>
+      </svg>
+    </div>
+    <div style="position: relative; max-width: 720px; margin: 0 auto;">
+      <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 140px; margin-bottom: 32px; filter: drop-shadow(0 8px 32px rgba(0,0,0,0.35));" />
+      <p style="font-size: 11px; letter-spacing: 0.35em; color: #52d9d6; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">About</p>
+      <h1 style="
+        font-family: 'Shippori Mincho', serif;
+        font-size: clamp(28px, 4vw, 48px);
+        font-weight: 800; color: #ffffff;
+        line-height: 1.4; margin-bottom: 24px;
+        letter-spacing: 0.03em;
+      ">カッテニハコダテとは</h1>
+      <p style="font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.9; max-width: 560px; margin: 0 auto;">
+        函館に暮らす人、訪れた人、これから移住を考える人。<br>
+        それぞれの「ハコダテ」を、かってに集めて発信するメディアです。
+      </p>
     </div>
   </section>
 
-  <main class="about-main">
+  <main style="max-width: 800px; margin: 0 auto; padding: 0 24px;">
 
-    <!-- 01 WHAT -->
-    <section class="about-section">
-      <div class="wrap">
-        <div class="two-col">
-          <div class="col-label">
-            <p class="col-num">01</p>
-            <p class="col-eye">WHAT WE DO</p>
-          </div>
-          <div class="col-body">
-            <h2 class="col-title">誰も測っていないものを、<br>私たちが測る。</h2>
-            <p class="col-text">
-              函館には、「当たり前」がたくさんあります。坂が多い、霧が出る、
-              ラッキーピエロが混んでいる、市電がゆっくり走る。
-            </p>
-            <p class="col-text">
-              でも、その「当たり前」を実際に測った人は、ほとんどいません。
-            </p>
-            <p class="col-text">
-              カッテニハコダテは、その「当たり前」を現地で計量・計測・記録し、
-              データとして提示するメディアです。グルメ情報でも観光ガイドでもありません。
-              <strong>函館という都市を、勝手に調査する実験報告書です。</strong>
-            </p>
-          </div>
-        </div>
+    <!-- コンセプト -->
+    <section style="padding: 80px 0 0;">
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Concept</p>
+      <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d0d0d; margin-bottom: 32px; line-height: 1.5;">
+        「かって」に、函館を好きでいい。
+      </h2>
+      <div style="font-size: 15px; color: #4a5568; line-height: 2.0; display: grid; gap: 20px;">
+        <p>函館には、観光ガイドに載っていない景色がある。地元の人しか知らない食堂がある。移住して初めて気づく、この街の面白さがある。</p>
+        <p>「カッテニハコダテ」は、そういう情報を<strong style="color: #0d2d52;">かってに</strong>集めて、かってに発信するコミュニティメディアです。プロのライターや観光協会ではなく、函館を好きな普通の人たちが書いています。</p>
+        <p>「かって」には2つの意味があります。ひとつは「勝手に＝自由に、制限なく」。もうひとつは「かつて＝昔の函館の記憶」。この街の今と昔を、自由に行き来しながら発信していきます。</p>
       </div>
     </section>
 
-    <hr class="divider" />
-
-    <!-- 02 STANCE -->
-    <section class="about-section">
-      <div class="wrap">
-        <div class="two-col">
-          <div class="col-label">
-            <p class="col-num">02</p>
-            <p class="col-eye">OUR STANCE</p>
-          </div>
-          <div class="col-body">
-            <h2 class="col-title">「私が言ったんじゃない、<br>数字がそう言っている。」</h2>
-            <p class="col-text">
-              私たちが信じるのは感想ではなく、数値です。
-              「おいしい」ではなく「127グラムだった」。
-              「坂がきつい」ではなく「勾配8.7度だった」。
-            </p>
-            <p class="col-text">
-              データを盾に持つことで、「函館はこういう街だ」を
-              感情論ではなく事実として示せる。それがこのメディアの存在理由です。
-            </p>
-
-            <div class="stance-block">
-              <div class="stance-item">
-                <span class="stance-num">1</span>
-                <div>
-                  <p class="stance-label">調査（Investigate）</p>
-                  <p class="stance-desc">誰も測っていない函館の「当たり前」を発見する</p>
-                </div>
-              </div>
-              <div class="stance-item">
-                <span class="stance-num">2</span>
-                <div>
-                  <p class="stance-label">計測（Measure）</p>
-                  <p class="stance-desc">実際に現地へ行き、一次データを取得する</p>
-                </div>
-              </div>
-              <div class="stance-item">
-                <span class="stance-num">3</span>
-                <div>
-                  <p class="stance-label">証明（Prove）</p>
-                  <p class="stance-desc">ユーモアで包みながら、数字で事実を語る</p>
-                </div>
-              </div>
+    <!-- 3つのこだわり -->
+    <section style="padding: 80px 0 0;">
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Our Promise</p>
+      <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d0d0d; margin-bottom: 40px;">3つのこだわり</h2>
+      <div style="display: grid; gap: 20px;">
+        {[
+          {
+            num: '01',
+            title: '地元目線で書く',
+            body: '観光客向けの情報ではなく、実際に函館に暮らす人・深く関わる人の視点で発信します。「本当に美味しい店」「実際に住んでみてわかったこと」そういう言葉を大切にします。',
+            img: '/images/kacchin-slope.png',
+          },
+          {
+            num: '02',
+            title: 'リアルな情報を届ける',
+            body: 'PR記事や広告に偏らず、書いた人の実体験に基づいた情報だけを掲載します。「実際に行った」「実際に食べた」「実際に住んでみた」という体験が情報の基本です。',
+            img: '/images/kacchin-gourmet.png',
+          },
+          {
+            num: '03',
+            title: '函館を好きな人を増やす',
+            body: '最終的な目的は、函館を好きな人を増やすことです。読んで終わりではなく、実際に函館を訪れたくなる・住みたくなる、そんな情報を目指しています。',
+            img: '/images/kacchin-goryokaku.png',
+          },
+        ].map(item => (
+          <div style="
+            display: grid; grid-template-columns: 100px 1fr;
+            gap: 32px; align-items: center;
+            padding: 28px 32px; background: #f8fafc;
+            border-radius: 8px; border-left: 3px solid #0d8a87;
+          ">
+            <img src={item.img} alt={item.title} style="width: 80px; height: 80px; object-fit: contain;" />
+            <div>
+              <p style="font-size: 11px; font-weight: 700; color: #0d8a87; letter-spacing: 0.2em; margin-bottom: 8px;">{item.num}</p>
+              <h3 style="font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 700; color: #0d0d0d; margin-bottom: 8px;">{item.title}</h3>
+              <p style="font-size: 14px; color: #4a5568; line-height: 1.8;">{item.body}</p>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
 
-    <hr class="divider" />
-
-    <!-- 03 WHY HAKODATE -->
-    <section class="about-section">
-      <div class="wrap">
-        <div class="two-col">
-          <div class="col-label">
-            <p class="col-num">03</p>
-            <p class="col-eye">WHY HAKODATE</p>
-          </div>
-          <div class="col-body">
-            <h2 class="col-title">函館在住だから、<br>現地で測れる。</h2>
-            <p class="col-text">
-              The Puddingのようなデータ・ジャーナリズムの多くは、
-              遠くからデータを集めて分析します。カッテニハコダテの強みはそこではありません。
-            </p>
-            <p class="col-text">
-              <strong>函館に住んでいるから、実際に行って測れる。</strong>
-              ラッキーピエロの全店舗を回ってチキンバーガーの重さを量れる。
-              八幡坂の勾配をスマートフォンで計測できる。
-              市電に乗って振動周波数を記録できる。
-            </p>
-            <p class="col-text">
-              東京のメディアには絶対に作れない、一次情報の地産地消。
-              それがカッテニハコダテです。
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <hr class="divider" />
-
-    <!-- 04 DAILY NEWS -->
-    <section class="about-section">
-      <div class="wrap">
-        <div class="two-col">
-          <div class="col-label">
-            <p class="col-num">04</p>
-            <p class="col-eye">DAILY NEWS</p>
-          </div>
-          <div class="col-body">
-            <h2 class="col-title">開店・閉店は、<br>毎日追う。</h2>
-            <p class="col-text">
-              調査報告（実験記事）は月数本ですが、函館の街の変化は毎日追っています。
-            </p>
-            <p class="col-text">
-              新しいお店が開いた、馴染みのあの店が閉まった、工事が始まった——
-              そういった日々の変化を記録することも、このメディアの大切な使命です。
-            </p>
-            <p class="col-text">
-              情報をお持ちの方はぜひ送ってください。現地確認した上でニュースに追加します。
-            </p>
-            <a href="/submit" class="col-cta">情報を送る →</a>
+    <!-- マスコット カッチン -->
+    <section style="padding: 80px 0 0;">
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #0d8a87; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Mascot</p>
+      <h2 style="font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 800; color: #0d0d0d; margin-bottom: 40px;">マスコット・カッチン</h2>
+      <div style="background: linear-gradient(135deg, #e8eef2, #d4e4f0); border-radius: 12px; padding: 40px; display: grid; grid-template-columns: 180px 1fr; gap: 40px; align-items: center;">
+        <img src="/images/kacchin-nightview.png" alt="カッチン" style="width: 100%; filter: drop-shadow(0 8px 24px rgba(13,45,82,0.2));" />
+        <div>
+          <h3 style="font-family: 'Shippori Mincho', serif; font-size: 22px; font-weight: 800; color: #0d2d52; margin-bottom: 14px;">カッチン</h3>
+          <p style="font-size: 14px; color: #4a5568; line-height: 1.9; margin-bottom: 16px;">
+            港町・函館の海に住むタコのキャラクター。サングラスには函館の風景が映り込んでいます。グルメ、観光、暮らし、イベント…函館のあらゆる場所を泳ぎ回り、いちばん面白いことを知っています。
+          </p>
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;">
+            {[
+              { src: '/images/kacchin-gourmet.png', label: 'グルメ' },
+              { src: '/images/kacchin-slope.png', label: '観光' },
+              { src: '/images/kacchin-tram.png', label: '暮らし' },
+              { src: '/images/kacchin-goryokaku.png', label: 'イベント' },
+              { src: '/images/kacchin-asaichi.png', label: '特産品' },
+              { src: '/images/kacchin-404.png', label: '404' },
+            ].map(k => (
+              <div style="text-align: center;">
+                <img src={k.src} alt={k.label} style="width: 52px; height: 52px; object-fit: contain;" />
+                <p style="font-size: 10px; color: #6c757d; margin-top: 4px; letter-spacing: 0.05em;">{k.label}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- QUOTE -->
-    <section class="quote-section">
-      <div class="wrap">
-        <blockquote class="big-quote">
-          「最高のユーモアは、<br>常に冷徹な事実に基づいている。」
-        </blockquote>
-        <p class="quote-caption">カッテニハコダテ 運営方針より</p>
       </div>
     </section>
 
     <!-- CTA -->
-    <section class="about-cta-section">
-      <div class="wrap">
-        <div class="about-cta-inner">
-          <h2 class="about-cta-title">読む、送る、関わる。</h2>
-          <div class="about-cta-btns">
-            <a href="/articles" class="cta-btn cta-btn--primary">調査報告を読む →</a>
-            <a href="/news" class="cta-btn cta-btn--secondary">ニュースを見る</a>
-            <a href="/submit" class="cta-btn cta-btn--ghost">情報を送る ＋</a>
-          </div>
+    <section style="padding: 80px 0 120px;">
+      <div style="background: #0d2d52; border-radius: 8px; padding: 56px; text-align: center;">
+        <p style="font-size: 11px; letter-spacing: 0.3em; color: #52d9d6; font-weight: 700; margin-bottom: 16px; text-transform: uppercase;">Join Us</p>
+        <h2 style="font-family: 'Shippori Mincho', serif; font-size: 24px; font-weight: 800; color: white; margin-bottom: 16px; line-height: 1.5;">
+          あなたの函館を、教えてください。
+        </h2>
+        <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 36px; line-height: 1.8; max-width: 480px; margin-left: auto; margin-right: auto;">
+          好きなお店、おすすめの景色、移住して気づいたこと。<br>「ハコダテ仕掛け人」として一緒に発信しませんか？
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="/submit" style="
+            display: inline-block; padding: 14px 32px;
+            background: #c05a3a; color: white;
+            font-size: 14px; font-weight: 700;
+            border-radius: 4px; letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+          "
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+          >情報を投稿する</a>
+          <a href="/members" style="
+            display: inline-block; padding: 14px 32px;
+            border: 1.5px solid rgba(255,255,255,0.4); color: white;
+            font-size: 14px; font-weight: 700;
+            border-radius: 4px; letter-spacing: 0.05em;
+            transition: all 0.2s;
+          "
+          onmouseover="this.style.borderColor='rgba(255,255,255,0.9)'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,0.4)'"
+          >仕掛け人について</a>
         </div>
       </div>
     </section>
@@ -188,155 +163,3 @@ import Footer from '../components/Footer.astro';
   </main>
   <Footer />
 </BaseLayout>
-
-<style>
-.concept-hero {
-  position: relative;
-  background: #080e1a;
-  padding: 140px 0 100px;
-  overflow: hidden;
-}
-.concept-hero-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(13,45,82,0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13,45,82,0.18) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-}
-.ch-inner {
-  position: relative;
-  max-width: 1200px; margin: 0 auto; padding: 0 48px;
-}
-.ch-label {
-  font-size: 9px; letter-spacing: 0.4em; font-weight: 700;
-  color: rgba(255,255,255,0.25); text-transform: uppercase;
-  margin-bottom: 28px;
-}
-.ch-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(32px, 5.5vw, 64px); font-weight: 800;
-  color: #ffffff; line-height: 1.35; letter-spacing: 0.02em;
-  margin-bottom: 24px;
-}
-.ch-title em { font-style: normal; color: #0d8a87; }
-.ch-sub {
-  font-size: 13px; color: rgba(255,255,255,0.3);
-  letter-spacing: 0.15em;
-}
-
-.about-main { background: #ffffff; }
-.wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.about-section { padding: 80px 0; }
-
-.two-col {
-  display: grid; grid-template-columns: 200px 1fr;
-  gap: 64px; align-items: start;
-}
-.col-label { padding-top: 4px; }
-.col-num {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 48px; font-weight: 900;
-  color: #e8edf2; line-height: 1; margin-bottom: 8px;
-}
-.col-eye {
-  font-size: 9px; letter-spacing: 0.35em; font-weight: 700;
-  color: #0d8a87; text-transform: uppercase;
-}
-.col-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(22px, 3vw, 30px); font-weight: 800;
-  color: #0d0d0d; line-height: 1.45; margin-bottom: 24px;
-}
-.col-text {
-  font-size: 15px; color: #3d4a52; line-height: 2; margin-bottom: 20px;
-}
-.col-text strong { color: #0d2d52; }
-.col-cta {
-  display: inline-flex; align-items: center;
-  padding: 12px 24px; margin-top: 8px;
-  background: #0d8a87; color: #fff;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
-  font-family: 'Shippori Mincho', serif; transition: background 0.2s;
-}
-.col-cta:hover { background: #0a6e6c; }
-
-.stance-block {
-  margin-top: 32px;
-  border: 1px solid #e4e8ed;
-}
-.stance-item {
-  display: flex; align-items: flex-start; gap: 20px;
-  padding: 20px 24px; border-bottom: 1px solid #e4e8ed;
-}
-.stance-item:last-child { border-bottom: none; }
-.stance-num {
-  width: 28px; height: 28px; flex-shrink: 0;
-  background: #0d2d52; color: #fff;
-  font-size: 11px; font-weight: 900;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Shippori Mincho', serif;
-}
-.stance-label {
-  font-size: 13px; font-weight: 700; color: #0d2d52;
-  margin-bottom: 4px; font-family: 'Shippori Mincho', serif;
-}
-.stance-desc { font-size: 12px; color: #6c757d; line-height: 1.7; }
-
-.divider { border: none; border-top: 1px solid #e8edf2; margin: 0; }
-
-.quote-section { padding: 96px 0; background: #0d2d52; }
-.big-quote {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(20px, 3vw, 32px);
-  font-weight: 800; color: #fff;
-  line-height: 1.65; text-align: center;
-  max-width: 640px; margin: 0 auto 20px;
-}
-.quote-caption {
-  text-align: center; font-size: 11px;
-  color: rgba(255,255,255,0.3); letter-spacing: 0.15em;
-}
-
-.about-cta-section {
-  padding: 88px 0; background: #f7f8fa;
-  border-top: 1px solid #e4e8ed;
-}
-.about-cta-inner { text-align: center; }
-.about-cta-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 28px; font-weight: 800; color: #0d0d0d;
-  margin-bottom: 36px;
-}
-.about-cta-btns {
-  display: flex; align-items: center; justify-content: center;
-  gap: 12px; flex-wrap: wrap;
-}
-.cta-btn {
-  display: inline-flex; align-items: center;
-  padding: 14px 28px;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
-  font-family: 'Shippori Mincho', serif; transition: all 0.2s;
-}
-.cta-btn--primary { background: #0d8a87; color: #fff; border: 2px solid #0d8a87; }
-.cta-btn--primary:hover { background: #0a6e6c; }
-.cta-btn--secondary { border: 2px solid #0d2d52; color: #0d2d52; }
-.cta-btn--secondary:hover { background: #0d2d52; color: #fff; }
-.cta-btn--ghost { border: 2px solid #d0d6de; color: #6c757d; }
-.cta-btn--ghost:hover { border-color: #0d8a87; color: #0d8a87; }
-
-@media (max-width: 900px) {
-  .wrap { padding: 0 24px; }
-  .ch-inner { padding: 0 24px; }
-  .two-col { grid-template-columns: 1fr; gap: 24px; }
-  .col-num { font-size: 32px; }
-  .about-section { padding: 56px 0; }
-  .quote-section { padding: 64px 0; }
-  .about-cta-section { padding: 64px 0; }
-}
-@media (max-width: 600px) {
-  .concept-hero { padding: 100px 0 64px; }
-  .about-cta-btns { flex-direction: column; align-items: stretch; }
-  .cta-btn { justify-content: center; }
-}
-</style>

@@ -2,219 +2,216 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import HeroSection from '../components/HeroSection.astro';
+import ArticleCard from '../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
 const sorted = allArticles.sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const investigations = sorted.filter(a => a.data.investigation);
-const regularArticles = sorted.filter(a => !a.data.investigation).slice(0, 3);
-const featuredArticles = investigations.length > 0 ? investigations.slice(0, 3) : regularArticles;
+const recent = sorted.slice(0, 3);
 
-const allNews = await getCollection('news');
-const recentNews = allNews
-  .sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 9);
+const allCF = await getCollection('crowdfunding');
+const featuredCF = allCF
+  .filter(cf => cf.data.featured)
+  .sort((a,b) => new Date(b.data.endDate).getTime() - new Date(a.data.endDate).getTime())
+  .slice(0, 3);
 
 const ticks = [
-  '🟢 函館の新店情報を毎日追跡中',
-  '⚫ 閉店情報もリアルタイムで更新',
-  '📐 誰も測っていないことを、測る',
-  '📊 データが事実を語る',
-  '🔬 函館 × 一次情報 × ユーモア',
-  '🏗 工事中のあの場所、何ができる？',
-  '🗞 函館の「今」を、勝手に記録する',
-  '🧪 CITY EXPERIMENT REPORT',
+  '📋 函館のリアルな情報を毎日収集中','💰 道南のプロジェクトを勝手に応援',
+  '🔍 地元あるあるを勝手に調べた','🍜 函館グルメの新発見をお届け',
+  '🏗 工事中のあの場所、何ができるの？','🎉 今週末の道南イベントをチェック',
+  '⚓ 頼まれてないけどやってます','🗞 新しいお店・なくなるお店',
 ];
 
-const NEWS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  '開店':   { bg: '#1a5c2e', color: '#a8f0c0', label: '開店' },
-  '閉店':   { bg: '#1a1a1a', color: '#d4d4d4', label: '閉店' },
-  '工事中': { bg: '#4a3800', color: '#f5c842', label: '工事中' },
-  'イベント': { bg: '#2c1a4a', color: '#c4a0f0', label: 'EVENT' },
-  '目撃情報': { bg: '#0d2d52', color: '#80b8e8', label: '目撃' },
-  'その他': { bg: '#2a2a2a', color: '#a0a0a0', label: 'NEWS' },
-};
+function daysLeft(dateStr: string) {
+  const end = new Date(dateStr);
+  const now = new Date();
+  return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86400000));
+}
+function pct(current: number, goal: number) {
+  if (!goal) return null;
+  return Math.min(100, Math.round((current / goal) * 100));
+}
+function fmtYen(n: number) {
+  return n.toLocaleString('ja-JP') + '円';
+}
 ---
 
-<BaseLayout
-  title="函館を、勝手に測る。"
-  description="函館の当たり前を、勝手に測って証明するデータ・ジャーナリズム・メディア。開店・閉店情報も毎日追跡。">
+<BaseLayout title="ホーム" description="函館・道南の超ローカル情報メディア。開店・閉店・地域プロジェクト・地元あるあるを勝手に発信。">
   <Header />
+  <HeroSection />
 
-  <!-- ═══════════════════════════════════════════
-       HERO
-  ═══════════════════════════════════════════ -->
-  <section class="hero">
-    <div class="hero-grid-bg" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div class="hero-eyebrow">
-        <span class="hero-label">KATTENI HAKODATE</span>
-        <span class="hero-sep">—</span>
-        <span class="hero-label">CITY EXPERIMENT REPORT</span>
-      </div>
+  <main class="main-page">
 
-      <h1 class="hero-title">
-        <span class="hero-line1">函館を、</span>
-        <span class="hero-line2">勝手に<em>測る</em>。</span>
-      </h1>
-
-      <p class="hero-sub">
-        誰も測っていないものを、私たちが測る。<br>
-        <span class="hero-quote">「私が言ったんじゃない、数字がそう言っている。」</span>
-      </p>
-
-      <div class="hero-actions">
-        <a href="/articles" class="hero-btn hero-btn--primary">調査報告を読む →</a>
-        <a href="/news" class="hero-btn hero-btn--ghost">ニュースを見る</a>
+    <!-- TICKER -->
+    <div class="ticker-wrap">
+      <span class="ticker-tag">KATTE NI</span>
+      <div class="ticker-track">
+        <div class="ticker-run">
+          {[...ticks,...ticks].map(t => (
+            <span class="t-item">{t}<span class="t-sep">◆</span></span>
+          ))}
+        </div>
       </div>
     </div>
 
-    <div class="hero-data-strip" aria-hidden="true">
-      <span>HAKODATE</span>
-      <span>北海道函館市</span>
-      <span>SINCE 2025</span>
-      <span>PRIMARY DATA JOURNALISM</span>
-      <span>独自調査</span>
-      <span>一次情報</span>
-    </div>
-  </section>
 
-  <!-- ═══════════════════════════════════════════
-       TICKER — 開店・閉店速報
-  ═══════════════════════════════════════════ -->
-  <div class="ticker-wrap">
-    <span class="ticker-tag">速報</span>
-    <div class="ticker-track">
-      <div class="ticker-run">
-        {[...ticks,...ticks].map(t => (
-          <span class="t-item">{t}<span class="t-sep">◆</span></span>
-        ))}
-      </div>
-    </div>
-  </div>
-
-  <main>
-
-    <!-- ═══════════════════════════════════════════
-         調査報告
-    ═══════════════════════════════════════════ -->
-    <section class="investigations-section">
+    <!-- 3軸コーナー -->
+    <section class="axes-section">
       <div class="wrap">
         <header class="sec-head">
-          <div class="sec-head-left">
-            <p class="sec-eye">INVESTIGATION REPORT</p>
-            <h2 class="sec-title">調査報告</h2>
+          <div>
+            <p class="sec-eye">カッテニハコダテの3つの活動</p>
+            <h2 class="sec-title">勝手に、全力でやってます。</h2>
           </div>
-          <a href="/articles" class="sec-more">すべての調査報告 →</a>
+          <p class="sec-note">頼まれてないけど、なぜかやめられない。</p>
         </header>
 
-        {featuredArticles.length > 0 ? (
-          <div class="inv-grid">
-            {featuredArticles.map((a, i) => (
-              <a href={`/articles/${a.id}`} class={`inv-card ${i === 0 ? 'inv-card--featured' : ''}`}>
-                {a.data.experimentNo && (
-                  <div class="inv-exp-no">EXP — {a.data.experimentNo}</div>
-                )}
-                {a.data.finding && (
-                  <div class="inv-finding">
-                    <span class="inv-finding-num">{a.data.finding}</span>
-                    {a.data.findingLabel && (
-                      <span class="inv-finding-label">{a.data.findingLabel}</span>
-                    )}
-                  </div>
-                )}
-                <h3 class="inv-title">{a.data.title}</h3>
-                <p class="inv-desc">{a.data.description}</p>
-                <div class="inv-foot">
-                  <span class="inv-cat">{a.data.category}</span>
-                  <span class="inv-date">{a.data.date}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div class="inv-empty">
-            <div class="inv-empty-inner">
-              <p class="inv-empty-label">COMING SOON</p>
-              <p class="inv-empty-title">最初の調査報告を準備中。</p>
-              <p class="inv-empty-body">
-                函館の「当たり前」を測りに行っています。<br>
-                データが揃い次第、公開します。
-              </p>
-              <a href="/about" class="inv-empty-link">このメディアについて →</a>
+        <div class="axes-grid">
+
+          <!-- 情報収集 -->
+          <a href="/news" class="axis-card axis-info">
+            <div class="card-stamp">勝手に</div>
+            <div class="card-num">01</div>
+            <div class="card-icon">📋</div>
+            <h3 class="card-name">情報収集</h3>
+            <p class="card-desc">
+              開店・閉店・工事中の謎スポット。函館の「今」を勝手にキャッチしてお届けします。
+            </p>
+            <span class="card-link">情報を見る →</span>
+          </a>
+
+          <!-- 応援 -->
+          <a href="/crowdfunding" class="axis-card axis-ouen">
+            <div class="card-stamp">勝手に</div>
+            <div class="card-num">02</div>
+            <div class="card-icon">💰</div>
+            <h3 class="card-name">応援</h3>
+            <p class="card-desc">
+              頑張ってるのに目につかないクラファン・プロジェクト・お店を勝手に発掘して応援します。
+            </p>
+            <span class="card-link">応援中を見る →</span>
+          </a>
+
+          <!-- 調べた -->
+          <a href="/articles" class="axis-card axis-shira">
+            <div class="card-stamp">勝手に</div>
+            <div class="card-num">03</div>
+            <div class="card-icon">🔍</div>
+            <h3 class="card-name">調べた</h3>
+            <p class="card-desc">
+              函館市民なら誰でも気になるアレ、ちゃんと調べました。ローカルあるある・検証・まとめ。
+            </p>
+            <span class="card-link">調べた記事を読む →</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 勝手に応援中 -->
+    {featuredCF.length > 0 && (
+      <section class="ouen-section">
+        <div class="wrap">
+          <header class="sec-head sec-head--row">
+            <div>
+              <p class="sec-eye">💰 勝手に応援中</p>
+              <h2 class="sec-title">今、応援したいのはコレ</h2>
             </div>
+            <a href="/crowdfunding" class="sec-more">もっと見る →</a>
+          </header>
+
+          <div class="cf-grid">
+            {featuredCF.map(cf => {
+              const p = pct(cf.data.currentAmount, cf.data.goalAmount);
+              const days = daysLeft(cf.data.endDate);
+              const ended = days === 0;
+              const isPurchase = !cf.data.goalAmount;
+              return (
+                <a href={cf.data.url} target="_blank" rel="noopener" class={`cf-card ${ended ? 'cf-card--ended' : ''}`}>
+                  <div class="cf-tags">
+                    <span class="cf-area">{cf.data.area}</span>
+                    <span class="cf-cat">{cf.data.category}</span>
+                    {!ended && days <= 7 && <span class="cf-urgent">🔥 残り{days}日</span>}
+                  </div>
+                  <h3 class="cf-title">{cf.data.title}</h3>
+                  <p class="cf-summary">{cf.data.summary}</p>
+                  {p !== null ? (
+                    <>
+                      <div class="cf-bar-row">
+                        <div class="cf-bar"><div class="cf-fill" style={`--pct: ${p}%`}></div></div>
+                        <span class="cf-pct">{p}%</span>
+                      </div>
+                      <div class="cf-nums">
+                        <b>{fmtYen(cf.data.currentAmount)}</b>
+                        <span>/ 目標 {fmtYen(cf.data.goalAmount)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div class="cf-purchase-row">
+                      <span class="cf-purchase-badge">🎫 応援購入型</span>
+                      <b>{fmtYen(cf.data.currentAmount)} 集まってます</b>
+                    </div>
+                  )}
+                  <div class="cf-foot">
+                    <span>👥 {cf.data.supporterCount}人が支援</span>
+                    <span class="cf-cta">詳細を見る ↗</span>
+                  </div>
+                </a>
+              );
+            })}
           </div>
-        )}
-      </div>
-    </section>
+        </div>
+      </section>
+    )}
 
 
-    <!-- ═══════════════════════════════════════════
-         ニュース — 開店・閉店
-    ═══════════════════════════════════════════ -->
-    <section class="news-section">
+    <!-- 勝手に調べた -->
+    <section class="articles-section">
       <div class="wrap">
-        <header class="sec-head">
-          <div class="sec-head-left">
-            <p class="sec-eye">DAILY NEWS</p>
-            <h2 class="sec-title">函館の開店・閉店</h2>
+        <header class="sec-head sec-head--row">
+          <div>
+            <p class="sec-eye">🔍 勝手に調べた</p>
+            <h2 class="sec-title">気になったから調べた</h2>
           </div>
-          <a href="/news" class="sec-more">すべて見る →</a>
+          <a href="/articles" class="sec-more">すべて見る →</a>
         </header>
 
-        <div class="news-list">
-          {recentNews.map(n => {
-            const badge = NEWS_BADGE[n.data.type] || NEWS_BADGE['その他'];
-            return (
-              <a href={`/news/${n.id}`} class="news-item">
-                <span class="news-badge" style={`background:${badge.bg}; color:${badge.color};`}>
-                  {badge.label}
-                </span>
-                <span class="news-area">{n.data.area}</span>
-                <span class="news-title">{n.data.title}</span>
-                <span class="news-date">{n.data.date}</span>
-              </a>
-            );
-          })}
+        <div class="article-grid">
+          {recent.map(a => (
+            <ArticleCard
+              title={a.data.title}
+              description={a.data.description}
+              category={a.data.category}
+              date={a.data.date}
+              author={a.data.author}
+              slug={a.id}
+              featured={a.data.featured}
+            />
+          ))}
         </div>
       </div>
     </section>
 
 
-    <!-- ═══════════════════════════════════════════
-         CONCEPT STRIP
-    ═══════════════════════════════════════════ -->
-    <section class="concept-strip">
-      <div class="wrap">
-        <div class="concept-inner">
-          <p class="concept-quote">「最高のユーモアは、常に冷徹な事実に基づいている。」</p>
-          <p class="concept-body">
-            函館に住んでいるから、現地で測れる。<br>
-            測ったから、証明できる。<br>
-            証明したから、記録として残る。
-          </p>
-          <a href="/about" class="concept-link">カッテニハコダテとは何か →</a>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ═══════════════════════════════════════════
-         情報投稿 CTA
-    ═══════════════════════════════════════════ -->
+    <!-- 情報投稿 CTA -->
     <section class="submit-section">
       <div class="wrap">
-        <div class="submit-inner">
-          <div class="submit-text">
-            <p class="submit-eye">YOUR INTEL</p>
-            <h2 class="submit-title">「そういえばあの店が…」<br>その情報が、次の調査になる。</h2>
+        <div class="submit-board">
+          <div class="board-tape bt1" aria-hidden="true"></div>
+          <div class="board-tape bt2" aria-hidden="true"></div>
+          <div class="submit-content">
+            <p class="submit-eye">あなたの情報が函館を動かす</p>
+            <h2 class="submit-title">「そういえばあのお店が…」<br>その情報、教えてください。</h2>
             <p class="submit-body">
-              開店・閉店・工事中・気になる変化——なんでも送ってください。<br>
-              現地確認して、データにします。
+              新しくできそうなお店、閉まってたお店、気になる工事現場、頑張ってる人やプロジェクト。<br>
+              なんでも投稿してください。勝手に記事にします。
             </p>
           </div>
           <div class="submit-actions">
-            <a href="/submit" class="sbtn sbtn--primary">情報を送る ＋</a>
+            <a href="/submit" class="sbtn sbtn--primary">情報を投稿する ＋</a>
+            <a href="/members" class="sbtn sbtn--ghost">仕掛け人を見る</a>
           </div>
         </div>
       </div>
@@ -226,395 +223,207 @@ const NEWS_BADGE: Record<string, { bg: string; color: string; label: string }> =
 
 
 <style>
-/* ═══════════════════════════════════
-   HERO
-═══════════════════════════════════ */
-.hero {
-  position: relative;
-  min-height: 100svh;
-  background: #080e1a;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-  padding: 120px 0 80px;
-}
-.hero-grid-bg {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(13,45,82,0.2) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13,45,82,0.2) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-}
-.hero-inner {
-  position: relative;
-  max-width: 1200px; margin: 0 auto;
-  padding: 0 48px;
-  flex: 1;
-  display: flex; flex-direction: column; justify-content: center;
-}
-.hero-eyebrow {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 32px;
-}
-.hero-label {
-  font-size: 10px; letter-spacing: 0.35em; font-weight: 700;
-  color: rgba(255,255,255,0.35);
-  text-transform: uppercase;
-}
-.hero-sep { color: rgba(13,138,135,0.5); font-size: 10px; }
+.main-page { background: #F5EDD8; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 
-.hero-title {
-  display: flex; flex-direction: column;
-  margin-bottom: 32px;
-}
-.hero-line1 {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 400;
-  color: rgba(255,255,255,0.6);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-}
-.hero-line2 {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(56px, 9vw, 120px);
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-  line-height: 1.0;
-}
-.hero-line2 em {
-  font-style: normal;
-  color: #0d8a87;
-}
-
-.hero-sub {
-  font-size: 14px; color: rgba(255,255,255,0.45);
-  line-height: 2; margin-bottom: 40px;
-  max-width: 500px;
-}
-.hero-quote {
-  display: block;
-  font-family: 'Shippori Mincho', serif;
-  font-size: 13px;
-  color: rgba(13,138,135,0.7);
-  margin-top: 6px;
-  letter-spacing: 0.03em;
-}
-
-.hero-actions {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-.hero-btn {
-  display: inline-flex; align-items: center;
-  padding: 14px 28px;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
-  font-family: 'Shippori Mincho', serif;
-  transition: all 0.2s;
-}
-.hero-btn--primary {
-  background: #0d8a87; color: #ffffff;
-  border: 2px solid #0d8a87;
-}
-.hero-btn--primary:hover { background: #0a6e6c; border-color: #0a6e6c; }
-.hero-btn--ghost {
-  border: 2px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6);
-}
-.hero-btn--ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
-
-.hero-data-strip {
-  position: relative;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 16px 48px;
-  display: flex; align-items: center; gap: 32px;
-  overflow: hidden;
-  margin-top: 60px;
-}
-.hero-data-strip span {
-  font-size: 10px; letter-spacing: 0.25em;
-  color: rgba(255,255,255,0.15);
-  white-space: nowrap;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-
-/* ═══════════════════════════════════
-   TICKER
-═══════════════════════════════════ */
+/* Ticker */
 .ticker-wrap {
   display: flex; align-items: center;
-  background: #0d2d52; height: 40px; overflow: hidden;
+  background: #2A2420; height: 44px; overflow: hidden;
 }
 .ticker-tag {
-  flex-shrink: 0; background: #0d8a87; color: #fff;
-  font-size: 9px; font-weight: 900; letter-spacing: 0.35em;
-  padding: 0 16px; height: 100%; display: flex; align-items: center;
-  font-family: 'Shippori Mincho', serif;
+  flex-shrink: 0; background: #9E3D26; color: #F5EDD8;
+  font-size: 9px; font-weight: 900; letter-spacing: 0.3em;
+  padding: 0 18px; height: 100%; display: flex; align-items: center;
+  font-family: 'Shippori Mincho', serif; border-right: 2px solid #D4A02A;
 }
 .ticker-track {
   flex: 1; overflow: hidden;
   mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
 }
-.ticker-run { display: flex; animation: tickRoll 40s linear infinite; white-space: nowrap; }
+.ticker-run { display: flex; animation: tickRoll 32s linear infinite; white-space: nowrap; }
 @keyframes tickRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 28px; font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 500; }
-.t-sep { font-size: 4px; color: #0d8a87; margin-left: 8px; }
+.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 24px; font-size: 12px; color: #8A7A6A; font-weight: 500; }
+.t-sep { font-size: 5px; color: #9E3D26; margin-left: 10px; }
 
-
-/* ═══════════════════════════════════
-   SHARED
-═══════════════════════════════════ */
-.wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.sec-head {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 40px; gap: 16px;
-}
+/* Section headers */
+.sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; margin-bottom: 36px; flex-wrap: wrap; }
+.sec-head--row { align-items: flex-end; }
 .sec-eye {
-  font-size: 9px; letter-spacing: 0.4em; font-weight: 700;
-  color: #0d8a87; text-transform: uppercase; margin-bottom: 6px;
+  font-size: 11px; letter-spacing: 0.2em; color: #9E3D26;
+  font-weight: 800; font-family: 'Shippori Mincho', serif;
+  margin-bottom: 6px;
 }
 .sec-title {
   font-family: 'Shippori Mincho', serif;
-  font-size: 28px; font-weight: 900;
-  color: #0d0d0d; letter-spacing: 0.03em;
+  font-size: 26px; font-weight: 900; color: #2A2420;
+  letter-spacing: 0.04em;
 }
+.sec-note { font-size: 13px; color: #8A7A6A; line-height: 1.8; text-align: right; font-style: italic; }
 .sec-more {
-  font-size: 12px; color: #0d8a87; font-weight: 700;
-  border-bottom: 1px solid currentColor; padding-bottom: 2px;
-  white-space: nowrap; transition: opacity 0.2s;
-  font-family: 'Shippori Mincho', serif; letter-spacing: 0.05em;
+  font-size: 13px; color: #9E3D26; font-weight: 700;
+  border-bottom: 1.5px solid currentColor; padding-bottom: 2px;
+  white-space: nowrap; flex-shrink: 0; margin-bottom: 6px;
+  transition: opacity 0.2s; font-family: 'Shippori Mincho', serif;
 }
-.sec-more:hover { opacity: 0.65; }
+.sec-more:hover { opacity: 0.7; }
 
-
-/* ═══════════════════════════════════
-   調査報告
-═══════════════════════════════════ */
-.investigations-section {
-  padding: 88px 0 96px;
-  background: #f7f8fa;
-  border-bottom: 1px solid #e4e8ed;
+/* 3軸 */
+.axes-section {
+  padding: 72px 0 80px;
+  background: #FBF7EF;
+  border-bottom: 3px solid #EDE3CC;
 }
-.inv-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: #d0d6de;
-  border: 1px solid #d0d6de;
-}
-.inv-card {
-  background: #ffffff;
-  padding: 32px 28px;
-  text-decoration: none;
-  display: flex; flex-direction: column; gap: 12px;
-  transition: background 0.2s;
-  min-height: 280px;
-}
-.inv-card:hover { background: #f0f4f8; }
-.inv-card--featured {
-  grid-column: 1 / -1;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 48px;
-  min-height: 200px;
-  background: #080e1a;
-}
-.inv-card--featured:hover { background: #0d1525; }
-.inv-card--featured .inv-exp-no { color: rgba(13,138,135,0.7); }
-.inv-card--featured .inv-finding-num { color: #0d8a87; font-size: clamp(40px, 5vw, 72px); }
-.inv-card--featured .inv-finding-label { color: rgba(255,255,255,0.4); }
-.inv-card--featured .inv-title { color: #ffffff; font-size: 22px; }
-.inv-card--featured .inv-desc { color: rgba(255,255,255,0.45); }
-.inv-card--featured .inv-cat { color: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.1); }
-.inv-card--featured .inv-date { color: rgba(255,255,255,0.25); }
-
-.inv-exp-no {
-  font-size: 9px; letter-spacing: 0.3em; font-weight: 700;
-  color: #0d8a87; text-transform: uppercase;
-}
-.inv-finding {
-  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
-}
-.inv-finding-num {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(32px, 4vw, 48px); font-weight: 900;
-  color: #0d2d52; line-height: 1;
-}
-.inv-finding-label {
-  font-size: 11px; color: #6c757d; letter-spacing: 0.05em;
-}
-.inv-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 17px; font-weight: 800;
-  color: #0d0d0d; line-height: 1.55;
-  flex: 1;
-}
-.inv-desc {
-  font-size: 13px; color: #6c757d; line-height: 1.8;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+.axes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.axis-card {
+  position: relative; border-radius: 0;
+  padding: 32px 24px 28px;
+  text-decoration: none; display: flex; flex-direction: column; gap: 10px;
+  border: 2px solid #2A2420;
+  box-shadow: 4px 4px 0 #2A2420;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
   overflow: hidden;
 }
-.inv-foot {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: auto; padding-top: 16px;
-  border-top: 1px solid #e4e8ed;
-}
-.inv-cat {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-  color: #3d4a52; border: 1px solid #d0d6de;
-  padding: 2px 8px;
-}
-.inv-date { font-size: 11px; color: #a0a8b0; }
+.axis-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #2A2420; }
+.axis-info  { background: #F7E8E2; }
+.axis-ouen  { background: #FBF3DB; }
+.axis-shira { background: #E8F0E8; }
 
-.inv-empty {
-  background: #080e1a;
-  border: 1px solid #1a2840;
-  padding: 80px 48px;
-  text-align: center;
-}
-.inv-empty-label {
-  font-size: 9px; letter-spacing: 0.4em; color: #0d8a87;
-  font-weight: 700; text-transform: uppercase; margin-bottom: 16px;
-}
-.inv-empty-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 28px; font-weight: 800; color: #ffffff;
-  margin-bottom: 16px;
-}
-.inv-empty-body {
-  font-size: 14px; color: rgba(255,255,255,0.35);
-  line-height: 2; margin-bottom: 32px;
-}
-.inv-empty-link {
-  font-size: 13px; color: #0d8a87; font-weight: 700;
-  border-bottom: 1px solid #0d8a87; padding-bottom: 2px;
+.card-stamp {
+  position: absolute; top: 12px; right: -4px;
+  background: #9E3D26; color: #F5EDD8;
+  font-size: 9px; font-weight: 900; letter-spacing: 0.2em;
+  padding: 3px 14px; transform: rotate(2deg);
   font-family: 'Shippori Mincho', serif;
 }
-
-
-/* ═══════════════════════════════════
-   NEWS
-═══════════════════════════════════ */
-.news-section {
-  padding: 88px 0 96px;
-  background: #ffffff;
-  border-bottom: 1px solid #e4e8ed;
-}
-.news-list {
-  display: flex; flex-direction: column;
-  border-top: 1px solid #e4e8ed;
-}
-.news-item {
-  display: grid;
-  grid-template-columns: 60px 100px 1fr 80px;
-  align-items: center; gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid #f0f2f4;
-  text-decoration: none;
-  transition: background 0.15s;
-}
-.news-item:hover { background: #f7f8fa; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
-.news-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 800; letter-spacing: 0.15em;
-  padding: 3px 6px; text-align: center;
-  white-space: nowrap;
-}
-.news-area { font-size: 11px; color: #8a9099; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.news-title { font-size: 13.5px; color: #0d0d0d; line-height: 1.5; font-weight: 500; }
-.news-date { font-size: 11px; color: #a0a8b0; text-align: right; white-space: nowrap; }
-
-
-/* ═══════════════════════════════════
-   CONCEPT STRIP
-═══════════════════════════════════ */
-.concept-strip {
-  padding: 88px 0;
-  background: #0d2d52;
-}
-.concept-inner {
-  max-width: 720px; margin: 0 auto;
-  text-align: center;
-}
-.concept-quote {
+.card-num {
   font-family: 'Shippori Mincho', serif;
-  font-size: clamp(16px, 2.5vw, 22px);
-  font-weight: 700; color: rgba(255,255,255,0.9);
-  line-height: 1.7; letter-spacing: 0.03em;
-  margin-bottom: 28px;
+  font-size: 36px; font-weight: 900; color: rgba(42,36,32,0.12);
+  line-height: 1; margin-bottom: -4px;
 }
-.concept-body {
-  font-size: 14px; color: rgba(255,255,255,0.45);
-  line-height: 2.2; margin-bottom: 36px;
-}
-.concept-link {
-  font-size: 13px; color: #0d8a87; font-weight: 700;
-  border-bottom: 1px solid #0d8a87; padding-bottom: 2px;
+.card-icon { font-size: 32px; line-height: 1; }
+.card-name {
   font-family: 'Shippori Mincho', serif;
-  transition: opacity 0.2s;
+  font-size: 22px; font-weight: 900; color: #2A2420;
+  letter-spacing: 0.04em;
 }
-.concept-link:hover { opacity: 0.7; }
+.card-desc { font-size: 13px; color: #5A4A3A; line-height: 1.85; flex: 1; }
+.card-link {
+  display: inline-block; margin-top: 8px;
+  font-size: 12px; font-weight: 800;
+  color: #9E3D26; letter-spacing: 0.08em;
+  font-family: 'Shippori Mincho', serif;
+  transition: letter-spacing 0.2s;
+}
+.axis-card:hover .card-link { letter-spacing: 0.14em; }
 
+/* 応援 */
+.ouen-section { padding: 72px 0 80px; background: #F5EDD8; }
+.cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.cf-card {
+  background: #FBF7EF;
+  border: 2px solid #2A2420;
+  box-shadow: 3px 3px 0 #2A2420;
+  padding: 20px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cf-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #2A2420; }
+.cf-card--ended { opacity: 0.6; }
+.cf-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cf-area {
+  font-size: 10px; font-weight: 800; padding: 2px 8px;
+  background: #F7E8E2; color: #9E3D26; border: 1px solid #9E3D26;
+  font-family: 'Shippori Mincho', serif;
+}
+.cf-cat { font-size: 10px; font-weight: 600; padding: 2px 8px; background: #EDE3CC; color: #5A4A3A; border: 1px solid #8A7A6A; }
+.cf-urgent { font-size: 10px; font-weight: 700; padding: 2px 8px; background: #2A2420; color: #D4A02A; margin-left: auto; }
+.cf-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 15px; font-weight: 800; color: #2A2420; line-height: 1.65;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cf-summary { font-size: 12.5px; color: #5A4A3A; line-height: 1.75; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cf-bar-row { display: flex; align-items: center; gap: 8px; }
+.cf-bar { flex: 1; height: 8px; background: #EDE3CC; border: 1px solid #8A7A6A; }
+.cf-fill { height: 100%; background: #9E3D26; width: 0; animation: fillBar 1s 0.3s ease-out forwards; }
+@keyframes fillBar { to { width: var(--pct); } }
+.cf-pct { font-size: 13px; font-weight: 900; color: #9E3D26; min-width: 36px; text-align: right; font-family: 'Shippori Mincho', serif; }
+.cf-nums { font-size: 12px; color: #5A4A3A; }
+.cf-nums b { font-size: 15px; font-weight: 800; color: #2A2420; margin-right: 4px; }
+.cf-purchase-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cf-purchase-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; background: #FBF3DB; color: #D4A02A; border: 1px solid #D4A02A; }
+.cf-purchase-row b { font-size: 14px; font-weight: 800; color: #2A2420; }
+.cf-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid #EDE3CC; font-size: 12px; color: #8A7A6A; }
+.cf-cta { font-weight: 800; color: #9E3D26; font-family: 'Shippori Mincho', serif; }
 
-/* ═══════════════════════════════════
-   SUBMIT
-═══════════════════════════════════ */
-.submit-section { padding: 88px 0; background: #f7f8fa; }
-.submit-inner {
+/* Articles */
+.articles-section {
+  padding: 72px 0 80px;
+  background: #FBF7EF;
+  border-top: 3px solid #EDE3CC;
+  border-bottom: 3px solid #EDE3CC;
+}
+.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+/* Submit CTA */
+.submit-section { padding: 72px 0 88px; background: #F5EDD8; }
+.submit-board {
+  position: relative;
+  background: #2A2420;
+  border: 3px solid #2A2420;
+  padding: 56px 64px;
   display: grid; grid-template-columns: 1fr auto;
-  align-items: center; gap: 48px;
-  border: 1px solid #d0d6de;
-  padding: 48px;
-  background: #ffffff;
+  gap: 48px; align-items: center;
+  box-shadow: 6px 6px 0 #9E3D26;
 }
-.submit-eye {
-  font-size: 9px; letter-spacing: 0.4em; font-weight: 700;
-  color: #0d8a87; text-transform: uppercase; margin-bottom: 12px;
+.board-tape {
+  position: absolute;
+  width: 60px; height: 18px;
+  background: rgba(212,160,42,0.75);
+  border: 1px solid rgba(212,160,42,0.4);
 }
+.bt1 { top: -9px; left: 32px; transform: rotate(-1.5deg); }
+.bt2 { top: -9px; right: 80px; transform: rotate(1.5deg); }
+.submit-eye { font-size: 10px; letter-spacing: 0.3em; color: #D4A02A; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; font-family: 'Shippori Mincho', serif; }
 .submit-title {
   font-family: 'Shippori Mincho', serif;
-  font-size: 22px; font-weight: 800; color: #0d0d0d;
-  line-height: 1.6; margin-bottom: 12px;
+  font-size: 24px; font-weight: 900; color: #F5EDD8;
+  line-height: 1.6; margin-bottom: 14px;
 }
-.submit-body { font-size: 13px; color: #6c757d; line-height: 2; }
+.submit-body { font-size: 13.5px; color: #8A7A6A; line-height: 2; max-width: 480px; }
+.submit-actions { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
 .sbtn {
-  display: inline-flex; align-items: center;
-  padding: 14px 28px;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+  padding: 14px 28px; font-size: 13px; font-weight: 800;
+  text-align: center; white-space: nowrap; letter-spacing: 0.06em;
   font-family: 'Shippori Mincho', serif;
-  white-space: nowrap; transition: all 0.2s;
+  transition: all 0.2s;
 }
-.sbtn--primary {
-  background: #0d8a87; color: #ffffff;
-  border: 2px solid #0d8a87;
-}
-.sbtn--primary:hover { background: #0a6e6c; }
+.sbtn--primary { background: #D4A02A; color: #2A2420; border: 2px solid #D4A02A; box-shadow: 3px 3px 0 #9E3D26; }
+.sbtn--primary:hover { background: #E0AD30; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #9E3D26; }
+.sbtn--ghost { border: 2px solid #5A4A3A; color: #8A7A6A; }
+.sbtn--ghost:hover { border-color: #F5EDD8; color: #F5EDD8; }
 
-
-/* ═══════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════ */
-@media (max-width: 960px) {
-  .wrap { padding: 0 24px; }
-  .hero-inner { padding: 0 24px; }
-  .hero-data-strip { padding: 16px 24px; gap: 20px; }
-  .inv-grid { grid-template-columns: 1fr; }
-  .inv-card--featured { flex-direction: column; grid-column: 1; gap: 16px; }
-  .news-item { grid-template-columns: 56px 1fr; grid-template-rows: auto auto; }
-  .news-area { display: none; }
-  .news-date { grid-column: 2; font-size: 10px; text-align: left; }
-  .submit-inner { grid-template-columns: 1fr; gap: 24px; }
+/* Responsive */
+@media (max-width: 768px) {
+  .wrap { padding: 0 16px; }
+  .axes-section { padding: 52px 0 60px; }
+  .axes-grid { grid-template-columns: 1fr; }
+  .ouen-section { padding: 52px 0 60px; }
+  .cf-grid { grid-template-columns: 1fr; }
+  .articles-section { padding: 52px 0 60px; }
+  .article-grid { grid-template-columns: 1fr; }
+  .submit-section { padding: 52px 0 64px; }
+  .submit-board { padding: 36px 24px; grid-template-columns: 1fr; gap: 24px; }
+  .sec-head { gap: 12px; }
+  .sec-note { text-align: left; }
+  .sec-title { font-size: 21px; }
+  .ticker-tag { font-size: 8px; padding: 0 10px; }
 }
-@media (max-width: 600px) {
-  .hero { padding: 100px 0 60px; }
-  .investigations-section, .news-section, .concept-strip, .submit-section { padding: 60px 0; }
-  .inv-card { padding: 24px 20px; }
-  .inv-empty { padding: 48px 24px; }
-  .submit-inner { padding: 28px 24px; }
-  .sec-title { font-size: 22px; }
+@media (max-width: 480px) {
+  .submit-actions { flex-direction: row; flex-wrap: wrap; }
+  .sbtn { padding: 12px 20px; font-size: 12px; }
+  .card-name { font-size: 18px; }
 }
 </style>
