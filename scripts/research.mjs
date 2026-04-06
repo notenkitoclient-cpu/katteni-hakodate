@@ -128,7 +128,10 @@ function saveNewsFile(title, type, area, date, url, summary) {
   const orig = slug; let i = 2;
   while (usedSlugs.has(slug)) slug = `${orig}-${i++}`;
 
-  const body = (summary || '').replace(/\s+/g, ' ').trim().slice(0, 150);
+  // hakodate.blogなど一部サイトは関連記事タイトルがサマリーに混入する
+  // 最初の1文（句点区切り）のみを本文として使用
+  const cleanSummary = (summary || '').replace(/\s+/g, ' ').trim();
+  const body = (cleanSummary.split('。')[0] || cleanSummary).slice(0, 120);
   const md = `---
 title: "${title.replace(/"/g, '\\"')}"
 type: "${type}"
