@@ -145,6 +145,21 @@ ${body}
   return slug;
 }
 
+// ── 信頼済みローカルメディアドメイン ─────────────────────────
+// これらのドメインからの記事は函館関連チェックをスキップ（タイトルに「函館」が入らない場合も多い）
+
+const TRUSTED_LOCAL_DOMAINS = [
+  'hakodate.blog', 'hakoaru.net', 'hakodate.goguynet.jp',
+  'e-hakodate.com', 'hakodate-keizai.co.jp',
+];
+
+function isTrustedLocalDomain(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    return TRUSTED_LOCAL_DOMAINS.some(d => host === d || host.endsWith('.' + d));
+  } catch { return false; }
+}
+
 // ── Exa リサーチ ──────────────────────────────────────────────
 
 async function runResearch(yesterday, today) {
@@ -152,46 +167,48 @@ async function runResearch(yesterday, today) {
 
   const exa = new Exa(process.env.EXA_API_KEY);
 
-  // 前日〜今日ウィンドウで幅広いクエリ
+  // 7日前（ローカルメディアは毎日更新されるとは限らない）
+  const weekAgo = new Date(Date.now() + 9 * 60 * 60 * 1000 - 7 * 24 * 60 * 60 * 1000)
+    .toISOString().split('T')[0];
+
   const queries = [
-    // 開店・閉店（最重要）
-    { q: '函館 オープン 開店',            n: 5 },
-    { q: '函館 閉店 撤退 廃業',           n: 5 },
-    // ローカルメディア直接サーチ
-    { q: 'site:hakodate.blog',             n: 5 },
-    { q: 'site:hakoaru.net 函館',          n: 5 },
-    { q: 'site:hakodate.goguynet.jp',      n: 5 },
-    // イベント・地域情報
-    { q: '函館 イベント 開催',             n: 4 },
-    { q: '函館 工事 リニューアル 建設',    n: 3 },
-    // 道南近隣
-    { q: '北斗市 七飯町 ニュース',         n: 3 },
-    // ビジネス・企業
-    { q: '函館 出店 進出 新規',            n: 4 },
+    // 開店・閉店（昨日〜今日、最重要）
+    { q: '函館 オープン 開店',         n: 5, start: yesterday },
+    { q: '函館 閉店 撤退 廃業',        n: 5, start: yesterday },
+    { q: '函館 出店 進出 新規オープン', n: 4, start: yesterday },
+    // ローカルメディア直接（過去7日、毎日更新されない可能性があるため広め）
+    { q: 'site:hakodate.blog',          n: 5, start: weekAgo },
+    { q: 'site:hakoaru.net',            n: 5, start: weekAgo },
+    { q: 'site:hakodate.goguynet.jp',   n: 5, start: weekAgo },
+    // イベント・地域（昨日〜今日）
+    { q: '函館 イベント 開催',          n: 4, start: yesterday },
+    { q: '函館 工事 リニューアル',      n: 3, start: yesterday },
+    { q: '北斗市 七飯町 ニュース',      n: 3, start: yesterday },
   ];
 
   const seen    = new Set();
   const results = [];
 
-  for (const { q, n } of queries) {
+  for (const { q, n, start } of queries) {
     try {
       const res = await exa.searchAndContents(q, {
         numResults:        n,
         type:              'neural',
         useAutoprompt:     true,
-        startPublishedDate: yesterday,
+        startPublishedDate: start,
         endPublishedDate:   today,
         text: { maxCharacters: 400 },
       });
-      for (const r of res.results) {
-        if (!seen.has(r.url) && r.title) {
-          seen.add(r.url);
-          results.push({
-            title:   r.title,
-            url:     r.url,
-            summary: (r.text || '').replace(/\s+/g, ' ').trim(),
-          });
-        }
+      const found = res.results.filter(r => r.title && !seen.has(r.url));
+      console.log(`  "${q}": ${found.length}件`);
+      for (const r of found) {
+        seen.add(r.url);
+        results.push({
+          title:       r.title,
+          url:         r.url,
+          summary:     (r.text || '').replace(/\s+/g, ' ').trim(),
+          trustedLocal: isTrustedLocalDomain(r.url),
+        });
       }
     } catch (e) {
       console.warn(`  検索スキップ (${q}): ${e.message}`);
@@ -239,10 +256,16 @@ async function main() {
 
   for (const r of rawResults) {
     // Google News URLはスキップ
-    if (isGoogleNewsUrl(r.url)) continue;
+    if (isGoogleNewsUrl(r.url)) {
+      console.log(`⏭  Google News: ${r.title.slice(0, 40)}`);
+      continue;
+    }
 
-    // 函館・道南関連チェック
-    if (!isHakodateRelated(r.title)) continue;
+    // 函館・道南関連チェック（信頼済みローカルドメインはスキップ）
+    if (!r.trustedLocal && !isHakodateRelated(r.title)) {
+      console.log(`⏭  函館無関係: ${r.title.slice(0, 40)}`);
+      continue;
+    }
 
     // URL重複チェック
     if (existingUrls.has(r.url)) {
@@ -259,7 +282,10 @@ async function main() {
 
     // ニュースタイプ判定
     const type = classifyType(r.title, r.summary);
-    if (!type) continue;
+    if (!type) {
+      console.log(`⏭  対象外タイプ: ${r.title.slice(0, 40)}`);
+      continue;
+    }
 
     const area = extractArea(r.title, r.summary);
     const slug = saveNewsFile(r.title, type, area, today, r.url, r.summary);
