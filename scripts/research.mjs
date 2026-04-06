@@ -1,8 +1,16 @@
 /**
  * カッテニハコダテ — リサーチスクリプト
- * 函館の最新情報を収集し：
- *   1. 開店・閉店・イベント等を情報収集（src/content/news/）に自動追加
- *   2. ネタ候補全件をDiscordに通知（詳細記事化は write.mjs で別途対応）
+ *
+ * 前日〜当日の24時間ウィンドウで函館の最新情報を収集し
+ * src/content/news/ に重複なく自動追加する。
+ *
+ * 動作:
+ *   - 検索対象: 昨日〜今日（JST）
+ *   - 多様なクエリで函館ローカルメディアを中心に広くカバー
+ *   - URL + タイトル類似の両方で既存ニュースとの重複を排除
+ *   - Google News RSS URL（news.google.com）はスキップ
+ *   - 函館・道南に無関係な記事はスキップ
+ *   - 完了後 process.exit(0) で確実に終了（ハング防止）
  */
 
 import Exa from 'exa-js';
@@ -13,42 +21,47 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const NEWS_DIR  = path.join(__dirname, '../src/content/news');
-const SITE_URL  = process.env.SITE_URL?.replace(/\/$/, '') || 'https://katteni-hakodate.pages.dev';
 
-// ── ライター推薦 ──────────────────────────────────────────────
+// ── 日付ユーティリティ ────────────────────────────────────────
 
-const WRITER_SPECIALTY = {
-  masaru:  { name: '港 まさあき', emoji: '🐟', tags: ['グルメ', '食', '朝市', '飲食店', '居酒屋', '海鮮'] },
-  taro:    { name: '坂本 颯',     emoji: '🚲', tags: ['開店', 'オープン', '閉店', '工事', '新しい', '変化'] },
-  rin:     { name: '深海 凛',     emoji: '📊', tags: ['ビジネス', '移住', '経済', '行政', '企業', '起業'] },
-  sora:    { name: '西野 そら',   emoji: '🌟', tags: ['イベント', '祭り', 'フェス', '若者', '大学', '体験'] },
-  shizuku: { name: '霧野 しずく', emoji: '🌫', tags: ['暮らし', '移住', '日常', 'カフェ', '生活'] },
-};
-
-function suggestWriter(title, text) {
-  const content = (title + ' ' + text).toLowerCase();
-  for (const [id, w] of Object.entries(WRITER_SPECIALTY)) {
-    if (w.tags.some(tag => content.includes(tag))) return { id, ...w };
-  }
-  return { id: 'taro', ...WRITER_SPECIALTY.taro };
+function todayJST() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
 }
 
-// ── 情報収集への自動追加 ──────────────────────────────────────
-
-/** 既存newsファイルのsource URLをSetで返す（重複チェック用） */
-function loadExistingSourceUrls() {
-  if (!fs.existsSync(NEWS_DIR)) return new Set();
-  const urls = new Set();
-  for (const file of fs.readdirSync(NEWS_DIR).filter(f => f.endsWith('.md'))) {
-    const raw = fs.readFileSync(path.join(NEWS_DIR, file), 'utf-8');
-    const m = raw.match(/^source:\s*["']?(.+?)["']?\s*$/m);
-    if (m) urls.add(m[1].trim());
-  }
-  return urls;
+function yesterdayJST() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000)
+    .toISOString().split('T')[0];
 }
 
-/** タイトル・本文からニュースタイプを判定。非対象はnull */
-function classifyNewsType(title, text) {
+// ── 函館・道南関連チェック ────────────────────────────────────
+
+const HAKODATE_WORDS = [
+  '函館', '北斗', '七飯', '松前', '江差', '八雲', '長万部', '今金', '森町',
+  '五稜郭', '湯川', '末広', '大門', '本町', '元町', '棒二', 'シエスタ',
+  'ベイエリア', '函館駅', '亀田', '桔梗', '道南',
+];
+
+const OTHER_AREAS = [
+  '新潟', '神保町', '東京', '大阪', '札幌', '仙台', '名古屋', '福岡',
+  '横浜', '埼玉', '千葉', '京都', '広島', '沖縄', '旭川', '帯広',
+];
+
+function isHakodateRelated(title) {
+  if (!HAKODATE_WORDS.some(w => title.includes(w))) return false;
+  const firstOther = Math.min(...OTHER_AREAS.map(w => title.indexOf(w)).filter(i => i >= 0), Infinity);
+  const firstLocal = Math.min(...HAKODATE_WORDS.map(w => title.indexOf(w)).filter(i => i >= 0), Infinity);
+  return firstLocal <= firstOther;
+}
+
+// ── Google News RSS チェック ──────────────────────────────────
+
+function isGoogleNewsUrl(url) {
+  return /news\.google\.com/.test(url);
+}
+
+// ── ニュースタイプ分類 ────────────────────────────────────────
+
+function classifyType(title, text) {
   const c = title + ' ' + (text || '');
   if (/開店|オープン|新店|ニューオープン|grand open/i.test(c)) return '開店';
   if (/閉店|クローズ|撤退|終了|破産|廃業|営業終了/.test(c))   return '閉店';
@@ -57,134 +70,118 @@ function classifyNewsType(title, text) {
   return null;
 }
 
-/** タイトル・本文からエリアを抽出 */
+// ── エリア抽出 ────────────────────────────────────────────────
+
 function extractArea(title, text) {
   const c = title + ' ' + (text || '');
-  const m = c.match(/([^\s　、。「」【】]{1,8}[町丁目区])/) ||
-            c.match(/(函館駅前|ベイエリア|五稜郭|湯川|元町|西部地区|末広町|大門|本町)/);
+  const named = c.match(/(函館駅前|ベイエリア|五稜郭|湯川|元町|西部地区|末広町|大門|本町|棒二|シエスタ|亀田|桔梗|松風|美原|昭和|石川町|港町|田家)/);
+  if (named) return named[1];
+  const m = c.match(/([^\s　、。「」【】\d]{1,6}(?:丁目|[町区]))/);
   return m ? m[1] : '函館市内';
 }
 
-/** ニュースファイル用スラッグを生成（重複回避付き） */
-function toNewsSlug(today, title, url, usedSlugs) {
-  // タイトルの英数字部分を抽出
-  let base = title
-    .replace(/[^\w\s]/g, ' ')
-    .toLowerCase()
-    .trim()
-    .split(/\s+/)
-    .filter(w => /^[a-z][a-z0-9]{1,}$/.test(w))
-    .slice(0, 4)
-    .join('-');
+// ── タイトル類似チェック ──────────────────────────────────────
 
-  // 英字がなければURLのドメインから生成
-  if (base.length < 3) {
-    try {
-      base = new URL(url).hostname.replace(/^www\./, '').split('.')[0];
-    } catch {
-      base = 'news';
-    }
-  }
-
-  let slug = `${today}-${base}`.slice(0, 55);
-  const orig = slug;
-  let i = 2;
-  while (usedSlugs.has(slug)) slug = `${orig}-${i++}`;
-  usedSlugs.add(slug);
-  return slug;
+function extractKeyTerms(title) {
+  const ja = title.match(/[\u3040-\u9fff\uff01-\uff60]{2,}/g) || [];
+  const en = title.match(/[a-zA-Z0-9]{3,}/g) || [];
+  return [...ja, ...en];
 }
 
-/**
- * リサーチ結果から情報収集ニュースファイルを生成。
- * 新たに追加したアイテムのリストを返す。
- */
-function saveNewsItems(topics, today) {
+function isSimilarTitle(a, b) {
+  const setA = new Set(extractKeyTerms(a));
+  return extractKeyTerms(b).filter(t => setA.has(t)).length >= 2;
+}
+
+// ── 既存ニュース読み込み ──────────────────────────────────────
+
+function loadExistingNews() {
+  if (!fs.existsSync(NEWS_DIR)) return { urls: new Set(), titles: [] };
+  const urls   = new Set();
+  const titles = [];
+  for (const file of fs.readdirSync(NEWS_DIR).filter(f => f.endsWith('.md'))) {
+    const raw = fs.readFileSync(path.join(NEWS_DIR, file), 'utf-8');
+    const urlM   = raw.match(/^source:\s*["']?(.+?)["']?\s*$/m);
+    const titleM = raw.match(/^title:\s*["']?(.+?)["']?\s*$/m);
+    if (urlM)   urls.add(urlM[1].trim());
+    if (titleM) titles.push(titleM[1].trim());
+  }
+  return { urls, titles };
+}
+
+// ── ニュースファイル保存 ──────────────────────────────────────
+
+function saveNewsFile(title, type, area, date, url, summary) {
   if (!fs.existsSync(NEWS_DIR)) fs.mkdirSync(NEWS_DIR, { recursive: true });
+  const usedSlugs = new Set(fs.readdirSync(NEWS_DIR).map(f => f.replace('.md', '')));
 
-  const existingUrls = loadExistingSourceUrls();
-  const usedSlugs = new Set(
-    fs.readdirSync(NEWS_DIR).map(f => f.replace('.md', ''))
-  );
+  let base = title
+    .replace(/[^\w\s]/g, ' ').toLowerCase().trim()
+    .split(/\s+/).filter(w => /^[a-z][a-z0-9]{1,}$/.test(w))
+    .slice(0, 3).join('-');
+  if (base.length < 3) {
+    try { base = new URL(url).hostname.replace(/^www\./, '').split('.')[0]; }
+    catch { base = 'news'; }
+  }
 
-  const saved = [];
+  let slug = `${date}-${base}`.slice(0, 55);
+  const orig = slug; let i = 2;
+  while (usedSlugs.has(slug)) slug = `${orig}-${i++}`;
 
-  for (const topic of topics) {
-    // URL重複チェック
-    if (existingUrls.has(topic.url)) {
-      console.log(`⏭  スキップ（既存）: ${topic.title.slice(0, 40)}`);
-      continue;
-    }
-
-    const type = classifyNewsType(topic.title, topic.summary);
-    if (!type) {
-      console.log(`⏭  スキップ（対象外）: ${topic.title.slice(0, 40)}`);
-      continue;
-    }
-
-    const area = extractArea(topic.title, topic.summary);
-    const slug = toNewsSlug(today, topic.title, topic.url, usedSlugs);
-    const body = (topic.summary || '').replace(/\s+/g, ' ').trim().slice(0, 150);
-
-    const md = `---
-title: "${topic.title.replace(/"/g, '\\"')}"
+  const body = (summary || '').replace(/\s+/g, ' ').trim().slice(0, 150);
+  const md = `---
+title: "${title.replace(/"/g, '\\"')}"
 type: "${type}"
-date: "${today}"
+date: "${date}"
 area: "${area}"
 reporter: "編集部"
-source: "${topic.url}"
+source: "${url}"
 ---
 
 ${body}
 `.trimEnd() + '\n';
 
-    fs.writeFileSync(path.join(NEWS_DIR, `${slug}.md`), md, 'utf-8');
-    existingUrls.add(topic.url); // 同一実行内の重複も防ぐ
-    saved.push({ slug, title: topic.title, type });
-    console.log(`✅ 情報収集に追加: [${type}] ${topic.title.slice(0, 40)}`);
-  }
-
-  return saved;
+  fs.writeFileSync(path.join(NEWS_DIR, `${slug}.md`), md, 'utf-8');
+  return slug;
 }
 
 // ── Exa リサーチ ──────────────────────────────────────────────
 
-function todayJST() {
-  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
-}
-
-function getRunLabel() {
-  const hour = parseInt(new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(11, 13));
-  return hour < 13 ? '朝' : '夕方';
-}
-
-async function runResearch(today) {
+async function runResearch(yesterday, today) {
   if (!process.env.EXA_API_KEY) throw new Error('EXA_API_KEY が設定されていません');
 
   const exa = new Exa(process.env.EXA_API_KEY);
-  const yyyy   = today.slice(0, 4);
-  const yyyymm = today.slice(0, 7);
 
+  // 前日〜今日ウィンドウで幅広いクエリ
   const queries = [
-    `函館 グルメ 新店 オープン ${yyyymm}`,
-    `函館 イベント ${yyyymm}`,
-    `函館 暮らし 移住 地域 ${yyyy}`,
-    `北斗市 七飯町 ニュース ${yyyy}`,
-    `函館 お店 開店 閉店 ${yyyymm}`,
-    `函館 ビジネス 起業 地域経済 ${yyyy}`,
-    `site:dateper.net 函館 ${yyyymm}`,
+    // 開店・閉店（最重要）
+    { q: '函館 オープン 開店',            n: 5 },
+    { q: '函館 閉店 撤退 廃業',           n: 5 },
+    // ローカルメディア直接サーチ
+    { q: 'site:hakodate.blog',             n: 5 },
+    { q: 'site:hakoaru.net 函館',          n: 5 },
+    { q: 'site:hakodate.goguynet.jp',      n: 5 },
+    // イベント・地域情報
+    { q: '函館 イベント 開催',             n: 4 },
+    { q: '函館 工事 リニューアル 建設',    n: 3 },
+    // 道南近隣
+    { q: '北斗市 七飯町 ニュース',         n: 3 },
+    // ビジネス・企業
+    { q: '函館 出店 進出 新規',            n: 4 },
   ];
 
   const seen    = new Set();
   const results = [];
 
-  for (const query of queries) {
+  for (const { q, n } of queries) {
     try {
-      const res = await exa.searchAndContents(query, {
-        numResults: 3,
-        type: 'neural',
-        useAutoprompt: true,
-        startPublishedDate: `${yyyy}-01-01`,
-        text: { maxCharacters: 300 },
+      const res = await exa.searchAndContents(q, {
+        numResults:        n,
+        type:              'neural',
+        useAutoprompt:     true,
+        startPublishedDate: yesterday,
+        endPublishedDate:   today,
+        text: { maxCharacters: 400 },
       });
       for (const r of res.results) {
         if (!seen.has(r.url) && r.title) {
@@ -192,17 +189,16 @@ async function runResearch(today) {
           results.push({
             title:   r.title,
             url:     r.url,
-            summary: (r.text || '').replace(/\s+/g, ' ').trim().slice(0, 120),
-            writer:  suggestWriter(r.title, r.text || ''),
+            summary: (r.text || '').replace(/\s+/g, ' ').trim(),
           });
         }
       }
     } catch (e) {
-      console.warn(`  検索スキップ (${query}): ${e.message}`);
+      console.warn(`  検索スキップ (${q}): ${e.message}`);
     }
   }
 
-  return results.slice(0, 8);
+  return results;
 }
 
 // ── Discord 通知 ──────────────────────────────────────────────
@@ -215,69 +211,99 @@ function sendDiscord(webhookUrl, message) {
       hostname: url.hostname, path: url.pathname + url.search,
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
-    }, res => { console.log(`Discord通知: HTTP ${res.statusCode}`); resolve(); });
+    }, res => {
+      res.resume(); // レスポンスボディを消費してTCP接続を解放（ハング防止）
+      console.log(`Discord通知: HTTP ${res.statusCode}`);
+      resolve();
+    });
     req.on('error', reject);
-    req.write(body); req.end();
+    req.write(body);
+    req.end();
   });
-}
-
-function buildDiscordMessages(today, label, topics, savedNews) {
-  const savedUrls = new Set(savedNews.map(s => s.slug));
-  const addedCount = savedNews.length;
-
-  // ヘッダー
-  const header = [
-    `🔍 **${today} ${label}のリサーチ** | カッテニハコダテ`,
-    `${topics.length}件見つかりました。${addedCount > 0 ? `うち **${addedCount}件** を情報収集に自動追加。` : '情報収集への新規追加はなし。'}`,
-    addedCount > 0 ? `記事化したいネタは Actions → 記事下書き生成 で実行。` : `記事化したいネタは Actions → 記事下書き生成 で実行。`,
-  ].join('\n');
-
-  // トピックを1件ずつ
-  const topicMessages = topics.map((t, i) => {
-    const newsItem = savedNews.find(s => s.title === t.title);
-    const newsTag  = newsItem ? `✅ 情報収集に追加 [${newsItem.type}]` : '';
-    const lines = [
-      `**${i + 1}. ${t.title}**`,
-      t.summary ? `> ${t.summary.slice(0, 100)}${t.summary.length > 100 ? '…' : ''}` : '',
-      `🔗 <${t.url}>`,
-      newsTag,
-      `→ ${t.writer.emoji} ${t.writer.name}（\`${t.writer.id}\`）向き`,
-    ].filter(Boolean);
-    return lines.join('\n');
-  });
-
-  return [header, ...topicMessages];
 }
 
 // ── メイン ────────────────────────────────────────────────────
 
 async function main() {
-  const today = todayJST();
-  const label = getRunLabel();
-  console.log(`📅 ${today} ${label}のリサーチ開始`);
+  const today     = todayJST();
+  const yesterday = yesterdayJST();
+  console.log(`📅 リサーチ開始: ${yesterday} → ${today}`);
 
-  const topics = await runResearch(today);
-  console.log(`✅ ${topics.length}件のネタ候補を取得`);
+  // 検索実行
+  const rawResults = await runResearch(yesterday, today);
+  console.log(`🔍 Exa取得: ${rawResults.length}件`);
 
-  // 情報収集に自動追加
-  console.log('📋 情報収集への自動追加を処理中...');
-  const savedNews = saveNewsItems(topics, today);
-  console.log(`📋 情報収集に ${savedNews.length}件追加`);
+  // 既存ニュースを読み込んでおく
+  const { urls: existingUrls, titles: existingTitles } = loadExistingNews();
+  const savedThisRun = [];
 
-  if (!process.env.DISCORD_ARTICLE_WEBHOOK_URL) {
-    console.log('DISCORD_ARTICLE_WEBHOOK_URL未設定 — 結果をコンソール出力のみ');
-    topics.forEach((t, i) => console.log(`${i+1}. [${t.writer.name}] ${t.title}\n   ${t.url}`));
+  for (const r of rawResults) {
+    // Google News URLはスキップ
+    if (isGoogleNewsUrl(r.url)) continue;
+
+    // 函館・道南関連チェック
+    if (!isHakodateRelated(r.title)) continue;
+
+    // URL重複チェック
+    if (existingUrls.has(r.url)) {
+      console.log(`⏭  URL重複: ${r.title.slice(0, 40)}`);
+      continue;
+    }
+
+    // タイトル類似チェック（既存＋今回追加分）
+    const allTitles = [...existingTitles, ...savedThisRun.map(s => s.title)];
+    if (allTitles.some(t => isSimilarTitle(r.title, t))) {
+      console.log(`⏭  タイトル重複: ${r.title.slice(0, 40)}`);
+      continue;
+    }
+
+    // ニュースタイプ判定
+    const type = classifyType(r.title, r.summary);
+    if (!type) continue;
+
+    const area = extractArea(r.title, r.summary);
+    const slug = saveNewsFile(r.title, type, area, today, r.url, r.summary);
+
+    existingUrls.add(r.url);
+    savedThisRun.push({ slug, title: r.title, type, url: r.url });
+    console.log(`✅ [${type}][${area}] ${r.title.slice(0, 45)}`);
+  }
+
+  console.log(`\n完了: ${savedThisRun.length}件追加 (検索結果${rawResults.length}件中)`);
+
+  // Discord通知
+  const webhookUrl = process.env.DISCORD_ARTICLE_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.log('DISCORD_ARTICLE_WEBHOOK_URL未設定 — コンソール出力のみ');
     return;
   }
 
-  const messages = buildDiscordMessages(today, label, topics, savedNews);
-  for (const msg of messages) {
-    await sendDiscord(process.env.DISCORD_ARTICLE_WEBHOOK_URL, msg);
+  const lines = [
+    `🔍 **${today} リサーチ結果** | カッテニハコダテ`,
+    `対象期間: ${yesterday} → ${today}`,
+    `検索: ${rawResults.length}件取得 / **${savedThisRun.length}件** を情報収集に追加`,
+    '',
+    ...savedThisRun.map(s => `✅ [${s.type}] ${s.title}\n🔗 <${s.url}>`),
+  ].filter(l => l !== undefined);
+
+  // Discordは2000文字制限があるため2000字ごとに分割
+  let chunk = '';
+  const chunks = [];
+  for (const line of lines) {
+    if ((chunk + '\n' + line).length > 1900) { chunks.push(chunk); chunk = line; }
+    else chunk = chunk ? chunk + '\n' + line : line;
+  }
+  if (chunk) chunks.push(chunk);
+
+  for (const c of chunks) {
+    await sendDiscord(webhookUrl, c);
   }
   console.log('✅ Discord通知完了');
 }
 
-main().catch(err => {
-  console.error('❌ エラー:', err.message);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))   // 確実に終了（TCP接続残存によるハング防止）
+  .catch(err => {
+    console.error('❌ エラー:', err.message);
+    process.exit(1);
+  });

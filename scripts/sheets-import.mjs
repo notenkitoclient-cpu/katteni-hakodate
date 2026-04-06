@@ -30,7 +30,7 @@ const PROCESSED_FILE  = path.join(__dirname, '../src/data/sheets-processed-ids.j
 
 const SHEET_ID      = '1pahfD31CQu4Gk3-DO_Oski001F6n_givsfg0KMjS_AA';
 const GID           = '754262894';
-const EARLIEST_DATE = '2026-01-01'; // これより古い記事は一切取り込まない
+const EARLIEST_DATE = '2026-04-01'; // これより古い記事は一切取り込まない
 const BATCH_SIZE    = 20;   // 1回の実行で追加する最大件数
 
 // ── ユーティリティ ─────────────────────────────────────────────
