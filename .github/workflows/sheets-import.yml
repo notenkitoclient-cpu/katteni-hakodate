@@ -1,11 +1,6 @@
 name: Sheetsからニュースをインポート
 
 on:
-  schedule:
-    # 毎朝 7:15 JST (= 22:15 UTC 前日)  ← research.yml より少し後に実行
-    - cron: '15 22 * * *'
-    # 毎夕 17:15 JST (= 08:15 UTC)
-    - cron: '15 8 * * *'
   workflow_dispatch:
 
 jobs:

@@ -1,9 +1,6 @@
 name: 週刊まとめ記事を自動生成・公開
 
 on:
-  schedule:
-    # 毎週土曜 7:00 JST (= 金曜 22:00 UTC)
-    - cron: '0 22 * * 5'
   workflow_dispatch:
 
 jobs:

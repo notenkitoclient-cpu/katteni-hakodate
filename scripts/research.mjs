@@ -65,8 +65,6 @@ function classifyType(title, text) {
   const c = title + ' ' + (text || '');
   if (/開店|オープン|新店|ニューオープン|grand open/i.test(c)) return '開店';
   if (/閉店|クローズ|撤退|終了|破産|廃業|営業終了/.test(c))   return '閉店';
-  if (/イベント|祭り|まつり|フェス|マルシェ|開催|コンサート|展示|展覧会|フリマ/.test(c)) return 'イベント';
-  if (/工事|建設|リニューアル|改装|解体/.test(c))              return '工事中';
   return null;
 }
 
@@ -175,18 +173,15 @@ async function runResearch(yesterday, today) {
     .toISOString().split('T')[0];
 
   const queries = [
-    // 開店・閉店（昨日〜今日、最重要）
+    // 開店・閉店（昨日〜今日）
     { q: '函館 オープン 開店',         n: 5, start: yesterday },
     { q: '函館 閉店 撤退 廃業',        n: 5, start: yesterday },
     { q: '函館 出店 進出 新規オープン', n: 4, start: yesterday },
-    // ローカルメディア直接（過去7日、毎日更新されない可能性があるため広め）
+    { q: '北斗市 七飯町 開店 閉店',    n: 3, start: yesterday },
+    // ローカルメディア直接（過去7日）
     { q: 'site:hakodate.blog',          n: 5, start: weekAgo },
     { q: 'site:hakoaru.net',            n: 5, start: weekAgo },
     { q: 'site:hakodate.goguynet.jp',   n: 5, start: weekAgo },
-    // イベント・地域（昨日〜今日）
-    { q: '函館 イベント 開催',          n: 4, start: yesterday },
-    { q: '函館 工事 リニューアル',      n: 3, start: yesterday },
-    { q: '北斗市 七飯町 ニュース',      n: 3, start: yesterday },
   ];
 
   const seen    = new Set();

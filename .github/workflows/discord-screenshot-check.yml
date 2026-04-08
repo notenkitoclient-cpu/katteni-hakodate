@@ -1,9 +1,6 @@
 name: Discordスクショを取り込んでニュース生成
 
 on:
-  schedule:
-    # 毎時30分に実行 (UTC) = JST 毎時39分
-    - cron: '30 * * * *'
   workflow_dispatch:
 
 jobs:
