@@ -4,8 +4,12 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
 
+const today = new Date();
+today.setHours(23, 59, 59, 999);
 const allNews = await getCollection('news');
-const sorted = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const sorted = allNews
+  .filter(n => new Date(n.data.date) <= today)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   '開店':   { label: '開店',   color: '#F5EDD8', bg: '#2A7A3A' },
@@ -18,7 +22,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return `${d.getMonth() + 1}/${d.getDate()}`;
+  return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 }
 ---
 
@@ -199,7 +203,7 @@ function formatDate(dateStr: string) {
 
 .card-left {
   display: flex; flex-direction: column; align-items: center;
-  gap: 6px; flex-shrink: 0; width: 52px;
+  gap: 6px; flex-shrink: 0; width: 64px;
   padding-top: 3px;
 }
 .type-badge {
