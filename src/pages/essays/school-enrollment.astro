@@ -1,0 +1,72 @@
+---
+import Navigation from '../../components/Navigation.tsx';
+import SchoolScrolly from '../../components/visuals/school/SchoolScrolly.tsx';
+import '../../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>函館の小学校が消えていく | カッテニハコダテ</title>
+  <meta name="description" content="25年で生徒数64%減。函館市内の小学校は廃校が相次ぐ。子どもたちの声が消えた校舎に残るものとは。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Shippori+Mincho:wght@400;700;800&display=swap" rel="stylesheet">
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RFE6QTKL22"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RFE6QTKL22');
+  </script>
+</head>
+<body style="background:#1a0e00; color:#f5e6c8; margin:0;">
+
+  <Navigation client:load />
+
+  <!-- カバー -->
+  <div style="height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 6rem;position:relative;overflow:hidden;background:linear-gradient(160deg,#2a1a08,#0e0800);">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(251,191,36,0.08),transparent 60%);"></div>
+    <div style="position:relative;z-index:1;max-width:700px;">
+      <p style="font-family:Inter,sans-serif;font-size:10px;letter-spacing:.3em;opacity:.4;text-transform:uppercase;margin-bottom:1.5rem;color:#fbbf24;">
+        Data Essay / 教育・人口
+      </p>
+      <h1 style="font-family:'Shippori Mincho',serif;font-size:clamp(2.5rem,8vw,6rem);line-height:1.1;letter-spacing:.04em;margin-bottom:1.5rem;font-feature-settings:'palt';color:#f5e6c8;">
+        函館の小学校が、<br />消えていく。
+      </h1>
+      <p style="font-family:Inter,sans-serif;font-size:.9rem;opacity:.5;line-height:1.8;max-width:480px;color:#f5e6c8;">
+        25年で生徒数64%減。廃校が相次ぐ函館市。<br />
+        子どもたちの声が消えた校舎に、残るものは何か。
+      </p>
+      <div style="margin-top:2rem;display:flex;gap:2rem;font-family:Inter,sans-serif;font-size:10px;opacity:.3;letter-spacing:.1em;color:#f5e6c8;">
+        <span>2026年4月</span><span>·</span>
+        <span>読了 5分</span><span>·</span>
+        <span>出典: 函館市教育委員会（架空データ）</span>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);text-align:center;">
+      <p style="font-family:Inter,sans-serif;font-size:9px;letter-spacing:.2em;opacity:.3;text-transform:uppercase;margin-bottom:.5rem;color:#f5e6c8;">Scroll</p>
+      <div style="width:1px;height:40px;background:rgba(245,230,200,.2);margin:0 auto;"></div>
+    </div>
+  </div>
+
+  <SchoolScrolly client:load />
+
+  <!-- エッセイ末尾 -->
+  <div style="background:#1a0e00;padding:5rem 2rem 8rem;max-width:680px;margin:0 auto;">
+    <p style="font-family:'Shippori Mincho',serif;font-size:1.6rem;line-height:1.8;letter-spacing:.04em;margin-bottom:2rem;font-feature-settings:'palt';color:#f5e6c8;opacity:.9;">
+      学校がなくなることは、<br />地域の記憶が消えることかもしれない。
+    </p>
+    <p style="font-family:Inter,sans-serif;font-size:.8rem;line-height:1.9;opacity:.5;color:#f5e6c8;">
+      統廃合は「合理的な選択」だ。しかし、そこで育った人たちにとって、母校は単なる建物ではない。
+      函館の未来を語るとき、子どもたちが通える学校の数を維持することは、まちの活力を維持することと同義だ。
+    </p>
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(245,230,200,.1);">
+      <a href="/essays" style="font-family:Inter,sans-serif;font-size:10px;letter-spacing:.2em;opacity:.4;text-transform:uppercase;text-decoration:none;color:#f5e6c8;">← 一覧に戻る</a>
+    </div>
+  </div>
+
+</body>
+</html>

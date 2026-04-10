@@ -1,0 +1,137 @@
+---
+import Navigation from '../../components/Navigation.tsx';
+import '../../styles/global.css';
+
+const essays = [
+  {
+    slug: 'youth-flow',
+    href: '/articles/hakodate-youth-flow',
+    title: '函館から若者が消えていく。',
+    subtitle: '20代人口25年間の記録',
+    theme: { bg: 'linear-gradient(135deg,#111 0%,#1a1a2e 100%)', accent: '#ffffff', text: '#ffffff' },
+    date: '2026-04-10',
+    minutes: 5,
+    source: '函館市人口統計',
+    tags: ['人口', '若者', 'データ'],
+  },
+  {
+    slug: 'squid-catch',
+    href: '/essays/squid-catch',
+    title: '函館のイカが、消えていく。',
+    subtitle: '漁獲量ピーク比93%減の現実',
+    theme: { bg: 'linear-gradient(135deg,#040e1e 0%,#0a2a4a 100%)', accent: '#00ccff', text: '#ffffff' },
+    date: '2026-04-10',
+    minutes: 6,
+    source: '函館市漁業統計',
+    tags: ['漁業', 'イカ', '海洋温暖化'],
+  },
+  {
+    slug: 'school-enrollment',
+    href: '/essays/school-enrollment',
+    title: '函館の小学校が、消えていく。',
+    subtitle: '25年で生徒数64%減',
+    theme: { bg: 'linear-gradient(135deg,#1a0e00 0%,#2a1a08 100%)', accent: '#fbbf24', text: '#f5e6c8' },
+    date: '2026-04-10',
+    minutes: 5,
+    source: '函館市教育委員会',
+    tags: ['教育', '少子化', '廃校'],
+  },
+];
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Essays | カッテニハコダテ</title>
+  <meta name="description" content="データで読み解く函館。スクロールするたびに現実が動く、ビジュアルエッセイ集。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Shippori+Mincho:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-spicato-black text-white" style="margin:0;">
+
+  <Navigation client:load />
+
+  <!-- ヘッダー -->
+  <div class="pt-40 pb-20 px-6 md:px-10 max-w-5xl mx-auto">
+    <p class="font-sans text-[10px] tracking-[0.3em] opacity-30 uppercase mb-6">
+      Visual Essays
+    </p>
+    <h1 class="font-serif text-[clamp(3rem,8vw,7rem)] leading-none tracking-widest mb-8" style="font-feature-settings:'palt'">
+      データで、<br />向き合う。
+    </h1>
+    <p class="font-sans text-sm opacity-40 leading-loose max-w-lg">
+      スクロールするたびに現実が動く。<br />
+      函館の不都合な真実を、グラフと文章で読み解くビジュアルエッセイ集。
+    </p>
+  </div>
+
+  <!-- エッセイグリッド -->
+  <div class="px-6 md:px-10 pb-32 max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10">
+      {essays.map((essay, i) => (
+        <a
+          href={essay.href}
+          class="group relative block overflow-hidden"
+          style={{ borderRight: i < 2 ? '1px solid rgba(255,255,255,0.1)' : 'none' }}
+        >
+          <!-- サムネイル -->
+          <div
+            class="aspect-video w-full transition-transform duration-700 group-hover:scale-105"
+            style={{ background: essay.theme.bg }}
+          >
+            <div class="w-full h-full flex items-end p-6">
+              <p
+                class="font-serif text-2xl md:text-3xl leading-tight tracking-widest"
+                style={{ color: essay.theme.text, fontFeatureSettings: "'palt'", opacity: 0.8 }}
+              >
+                {essay.title.split('、')[0]}、
+              </p>
+            </div>
+          </div>
+
+          <!-- テキスト -->
+          <div class="p-6 border-t border-white/10">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="font-sans text-[9px] tracking-widest opacity-30 uppercase">
+                {essay.date.replace(/-/g, '.')}
+              </span>
+              <span class="font-sans text-[9px] opacity-30">·</span>
+              <span class="font-sans text-[9px] tracking-wide opacity-30">
+                {essay.minutes}分
+              </span>
+            </div>
+            <h2 class="font-serif text-lg leading-snug tracking-wide mb-2" style="font-feature-settings:'palt'">
+              {essay.title}
+            </h2>
+            <p class="font-sans text-xs opacity-40 mb-4">{essay.subtitle}</p>
+            <div class="flex gap-2 flex-wrap">
+              {essay.tags.map(tag => (
+                <span class="font-sans text-[9px] px-2 py-1 border border-white/10 opacity-40">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <!-- ホバーアロー -->
+          <div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-60 transition-opacity duration-300">
+            <span class="font-sans text-xs tracking-widest">読む →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- 準備中カード -->
+    <div class="mt-0 border border-white/10 border-t-0 p-8 opacity-30">
+      <p class="font-sans text-[10px] tracking-[0.2em] uppercase mb-3">Coming Soon</p>
+      <p class="font-serif text-xl tracking-widest" style="font-feature-settings:'palt'">
+        函館に登場するアニメ・漫画の聖地を全部調べた。
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>
