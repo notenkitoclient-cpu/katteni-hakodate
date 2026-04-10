@@ -14,7 +14,7 @@ export default function Navigation() {
 
   const menuItems = [
     { title: '情報収集',   path: '/news',         en: 'News' },
-    { title: '調べた',     path: '/articles',     en: 'Articles' },
+    { title: '考える',     path: '/essays',       en: 'Essays' },
     { title: '応援',       path: '/crowdfunding', en: 'Support' },
     { title: '仕掛け人',   path: '/members',      en: 'Members' },
     { title: 'について',   path: '/about',        en: 'About' },
