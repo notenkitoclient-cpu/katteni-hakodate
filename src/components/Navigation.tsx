@@ -5,10 +5,18 @@ import { Menu, X } from 'lucide-react';
 export default function Navigation({ initialLight = false }: { initialLight?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(initialLight);
+  // スクロールでヘッダーが「消滅」— コンテンツと自分だけの空間へ
+  const [dimmed, setDimmed] = useState(false);
+  const [navHovered, setNavHovered] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 50);
+      // ビューポートの 70% を超えたら静かに消える
+      setDimmed(y > window.innerHeight * 0.7);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -18,14 +26,23 @@ export default function Navigation({ initialLight = false }: { initialLight?: bo
     { title: 'このサイトは', path: '/about',  en: 'About' },
   ];
 
+  // isOpen 中・hover 中は完全表示、コンテンツ閲覧中は消滅
+  const headerOpacity = isOpen || navHovered ? 1 : dimmed ? 0.06 : 1;
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-colors duration-500 ${
+        className={`fixed top-0 left-0 w-full z-50 ${
           scrolled || isOpen
             ? 'bg-white/90 backdrop-blur-md text-spicato-black'
             : 'bg-transparent text-white'
         }`}
+        style={{
+          opacity: headerOpacity,
+          transition: 'opacity 0.7s ease, background 0.5s ease',
+        }}
+        onMouseEnter={() => setNavHovered(true)}
+        onMouseLeave={() => setNavHovered(false)}
       >
         <div className="flex justify-between items-center px-6 py-4 md:px-10 md:py-6">
           <motion.a

@@ -124,28 +124,30 @@ const stories: Story[] = [
   .hero-body { margin-bottom: 2rem; }
   .hero-kicker {
     font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: .35em;
-    opacity: .3;
+    font-size: 9px;
+    letter-spacing: .42em;
+    opacity: .18;
     text-transform: uppercase;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
   .hero-title {
     font-family: 'Shippori Mincho', serif;
-    font-size: clamp(2.2rem, 6vw, 6rem);
+    /* 極端に大きく — 中途半端なサイズを避ける */
+    font-size: clamp(3.2rem, 9vw, 10rem);
     font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: .03em;
+    line-height: 1.02;
+    letter-spacing: .02em;
     font-feature-settings: 'palt';
     margin: 0;
   }
-  .hero-title em { font-style: normal; opacity: .3; }
+  .hero-title em { font-style: normal; opacity: .22; }
   .hero-sub {
     font-family: 'Inter', sans-serif;
-    font-size: clamp(.8rem, 1.2vw, .95rem);
-    opacity: .4;
-    line-height: 1.9;
-    max-width: 30em;
+    font-size: clamp(.75rem, 1vw, .85rem);
+    opacity: .3;
+    line-height: 2;
+    max-width: 28em;
+    letter-spacing: .04em;
   }
 
   /* ── MAIN ── */

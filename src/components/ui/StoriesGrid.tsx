@@ -1,8 +1,9 @@
 /**
- * StoriesGrid — フィルター + Gallery View グリッド
+ * StoriesGrid — フィルター + Gallery View + スクロール時のStaggerアニメーション
  * client:load で使用する
  */
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import StoryCard, { type Story } from './StoryCard';
 
 const FILTERS = [
@@ -11,6 +12,23 @@ const FILTERS = [
   { label: '漁業',   value: '漁業' },
   { label: '教育',   value: '教育' },
 ];
+
+// スクロール時に時間差で浮き上がるアニメーション
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 interface Props {
   stories: Story[];
@@ -32,9 +50,9 @@ export default function StoriesGrid({ stories }: Props) {
         <span
           style={{
             fontFamily: 'Inter,sans-serif',
-            fontSize: '10px',
-            letterSpacing: '0.2em',
-            opacity: 0.3,
+            fontSize: '9px',
+            letterSpacing: '0.28em',
+            opacity: 0.22,
             textTransform: 'uppercase',
             marginRight: '0.5rem',
           }}
@@ -60,120 +78,138 @@ export default function StoriesGrid({ stories }: Props) {
 
       {/* ── Grid ── */}
       {filtered.length === 0 ? (
-        <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '0.85rem', opacity: 0.35, padding: '3rem 0' }}>
+        <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '0.8rem', opacity: 0.25, padding: '4rem 0', letterSpacing: '0.08em' }}>
           該当するエッセイはまだありません。
         </p>
       ) : (
         <div>
-          {/* Featured (最初の1枚) — full-width */}
+          {/* Featured — full-width、ふわっと浮き上がる */}
           {featured && (
-            <div className="mb-20">
+            <motion.div
+              className="mb-24"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            >
               <StoryCard story={featured} featured />
-            </div>
+            </motion.div>
           )}
 
-          {/* Rest grid — wide gap, gallery feel */}
+          {/* Rest — 時間差で浮き上がるグリッド */}
           {rest.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+            >
               {rest.map(story => (
-                <StoryCard key={story.id} story={story} />
+                <motion.div key={story.id} variants={itemVariants}>
+                  <StoryCard story={story} />
+                </motion.div>
               ))}
 
               {/* CTA — 静かなスタイル */}
-              <div
-                style={{
-                  borderTop: '1px solid rgba(0,0,0,0.1)',
-                  paddingTop: '1.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  minHeight: '200px',
-                }}
-              >
-                <p
+              <motion.div variants={itemVariants}>
+                <div
                   style={{
-                    fontFamily: 'Inter,sans-serif',
-                    fontSize: '9px',
-                    letterSpacing: '0.25em',
-                    opacity: 0.3,
-                    textTransform: 'uppercase',
-                    marginBottom: '1rem',
+                    borderTop: '1px solid rgba(0,0,0,0.08)',
+                    paddingTop: '1.25rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '180px',
                   }}
                 >
-                  Your Info
-                </p>
-                <div>
+                  <p
+                    style={{
+                      fontFamily: 'Inter,sans-serif',
+                      fontSize: '8px',
+                      letterSpacing: '0.28em',
+                      opacity: 0.2,
+                      textTransform: 'uppercase',
+                      marginBottom: '1.25rem',
+                    }}
+                  >
+                    Your Info
+                  </p>
+                  <div>
+                    <p
+                      style={{
+                        fontFamily: "'Shippori Mincho',serif",
+                        fontSize: '1rem',
+                        lineHeight: 1.7,
+                        letterSpacing: '0.06em',
+                        marginBottom: '1.5rem',
+                        fontFeatureSettings: "'palt'",
+                        opacity: 0.45,
+                      }}
+                    >
+                      「そういえば<br />あのお店が…」<br />
+                      その情報、ください。
+                    </p>
+                    <a
+                      href="/submit"
+                      style={{
+                        display: 'inline-block',
+                        fontFamily: 'Inter,sans-serif',
+                        fontSize: '0.7rem',
+                        letterSpacing: '0.14em',
+                        opacity: 0.3,
+                        borderBottom: '1px solid currentColor',
+                        paddingBottom: '2px',
+                        transition: 'opacity 0.25s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                      onMouseLeave={e => (e.currentTarget.style.opacity = '0.3')}
+                    >
+                      情報を投稿する →
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Coming Soon */}
+              <motion.div variants={itemVariants}>
+                <div
+                  style={{
+                    borderTop: '1px dashed rgba(0,0,0,0.1)',
+                    paddingTop: '1.25rem',
+                    minHeight: '180px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Inter,sans-serif',
+                      fontSize: '8px',
+                      letterSpacing: '0.28em',
+                      opacity: 0.15,
+                      textTransform: 'uppercase',
+                      marginBottom: '0.75rem',
+                    }}
+                  >
+                    Coming Soon
+                  </p>
                   <p
                     style={{
                       fontFamily: "'Shippori Mincho',serif",
-                      fontSize: '1.05rem',
-                      lineHeight: 1.65,
-                      letterSpacing: '0.04em',
-                      marginBottom: '1.5rem',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.7,
+                      letterSpacing: '0.12em',
+                      opacity: 0.15,
                       fontFeatureSettings: "'palt'",
-                      opacity: 0.6,
                     }}
                   >
-                    「そういえば<br />あのお店が…」<br />
-                    その情報、ください。
+                    函館のコンビニ密度は<br />異常なのか、調べた。
                   </p>
-                  <a
-                    href="/submit"
-                    style={{
-                      display: 'inline-block',
-                      fontFamily: 'Inter,sans-serif',
-                      fontSize: '0.75rem',
-                      letterSpacing: '0.1em',
-                      opacity: 0.4,
-                      borderBottom: '1px solid currentColor',
-                      paddingBottom: '2px',
-                      transition: 'opacity 0.2s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '0.4')}
-                  >
-                    情報を投稿する →
-                  </a>
                 </div>
-              </div>
-
-              {/* Coming Soon */}
-              <div
-                style={{
-                  borderTop: '1px dashed rgba(0,0,0,0.12)',
-                  paddingTop: '1.5rem',
-                  minHeight: '200px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: 'Inter,sans-serif',
-                    fontSize: '9px',
-                    letterSpacing: '0.25em',
-                    opacity: 0.2,
-                    textTransform: 'uppercase',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  Coming Soon
-                </p>
-                <p
-                  style={{
-                    fontFamily: "'Shippori Mincho',serif",
-                    fontSize: '1.05rem',
-                    lineHeight: 1.65,
-                    letterSpacing: '0.04em',
-                    opacity: 0.2,
-                    fontFeatureSettings: "'palt'",
-                  }}
-                >
-                  函館のコンビニ密度は<br />異常なのか、調べた。
-                </p>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
         </div>
       )}
