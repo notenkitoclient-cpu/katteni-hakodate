@@ -61,6 +61,16 @@ jobs:
                       return line.split(':', 1)[1].strip().strip('"')
               return ''
 
+          # 未来日付なら今日の日付に書き換えてサイトに表示されるようにする
+          from datetime import date as date_cls
+          today_str = date_cls.today().isoformat()
+          item_date = get_field(content, 'date')
+          if item_date > today_str:
+              content = content.replace(f'date: "{item_date}"', f'date: "{today_str}"', 1)
+              with open(file_path, 'w', encoding='utf-8') as f:
+                  f.write(content)
+              print(f"日付を {item_date} → {today_str} に更新")
+
           title = get_field(content, 'title')
           type_ = get_field(content, 'type')
           area  = get_field(content, 'area')
@@ -110,7 +120,7 @@ jobs:
         run: |
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
-          git add src/data/threads-queue.json
+          git add src/data/threads-queue.json src/content/news/
           if git diff --staged --quiet; then
             echo "変更なし"
           else
