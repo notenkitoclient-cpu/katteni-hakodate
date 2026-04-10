@@ -1,55 +1,53 @@
 ---
 import Navigation from '../components/Navigation.tsx';
+import StoriesGrid from '../components/ui/StoriesGrid.tsx';
 import { getCollection } from 'astro:content';
 import '../styles/global.css';
+import type { Story } from '../components/ui/StoryCard.tsx';
 
 const allNews = await getCollection('news');
 const recentNews = allNews
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 6);
+  .slice(0, 5);
 
 const TYPE_COLOR: Record<string, string> = {
-  '開店': '#4ade80',
-  '閉店': '#f87171',
-  '工事中': '#fb923c',
-  'イベント': '#60a5fa',
-  '目撃情報': '#c084fc',
-  'その他': '#94a3b8',
+  '開店': '#2d7a3a',
+  '閉店': '#b91c1c',
+  '工事中': '#c2410c',
+  'イベント': '#1d4ed8',
+  'その他': '#6b7280',
 };
 
-const essays = [
+const stories: Story[] = [
   {
+    id: '001',
     href: '/essays/squid-catch',
     title: '函館のイカが、消えていく。',
     subtitle: '漁獲量ピーク比93%減の現実',
-    date: '2026.04.10',
-    minutes: 6,
+    month: 'Apr 2026',
     tags: ['漁業', 'イカ', '海洋温暖化'],
-    bg: 'linear-gradient(135deg,#040e1e 0%,#0a2a4a 100%)',
-    accent: '#00ccff',
-    featured: true,
+    bg: '#d0ecfd',
+    filterTags: ['漁業'],
   },
   {
+    id: '002',
     href: '/essays/school-enrollment',
     title: '函館の小学校が、消えていく。',
     subtitle: '25年で生徒数64%減',
-    date: '2026.04.10',
-    minutes: 5,
+    month: 'Apr 2026',
     tags: ['教育', '少子化', '廃校'],
-    bg: 'linear-gradient(135deg,#1a0e00 0%,#2a1a08 100%)',
-    accent: '#fbbf24',
-    featured: false,
+    bg: '#F0D0D3',
+    filterTags: ['教育'],
   },
   {
+    id: '003',
     href: '/articles/hakodate-youth-flow',
     title: '函館から若者が消えていく。',
     subtitle: '20代人口25年間の記録',
-    date: '2026.04.10',
-    minutes: 5,
+    month: 'Apr 2026',
     tags: ['人口', '若者', 'データ'],
-    bg: 'linear-gradient(135deg,#111 0%,#1a1a2e 100%)',
-    accent: '#ffffff',
-    featured: false,
+    bg: '#C2D932',
+    filterTags: ['人口'],
   },
 ];
 ---
@@ -60,425 +58,175 @@ const essays = [
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>カッテニハコダテ — 函館について、勝手に調べてしまった。</title>
-  <meta name="description" content="気になったから、本気で調べてしまった。データと地図で読み解く、函館のビジュアルエッセイ。" />
+  <meta name="description" content="気になったから、本気で調べてしまった。データと地図で読み解く函館のビジュアルエッセイ。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Shippori+Mincho:wght@400;700;800&display=swap" rel="stylesheet" />
 </head>
-<body>
+<body style="background:#fdfdfd; color:#0d0d0d;">
 
-  <Navigation client:load />
+  <Navigation client:load initialLight />
 
-  <!-- ============ HERO ============ -->
+  <!-- ════ HERO ════ -->
   <section class="hero">
-    <div class="hero-inner">
-      <p class="hero-eyebrow">Katteni Hakodate</p>
+    <div class="hero-body">
+      <p class="hero-kicker">Katteni Hakodate</p>
       <h1 class="hero-title">
         函館について、<br />
-        <em>勝手に</em>調べて<br />しまった。
+        勝手に<em>調べて</em><br />しまった。
       </h1>
-      <p class="hero-sub">
-        気になったから、本気で調べた。<br />
-        スクロールするたびに発見が動く、函館のビジュアルエッセイ。
-      </p>
     </div>
-    <div class="hero-scroll-hint">
-      <span class="scroll-label">Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
+    <p class="hero-sub">
+      気になったから、本気で調べた。<br class="sp-only" />
+      スクロールするたびに発見が動く、函館のビジュアルエッセイ。
+    </p>
   </section>
 
-  <!-- ============ FEATURED ESSAY ============ -->
-  <section class="section-essays">
+  <!-- ════ STORIES ════ -->
+  <main class="main-wrap">
+    <StoriesGrid client:load stories={stories} />
+  </main>
 
-    <div class="section-label">
-      <span class="label-en">Essays</span>
-      <span class="label-slash">/</span>
-      <span class="label-ja">勝手に調べた</span>
-    </div>
-
-    <!-- Featured -->
-    {essays.filter(e => e.featured).map(e => (
-      <a href={e.href} class="essay-featured" style={`background:${e.bg};`}>
-        <div class="featured-inner">
-          <div class="featured-meta">
-            <span class="meta-date">{e.date}</span>
-            <span class="meta-dot">·</span>
-            <span class="meta-min">{e.minutes}分</span>
-          </div>
-          <h2 class="featured-title" style={`color:${e.accent}`}>{e.title}</h2>
-          <p class="featured-sub">{e.subtitle}</p>
-          <div class="featured-tags">
-            {e.tags.map(t => (
-              <span class="tag" style={`border-color:${e.accent}44; color:${e.accent}99`}>{t}</span>
-            ))}
-          </div>
-        </div>
-        <div class="featured-read">読む →</div>
-      </a>
-    ))}
-
-    <!-- Grid -->
-    <div class="essay-grid">
-      {essays.filter(e => !e.featured).map(e => (
-        <a href={e.href} class="essay-card" style={`background:${e.bg};`}>
-          <div class="card-meta">
-            <span class="meta-date">{e.date}</span>
-            <span class="meta-dot">·</span>
-            <span class="meta-min">{e.minutes}分</span>
-          </div>
-          <h2 class="card-title">{e.title}</h2>
-          <p class="card-sub">{e.subtitle}</p>
-          <div class="card-tags">
-            {e.tags.map(t => <span class="tag">{t}</span>)}
-          </div>
-          <div class="card-read">読む →</div>
-        </a>
-      ))}
-
-      <!-- Coming Soon -->
-      <div class="essay-coming">
-        <p class="coming-label">Coming Soon</p>
-        <p class="coming-title">函館のコンビニ密度は<br />異常なのか、調べた。</p>
+  <!-- ════ 今日の函館（おまけ）════ -->
+  <footer class="news-footer">
+    <div class="news-footer-inner">
+      <div class="news-footer-head">
+        <h2 class="news-footer-title">今日の函館</h2>
+        <a href="/news" class="news-footer-more">すべて見る →</a>
       </div>
-    </div>
-
-    <div class="essays-more">
-      <a href="/essays" class="essays-more-link">すべてのエッセイを見る →</a>
-    </div>
-
-  </section>
-
-  <!-- ============ 今日の函館 ============ -->
-  <section class="section-news">
-    <div class="news-inner">
-      <div class="news-header">
-        <div>
-          <p class="news-eyebrow">今日の函館 / News</p>
-          <p class="news-desc">開店・閉店など、街の小さな変化を自動収集しています。</p>
-        </div>
-        <a href="/news" class="news-more">すべて見る →</a>
-      </div>
-
-      <ul class="news-list">
+      <ul class="news-footer-list">
         {recentNews.map(n => (
-          <li class="news-item">
-            <span class="news-date">{n.data.date.replace(/-/g, '.')}</span>
-            <span
-              class="news-type"
-              style={`color:${TYPE_COLOR[n.data.type] ?? '#94a3b8'}`}
-            >{n.data.type}</span>
-            <a href={`/news/${n.id}`} class="news-title">{n.data.title}</a>
+          <li class="news-row">
+            <span class="news-row-date">{n.data.date.replace(/-/g,'.')}</span>
+            <span class="news-row-type" style={`color:${TYPE_COLOR[n.data.type] ?? '#6b7280'}`}>
+              {n.data.type}
+            </span>
+            <a href={`/news/${n.id}`} class="news-row-title">{n.data.title}</a>
           </li>
         ))}
       </ul>
-
-      <div class="news-submit">
-        <span class="submit-text">「そういえばあのお店が…」その情報、ください。</span>
-        <a href="/submit" class="submit-btn">情報を投稿する ＋</a>
-      </div>
     </div>
-  </section>
+  </footer>
 
 </body>
 </html>
 
 <style>
-  * { box-sizing: border-box; }
-  body { margin: 0; background: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
-  a { text-decoration: none; color: inherit; }
-
   /* ── HERO ── */
   .hero {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 0 clamp(1.5rem, 5vw, 5rem);
-    padding-top: 30vh;
-    padding-bottom: 4rem;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    justify-content: flex-end;
+    padding: 0 clamp(1.5rem,5vw,5rem) 5rem;
+    border-bottom: 1.5px solid #0d0d0d;
   }
-  .hero-eyebrow {
+  .hero-body { margin-bottom: 2rem; }
+  .hero-kicker {
+    font-family: 'Inter', sans-serif;
     font-size: 10px;
-    letter-spacing: .4em;
+    letter-spacing: .35em;
     opacity: .3;
     text-transform: uppercase;
-    margin: 0 0 2rem;
+    margin-bottom: 1.5rem;
   }
   .hero-title {
     font-family: 'Shippori Mincho', serif;
-    font-size: clamp(3rem, 9vw, 9rem);
+    font-size: clamp(3.2rem, 10vw, 10rem);
     font-weight: 800;
     line-height: 1.05;
-    letter-spacing: .04em;
-    margin: 0 0 2.5rem;
+    letter-spacing: .03em;
     font-feature-settings: 'palt';
-    max-width: 16em;
+    margin: 0;
   }
-  .hero-title em {
-    font-style: normal;
-    opacity: .45;
-  }
+  .hero-title em { font-style: normal; opacity: .3; }
   .hero-sub {
-    font-size: clamp(.85rem, 1.2vw, 1rem);
-    line-height: 2;
-    opacity: .45;
-    margin: 0;
-    max-width: 28em;
-  }
-  .hero-scroll-hint {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: .75rem;
-    margin-top: auto;
-    padding-top: 4rem;
-  }
-  .scroll-label {
-    font-size: 9px;
-    letter-spacing: .3em;
-    opacity: .25;
-    text-transform: uppercase;
-  }
-  .scroll-line {
-    width: 1px;
-    height: 48px;
-    background: rgba(255,255,255,.15);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { opacity: .15; transform: scaleY(1); }
-    50%       { opacity: .5;  transform: scaleY(1.3); transform-origin: top; }
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(.8rem, 1.2vw, .95rem);
+    opacity: .4;
+    line-height: 1.9;
+    max-width: 30em;
   }
 
-  /* ── ESSAYS SECTION ── */
-  .section-essays {
-    max-width: 1400px;
+  /* ── MAIN ── */
+  .main-wrap {
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 5rem clamp(1.5rem, 5vw, 5rem) 8rem;
-  }
-  .section-label {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    margin-bottom: 3rem;
-  }
-  .label-en  { font-size: 10px; letter-spacing: .3em; opacity: .3; text-transform: uppercase; }
-  .label-slash { opacity: .2; }
-  .label-ja  { font-family: 'Shippori Mincho', serif; font-size: 13px; opacity: .4; }
-
-  /* Featured essay */
-  .essay-featured {
-    display: block;
-    position: relative;
-    min-height: 60vh;
-    padding: clamp(2rem, 5vw, 4rem);
-    overflow: hidden;
-    transition: filter .4s;
-    margin-bottom: 2px;
-  }
-  .essay-featured:hover { filter: brightness(1.08); }
-  .featured-inner { max-width: 640px; }
-  .featured-meta {
-    display: flex;
-    gap: .5rem;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-  .meta-date, .meta-min { font-size: 10px; opacity: .4; letter-spacing: .1em; }
-  .meta-dot { opacity: .2; }
-  .featured-title {
-    font-family: 'Shippori Mincho', serif;
-    font-size: clamp(2rem, 5vw, 4.5rem);
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: .04em;
-    margin: 0 0 1.25rem;
-    font-feature-settings: 'palt';
-  }
-  .featured-sub { font-size: .9rem; opacity: .5; margin: 0 0 2rem; }
-  .featured-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
-  .featured-read {
-    position: absolute;
-    bottom: clamp(1.5rem, 3vw, 2.5rem);
-    right: clamp(1.5rem, 3vw, 2.5rem);
-    font-size: .8rem;
-    letter-spacing: .15em;
-    opacity: 0;
-    transition: opacity .3s;
-  }
-  .essay-featured:hover .featured-read { opacity: .6; }
-
-  /* Essay grid */
-  .essay-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2px;
-    margin-bottom: 2px;
-  }
-  .essay-card {
-    display: block;
-    position: relative;
-    min-height: 360px;
-    padding: clamp(1.5rem, 3vw, 2.5rem);
-    overflow: hidden;
-    transition: filter .4s;
-  }
-  .essay-card:hover { filter: brightness(1.1); }
-  .card-meta {
-    display: flex;
-    gap: .5rem;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  .card-title {
-    font-family: 'Shippori Mincho', serif;
-    font-size: clamp(1.3rem, 2.5vw, 2rem);
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: .04em;
-    margin: 0 0 .75rem;
-    font-feature-settings: 'palt';
-  }
-  .card-sub { font-size: .8rem; opacity: .45; margin: 0 0 1.25rem; }
-  .card-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
-  .card-read {
-    position: absolute;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    font-size: .75rem;
-    letter-spacing: .12em;
-    opacity: 0;
-    transition: opacity .3s;
-  }
-  .essay-card:hover .card-read { opacity: .5; }
-
-  /* Coming Soon */
-  .essay-coming {
-    min-height: 360px;
-    padding: clamp(1.5rem, 3vw, 2.5rem);
-    border: 1px solid rgba(255,255,255,.06);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-  .coming-label {
-    font-size: 9px;
-    letter-spacing: .25em;
-    opacity: .2;
-    text-transform: uppercase;
-    margin: 0 0 .75rem;
-  }
-  .coming-title {
-    font-family: 'Shippori Mincho', serif;
-    font-size: 1.4rem;
-    line-height: 1.6;
-    letter-spacing: .04em;
-    opacity: .2;
-    margin: 0;
-    font-feature-settings: 'palt';
+    padding: 4rem clamp(1.5rem,5vw,5rem) 6rem;
   }
 
-  /* Tags */
-  .tag {
-    font-size: 9px;
-    padding: 3px 8px;
-    border: 1px solid rgba(255,255,255,.12);
-    color: rgba(255,255,255,.4);
-    letter-spacing: .06em;
+  /* ── NEWS FOOTER ── */
+  .news-footer {
+    border-top: 1.5px solid #0d0d0d;
+    background: #f5f5f5;
   }
-
-  /* More link */
-  .essays-more {
-    margin-top: 3rem;
-    text-align: right;
-  }
-  .essays-more-link {
-    font-size: .8rem;
-    letter-spacing: .1em;
-    opacity: .35;
-    transition: opacity .2s;
-  }
-  .essays-more-link:hover { opacity: .7; }
-
-  /* ── NEWS STRIP ── */
-  .section-news {
-    background: #0f0f0f;
-    border-top: 1px solid rgba(255,255,255,.06);
-  }
-  .news-inner {
-    max-width: 1400px;
+  .news-footer-inner {
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 4rem clamp(1.5rem, 5vw, 5rem) 6rem;
+    padding: 3rem clamp(1.5rem,5vw,5rem) 5rem;
   }
-  .news-header {
+  .news-footer-head {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 2.5rem;
-    gap: 1rem;
-    flex-wrap: wrap;
+    align-items: baseline;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    padding-bottom: 1rem;
   }
-  .news-eyebrow {
+  .news-footer-title {
     font-family: 'Shippori Mincho', serif;
-    font-size: .95rem;
-    letter-spacing: .1em;
-    opacity: .6;
-    margin: 0 0 .4rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    opacity: .5;
   }
-  .news-desc { font-size: .75rem; opacity: .25; margin: 0; }
-  .news-more { font-size: .75rem; opacity: .3; letter-spacing: .08em; transition: opacity .2s; white-space: nowrap; }
-  .news-more:hover { opacity: .7; }
-
-  .news-list { list-style: none; padding: 0; margin: 0 0 3rem; }
-  .news-item {
+  .news-footer-more {
+    font-family: 'Inter', sans-serif;
+    font-size: .75rem;
+    opacity: .3;
+    letter-spacing: .08em;
+    transition: opacity .2s;
+  }
+  .news-footer-more:hover { opacity: .7; }
+  .news-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .news-row {
     display: flex;
     align-items: baseline;
     gap: 1rem;
-    padding: .9rem 0;
-    border-bottom: 1px solid rgba(255,255,255,.04);
+    padding: .7rem 0;
+    border-bottom: 1px solid rgba(0,0,0,.05);
     flex-wrap: wrap;
   }
-  .news-date { font-size: 10px; opacity: .25; letter-spacing: .06em; white-space: nowrap; }
-  .news-type { font-size: 10px; letter-spacing: .08em; white-space: nowrap; }
-  .news-title {
+  .news-row-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    opacity: .25;
+    white-space: nowrap;
+    letter-spacing: .05em;
+  }
+  .news-row-type {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .news-row-title {
     font-family: 'Shippori Mincho', serif;
-    font-size: .9rem;
-    opacity: .55;
+    font-size: .85rem;
+    opacity: .5;
     letter-spacing: .04em;
     line-height: 1.5;
     transition: opacity .2s;
-    flex: 1;
-    min-width: 0;
   }
-  .news-title:hover { opacity: .9; }
+  .news-row-title:hover { opacity: .9; }
 
-  .news-submit {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255,255,255,.05);
-  }
-  .submit-text { font-size: .8rem; opacity: .25; }
-  .submit-btn {
-    font-size: .75rem;
-    padding: .6rem 1.25rem;
-    border: 1px solid rgba(255,255,255,.15);
-    letter-spacing: .1em;
-    opacity: .4;
-    transition: opacity .2s, border-color .2s;
-    white-space: nowrap;
-  }
-  .submit-btn:hover { opacity: .8; border-color: rgba(255,255,255,.4); }
-
-  /* ── RESPONSIVE ── */
+  .sp-only { display: none; }
   @media (max-width: 640px) {
-    .essay-grid { grid-template-columns: 1fr; }
-    .essay-featured { min-height: 50vh; }
-    .news-submit { flex-direction: column; align-items: flex-start; }
+    .sp-only { display: inline; }
   }
 </style>

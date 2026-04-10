@@ -17,10 +17,52 @@
 
   --font-family-sans: 'Inter', 'Noto Sans JP', sans-serif;
   --font-family-serif: 'Shippori Mincho', 'Noto Serif JP', serif;
+  --font-family-mono: 'JetBrains Mono', 'Courier New', monospace;
 
   --color-spicato-black: #111111;
   --color-spicato-white: #FDFDFD;
   --color-spicato-gray: #F4F4F4;
+
+  /* Neo-Brutalism palette */
+  --color-off-white: #fdfdfd;
+  --color-ink: #0d0d0d;
+  --color-card-blue: #d0ecfd;
+  --color-card-pink: #F0D0D3;
+  --color-card-lime: #C2D932;
+  --color-card-gray: #f0f0f0;
+}
+
+/* Neo-Brutalism shared utilities */
+.brutalist-card {
+  border: 1.5px solid #0d0d0d;
+  box-shadow: 4px 4px 0 0 #0d0d0d;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.brutalist-card:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 #0d0d0d;
+}
+.brutalist-btn {
+  border: 1.5px solid #0d0d0d;
+  box-shadow: 3px 3px 0 0 #0d0d0d;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+  cursor: pointer;
+  background: #fdfdfd;
+  color: #0d0d0d;
+}
+.brutalist-btn:hover {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 0 #0d0d0d;
+}
+.brutalist-btn.active {
+  background: #0d0d0d;
+  color: #fdfdfd;
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 @layer base {

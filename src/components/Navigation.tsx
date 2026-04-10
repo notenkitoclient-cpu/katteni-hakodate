@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 
-export default function Navigation() {
+export default function Navigation({ initialLight = false }: { initialLight?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(initialLight);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
