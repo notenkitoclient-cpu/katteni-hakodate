@@ -10,31 +10,13 @@ const allArticles = await getCollection('articles');
 const sorted = allArticles.sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const recent = sorted.slice(0, 3);
 
-const allCF = await getCollection('crowdfunding');
-const featuredCF = allCF
-  .filter(cf => cf.data.featured)
-  .sort((a,b) => new Date(b.data.endDate).getTime() - new Date(a.data.endDate).getTime())
-  .slice(0, 3);
-
 const ticks = [
-  '📋 函館のリアルな情報を毎日収集中','💰 道南のプロジェクトを勝手に応援',
-  '🔍 地元あるあるを勝手に調べた','🍜 函館グルメの新発見をお届け',
-  '🏗 工事中のあの場所、何ができるの？','🎉 今週末の道南イベントをチェック',
+  '📋 函館のリアルな情報を毎日収集中','🔍 気になったから、調べてしまった',
+  '🦑 イカが消えていく、なぜ？','📊 データで読む函館の意外な真実',
   '⚓ 頼まれてないけどやってます','🗞 新しいお店・なくなるお店',
+  '📐 函館について、本気で調べた','🗺 地図と数字で読む函館',
 ];
 
-function daysLeft(dateStr: string) {
-  const end = new Date(dateStr);
-  const now = new Date();
-  return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86400000));
-}
-function pct(current: number, goal: number) {
-  if (!goal) return null;
-  return Math.min(100, Math.round((current / goal) * 100));
-}
-function fmtYen(n: number) {
-  return n.toLocaleString('ja-JP') + '円';
-}
 ---
 
 <BaseLayout title="ホーム" description="函館・道南の超ローカル情報メディア。開店・閉店・地域プロジェクト・地元あるあるを勝手に発信。">
@@ -81,26 +63,14 @@ function fmtYen(n: number) {
             <span class="card-link">情報を見る →</span>
           </a>
 
-          <!-- 応援 -->
-          <a href="/crowdfunding" class="axis-card axis-ouen">
-            <div class="card-stamp">勝手に</div>
-            <div class="card-num">02</div>
-            <div class="card-icon">💰</div>
-            <h3 class="card-name">応援</h3>
-            <p class="card-desc">
-              頑張ってるのに目につかないクラファン・プロジェクト・お店を勝手に発掘して応援します。
-            </p>
-            <span class="card-link">応援中を見る →</span>
-          </a>
-
-          <!-- 考える -->
+          <!-- 調べた -->
           <a href="/essays" class="axis-card axis-shira">
             <div class="card-stamp">勝手に</div>
-            <div class="card-num">03</div>
-            <div class="card-icon">💭</div>
-            <h3 class="card-name">考える</h3>
+            <div class="card-num">02</div>
+            <div class="card-icon">🔍</div>
+            <h3 class="card-name">調べた</h3>
             <p class="card-desc">
-              データと愛で函館を読み解く。スクロールするたびに現実が動くビジュアルエッセイ。
+              気になったから、本気で調べてしまった。データと地図で読み解くビジュアルエッセイ。
             </p>
             <span class="card-link">エッセイを読む →</span>
           </a>
@@ -110,70 +80,13 @@ function fmtYen(n: number) {
     </section>
 
 
-    <!-- 勝手に応援中 -->
-    {featuredCF.length > 0 && (
-      <section class="ouen-section">
-        <div class="wrap">
-          <header class="sec-head sec-head--row">
-            <div>
-              <p class="sec-eye">💰 勝手に応援中</p>
-              <h2 class="sec-title">今、応援したいのはコレ</h2>
-            </div>
-            <a href="/crowdfunding" class="sec-more">もっと見る →</a>
-          </header>
-
-          <div class="cf-grid">
-            {featuredCF.map(cf => {
-              const p = pct(cf.data.currentAmount, cf.data.goalAmount);
-              const days = daysLeft(cf.data.endDate);
-              const ended = days === 0;
-              const isPurchase = !cf.data.goalAmount;
-              return (
-                <a href={cf.data.url} target="_blank" rel="noopener" class={`cf-card ${ended ? 'cf-card--ended' : ''}`}>
-                  <div class="cf-tags">
-                    <span class="cf-area">{cf.data.area}</span>
-                    <span class="cf-cat">{cf.data.category}</span>
-                    {!ended && days <= 7 && <span class="cf-urgent">🔥 残り{days}日</span>}
-                  </div>
-                  <h3 class="cf-title">{cf.data.title}</h3>
-                  <p class="cf-summary">{cf.data.summary}</p>
-                  {p !== null ? (
-                    <>
-                      <div class="cf-bar-row">
-                        <div class="cf-bar"><div class="cf-fill" style={`--pct: ${p}%`}></div></div>
-                        <span class="cf-pct">{p}%</span>
-                      </div>
-                      <div class="cf-nums">
-                        <b>{fmtYen(cf.data.currentAmount)}</b>
-                        <span>/ 目標 {fmtYen(cf.data.goalAmount)}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div class="cf-purchase-row">
-                      <span class="cf-purchase-badge">🎫 応援購入型</span>
-                      <b>{fmtYen(cf.data.currentAmount)} 集まってます</b>
-                    </div>
-                  )}
-                  <div class="cf-foot">
-                    <span>👥 {cf.data.supporterCount}人が支援</span>
-                    <span class="cf-cta">詳細を見る ↗</span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    )}
-
-
-    <!-- 勝手に考える -->
+    <!-- 勝手に調べた -->
     <section class="articles-section">
       <div class="wrap">
         <header class="sec-head sec-head--row">
           <div>
-            <p class="sec-eye">💭 勝手に考える</p>
-            <h2 class="sec-title">データと愛で函館を読み解く</h2>
+            <p class="sec-eye">🔍 勝手に調べた</p>
+            <h2 class="sec-title">気になったから、本気で調べてしまった</h2>
           </div>
           <a href="/essays" class="sec-more">すべて見る →</a>
         </header>
@@ -211,7 +124,6 @@ function fmtYen(n: number) {
           </div>
           <div class="submit-actions">
             <a href="/submit" class="sbtn sbtn--primary">情報を投稿する ＋</a>
-            <a href="/members" class="sbtn sbtn--ghost">仕掛け人を見る</a>
           </div>
         </div>
       </div>

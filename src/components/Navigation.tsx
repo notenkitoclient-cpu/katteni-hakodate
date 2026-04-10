@@ -13,11 +13,9 @@ export default function Navigation() {
   }, []);
 
   const menuItems = [
-    { title: '情報収集',   path: '/news',         en: 'News' },
-    { title: '考える',     path: '/essays',       en: 'Essays' },
-    { title: '応援',       path: '/crowdfunding', en: 'Support' },
-    { title: '仕掛け人',   path: '/members',      en: 'Members' },
-    { title: 'について',   path: '/about',        en: 'About' },
+    { title: '今日の函館',   path: '/news',   en: 'News' },
+    { title: '調べた',       path: '/essays', en: 'Essays' },
+    { title: 'このサイトは', path: '/about',  en: 'About' },
   ];
 
   return (
@@ -35,7 +33,7 @@ export default function Navigation() {
             className="relative z-50 flex flex-col uppercase font-serif tracking-widest leading-none"
           >
             <span className="text-xl md:text-2xl font-bold">カッテニハコダテ</span>
-            <span className="text-[10px] mt-1 opacity-70">函館の不都合な真実</span>
+            <span className="text-[10px] mt-1 opacity-70">勝手に調べてしまった。</span>
           </a>
           <button
             onClick={() => setIsOpen(!isOpen)}
