@@ -14,9 +14,12 @@
     "discord-check": "node scripts/discord-screenshot-check.mjs"
   },
   "dependencies": {
+    "@astrojs/react": "^5.0.3",
     "@astrojs/sitemap": "^3.7.2",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^6.1.2",
+    "lucide-react": "^1.8.0",
+    "motion": "^12.38.0",
     "scrollama": "^3.2.0",
     "tailwindcss": "^4.0.0"
   },
@@ -24,6 +27,8 @@
     "vite": "^7"
   },
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.80.0"
+    "@anthropic-ai/sdk": "^0.80.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
   }
 }

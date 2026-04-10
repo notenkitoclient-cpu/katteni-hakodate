@@ -15,8 +15,12 @@
   --color-hako-sand: #c8ab8a;
   --color-hako-mist: #e8eef2;
 
-  --font-family-sans: 'Noto Sans JP', sans-serif;
+  --font-family-sans: 'Inter', 'Noto Sans JP', sans-serif;
   --font-family-serif: 'Shippori Mincho', 'Noto Serif JP', serif;
+
+  --color-spicato-black: #111111;
+  --color-spicato-white: #FDFDFD;
+  --color-spicato-gray: #F4F4F4;
 }
 
 @layer base {

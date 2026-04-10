@@ -38,19 +38,6 @@
       "default": false,
       "type": "boolean"
     },
-    "investigation": {
-      "default": false,
-      "type": "boolean"
-    },
-    "finding": {
-      "type": "string"
-    },
-    "findingLabel": {
-      "type": "string"
-    },
-    "experimentNo": {
-      "type": "string"
-    },
     "$schema": {
       "type": "string"
     }
