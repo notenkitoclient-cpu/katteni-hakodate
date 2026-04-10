@@ -65,6 +65,71 @@
   font-feature-settings: 'palt' 1;
   letter-spacing: -0.01em;
 }
+
+/* ── Gallery Card（TOPページ専用） ── */
+.gallery-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.35s ease;
+}
+.gallery-card:hover {
+  opacity: 0.62;
+}
+.gallery-visual {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.gallery-id {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.3;
+}
+.gallery-text {
+  padding: 1.5rem 0 0;
+}
+.gallery-month {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.3;
+  margin: 0 0 1rem;
+}
+.gallery-title {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  font-feature-settings: 'palt' 1;
+  margin: 0 0 0.75rem;
+}
+.gallery-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  opacity: 0.35;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+.gallery-tags {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.gallery-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.3;
+}
 .brutalist-btn {
   border: 1.5px solid #0d0d0d;
   box-shadow: 3px 3px 0 0 #0d0d0d;

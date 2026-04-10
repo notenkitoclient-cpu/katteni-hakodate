@@ -1,5 +1,5 @@
 /**
- * StoriesGrid — フィルター + エッセイグリッド + CTAインタースティシャル
+ * StoriesGrid — フィルター + Gallery View グリッド
  * client:load で使用する
  */
 import { useState } from 'react';
@@ -28,7 +28,7 @@ export default function StoriesGrid({ stories }: Props) {
   return (
     <div>
       {/* ── Filters ── */}
-      <div className="flex flex-wrap gap-2 sm:gap-3 mb-8 items-center">
+      <div className="flex flex-wrap gap-2 sm:gap-3 mb-16 items-center">
         <span
           style={{
             fontFamily: 'Inter,sans-serif',
@@ -65,30 +65,29 @@ export default function StoriesGrid({ stories }: Props) {
         </p>
       ) : (
         <div>
-          {/* Featured (最初の1枚) */}
+          {/* Featured (最初の1枚) — full-width */}
           {featured && (
-            <div className="mb-3">
+            <div className="mb-20">
               <StoryCard story={featured} featured />
             </div>
           )}
 
-          {/* Rest grid — Tailwindレスポンシブ: mobile:1col / sm:2col / lg:3col */}
+          {/* Rest grid — wide gap, gallery feel */}
           {rest.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-              {rest.map((story, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+              {rest.map(story => (
                 <StoryCard key={story.id} story={story} />
               ))}
 
-              {/* CTA インタースティシャル */}
+              {/* CTA — 静かなスタイル */}
               <div
-                className="brutalist-card"
                 style={{
-                  background: '#fdfdfd',
-                  padding: '1.5rem',
+                  borderTop: '1px solid rgba(0,0,0,0.1)',
+                  paddingTop: '1.5rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  minHeight: '260px',
+                  minHeight: '200px',
                 }}
               >
                 <p
@@ -107,11 +106,12 @@ export default function StoriesGrid({ stories }: Props) {
                   <p
                     style={{
                       fontFamily: "'Shippori Mincho',serif",
-                      fontSize: '1.1rem',
-                      lineHeight: 1.6,
+                      fontSize: '1.05rem',
+                      lineHeight: 1.65,
                       letterSpacing: '0.04em',
                       marginBottom: '1.5rem',
                       fontFeatureSettings: "'palt'",
+                      opacity: 0.6,
                     }}
                   >
                     「そういえば<br />あのお店が…」<br />
@@ -119,16 +119,20 @@ export default function StoriesGrid({ stories }: Props) {
                   </p>
                   <a
                     href="/submit"
-                    className="brutalist-btn"
                     style={{
                       display: 'inline-block',
-                      padding: '0.5rem 1.25rem',
                       fontFamily: 'Inter,sans-serif',
                       fontSize: '0.75rem',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.1em',
+                      opacity: 0.4,
+                      borderBottom: '1px solid currentColor',
+                      paddingBottom: '2px',
+                      transition: 'opacity 0.2s',
                     }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '0.4')}
                   >
-                    情報を投稿する ＋
+                    情報を投稿する →
                   </a>
                 </div>
               </div>
@@ -136,13 +140,12 @@ export default function StoriesGrid({ stories }: Props) {
               {/* Coming Soon */}
               <div
                 style={{
-                  border: '1.5px dashed rgba(0,0,0,0.15)',
-                  padding: '1.5rem',
-                  minHeight: '260px',
+                  borderTop: '1px dashed rgba(0,0,0,0.12)',
+                  paddingTop: '1.5rem',
+                  minHeight: '200px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-end',
-                  background: 'transparent',
                 }}
               >
                 <p
@@ -160,8 +163,8 @@ export default function StoriesGrid({ stories }: Props) {
                 <p
                   style={{
                     fontFamily: "'Shippori Mincho',serif",
-                    fontSize: '1.1rem',
-                    lineHeight: 1.6,
+                    fontSize: '1.05rem',
+                    lineHeight: 1.65,
                     letterSpacing: '0.04em',
                     opacity: 0.2,
                     fontFeatureSettings: "'palt'",
