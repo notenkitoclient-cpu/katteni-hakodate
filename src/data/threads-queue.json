@@ -1,1 +1,122 @@
-[{"slug": "2026-03-01-cocoro-stone-close", "file": "src/content/news/2026-03-01-cocoro-stone-close.md"}, {"slug": "2026-03-03-zetteria-renewal", "file": "src/content/news/2026-03-03-zetteria-renewal.md"}, {"slug": "2026-03-05-goryo-katsu-open", "file": "src/content/news/2026-03-05-goryo-katsu-open.md"}, {"slug": "2026-03-10-zalon-open", "file": "src/content/news/2026-03-10-zalon-open.md"}, {"slug": "2026-03-17-gotoukenn-curry-open", "file": "src/content/news/2026-03-17-gotoukenn-curry-open.md"}, {"slug": "2026-03-20-jounetsu-shokudo-open", "file": "src/content/news/2026-03-20-jounetsu-shokudo-open.md"}, {"slug": "2026-03-21-salon-de-kumako-open", "file": "src/content/news/2026-03-21-salon-de-kumako-open.md"}, {"slug": "2026-03-22-sakuo-mochiko-open", "file": "src/content/news/2026-03-22-sakuo-mochiko-open.md"}, {"slug": "2026-03-25-akachouchin-close", "file": "src/content/news/2026-03-25-akachouchin-close.md"}, {"slug": "2026-03-25-maruku-open", "file": "src/content/news/2026-03-25-maruku-open.md"}, {"slug": "2026-03-25-sazae-close", "file": "src/content/news/2026-03-25-sazae-close.md"}, {"slug": "2026-03-27-doutor-close", "file": "src/content/news/2026-03-27-doutor-close.md"}, {"slug": "2026-03-28-idohado-close", "file": "src/content/news/2026-03-28-idohado-close.md"}, {"slug": "2026-03-30-buta-no-hanamichi-close", "file": "src/content/news/2026-03-30-buta-no-hanamichi-close.md"}, {"slug": "2026-03-31-gindako-close", "file": "src/content/news/2026-03-31-gindako-close.md"}, {"slug": "2026-04-02-goryokaku-kojichu", "file": "src/content/news/2026-04-02-goryokaku-kojichu.md"}, {"slug": "2026-04-04-hanaaruki-open", "file": "src/content/news/2026-04-04-hanaaruki-open.md"}, {"slug": "2026-04-05-discord-event-2590", "file": "src/content/news/2026-04-05-discord-event-2590.md"}, {"slug": "2026-04-05-energy-life-open", "file": "src/content/news/2026-04-05-energy-life-open.md"}, {"slug": "2026-04-06-discord-open-5866", "file": "src/content/news/2026-04-06-discord-open-5866.md"}, {"slug": "2026-04-06-hakodate-2", "file": "src/content/news/2026-04-06-hakodate-2.md"}, {"slug": "2026-04-06-hakodate", "file": "src/content/news/2026-04-06-hakodate.md"}, {"slug": "2026-04-07-hakodate", "file": "src/content/news/2026-04-07-hakodate.md"}, {"slug": "2026-04-07-minatomachi-noodle", "file": "src/content/news/2026-04-07-minatomachi-noodle.md"}, {"slug": "2026-04-08-komachi-web", "file": "src/content/news/2026-04-08-komachi-web.md"}, {"slug": "2026-04-09-tvcm", "file": "src/content/news/2026-04-09-tvcm.md"}, {"slug": "2026-04-09-zalon", "file": "src/content/news/2026-04-09-zalon.md"}, {"slug": "2026-04-10-shiroi-koibito-open", "file": "src/content/news/2026-04-10-shiroi-koibito-open.md"}]
+[
+  {
+    "slug": "2026-03-01-cocoro-stone-close",
+    "file": "src/content/news/2026-03-01-cocoro-stone-close.md"
+  },
+  {
+    "slug": "2026-03-03-zetteria-renewal",
+    "file": "src/content/news/2026-03-03-zetteria-renewal.md"
+  },
+  {
+    "slug": "2026-03-05-goryo-katsu-open",
+    "file": "src/content/news/2026-03-05-goryo-katsu-open.md"
+  },
+  {
+    "slug": "2026-03-10-zalon-open",
+    "file": "src/content/news/2026-03-10-zalon-open.md"
+  },
+  {
+    "slug": "2026-03-17-gotoukenn-curry-open",
+    "file": "src/content/news/2026-03-17-gotoukenn-curry-open.md"
+  },
+  {
+    "slug": "2026-03-20-jounetsu-shokudo-open",
+    "file": "src/content/news/2026-03-20-jounetsu-shokudo-open.md"
+  },
+  {
+    "slug": "2026-03-21-salon-de-kumako-open",
+    "file": "src/content/news/2026-03-21-salon-de-kumako-open.md"
+  },
+  {
+    "slug": "2026-03-22-sakuo-mochiko-open",
+    "file": "src/content/news/2026-03-22-sakuo-mochiko-open.md"
+  },
+  {
+    "slug": "2026-03-25-akachouchin-close",
+    "file": "src/content/news/2026-03-25-akachouchin-close.md"
+  },
+  {
+    "slug": "2026-03-25-maruku-open",
+    "file": "src/content/news/2026-03-25-maruku-open.md"
+  },
+  {
+    "slug": "2026-03-25-sazae-close",
+    "file": "src/content/news/2026-03-25-sazae-close.md"
+  },
+  {
+    "slug": "2026-03-27-doutor-close",
+    "file": "src/content/news/2026-03-27-doutor-close.md"
+  },
+  {
+    "slug": "2026-03-28-idohado-close",
+    "file": "src/content/news/2026-03-28-idohado-close.md"
+  },
+  {
+    "slug": "2026-03-30-buta-no-hanamichi-close",
+    "file": "src/content/news/2026-03-30-buta-no-hanamichi-close.md"
+  },
+  {
+    "slug": "2026-03-31-gindako-close",
+    "file": "src/content/news/2026-03-31-gindako-close.md"
+  },
+  {
+    "slug": "2026-04-02-goryokaku-kojichu",
+    "file": "src/content/news/2026-04-02-goryokaku-kojichu.md"
+  },
+  {
+    "slug": "2026-04-04-hanaaruki-open",
+    "file": "src/content/news/2026-04-04-hanaaruki-open.md"
+  },
+  {
+    "slug": "2026-04-05-discord-event-2590",
+    "file": "src/content/news/2026-04-05-discord-event-2590.md"
+  },
+  {
+    "slug": "2026-04-05-energy-life-open",
+    "file": "src/content/news/2026-04-05-energy-life-open.md"
+  },
+  {
+    "slug": "2026-04-06-discord-open-5866",
+    "file": "src/content/news/2026-04-06-discord-open-5866.md"
+  },
+  {
+    "slug": "2026-04-06-hakodate-2",
+    "file": "src/content/news/2026-04-06-hakodate-2.md"
+  },
+  {
+    "slug": "2026-04-06-hakodate",
+    "file": "src/content/news/2026-04-06-hakodate.md"
+  },
+  {
+    "slug": "2026-04-07-hakodate",
+    "file": "src/content/news/2026-04-07-hakodate.md"
+  },
+  {
+    "slug": "2026-04-07-minatomachi-noodle",
+    "file": "src/content/news/2026-04-07-minatomachi-noodle.md"
+  },
+  {
+    "slug": "2026-04-08-komachi-web",
+    "file": "src/content/news/2026-04-08-komachi-web.md"
+  },
+  {
+    "slug": "2026-04-09-tvcm",
+    "file": "src/content/news/2026-04-09-tvcm.md"
+  },
+  {
+    "slug": "2026-04-09-zalon",
+    "file": "src/content/news/2026-04-09-zalon.md"
+  },
+  {
+    "slug": "2026-04-10-shiroi-koibito-open",
+    "file": "src/content/news/2026-04-10-shiroi-koibito-open.md"
+  },
+  {
+    "slug": "2026-04-22-t9-hakodate-open",
+    "file": "src/content/news/2026-04-22-t9-hakodate-open.md"
+  },
+  {
+    "slug": "2026-04-30-morihico-open",
+    "file": "src/content/news/2026-04-30-morihico-open.md"
+  }
+]
