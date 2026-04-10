@@ -1,11 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import HeroSection from '../components/HeroSection.astro';
 import ArticleCard from '../components/ArticleCard.astro';
-import Navigation from '../components/Navigation.tsx';
-import Hero from '../components/Hero.tsx';
-import MainPhilosophy from '../components/MainPhilosophy.tsx';
-import DataVisualSection from '../components/DataVisualSection.tsx';
 import { getCollection } from 'astro:content';
 
 const allArticles = await getCollection('articles');
@@ -40,10 +38,8 @@ function fmtYen(n: number) {
 ---
 
 <BaseLayout title="ホーム" description="函館・道南の超ローカル情報メディア。開店・閉店・地域プロジェクト・地元あるあるを勝手に発信。">
-  <Navigation client:load />
-  <Hero client:load />
-  <MainPhilosophy client:load />
-  <DataVisualSection client:load />
+  <Header />
+  <HeroSection />
 
   <main class="main-page">
 
