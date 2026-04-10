@@ -1,10 +1,13 @@
 /**
- * SchoolScrolly — 小学校エッセイ用の自己完結スクローリテリングコンポーネント
+ * SchoolScrolly — 小学校生徒数エッセイのスクローリテリング
+ * Scrollama + ScrollyLayout で構成
  */
-import { useEffect, useRef, useState } from 'react';
+import { useScrollama } from '../../scrolly/useScrollama';
+import ScrollyLayout from '../../scrolly/ScrollyLayout';
+import { PANEL_AMBER, type StepData } from '../../scrolly/StepPanel';
 import SchoolViz from './SchoolViz';
 
-const STEPS = [
+const STEPS: StepData[] = [
   {
     chapter: 'Chapter 01',
     title: '2000年、函館の小学校',
@@ -32,63 +35,16 @@ const STEPS = [
 ];
 
 export default function SchoolScrolly() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const stepsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const els = stepsRef.current?.querySelectorAll<HTMLElement>('[data-step]');
-    if (!els) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) setCurrentStep(parseInt((e.target as HTMLElement).dataset.step ?? '0', 10));
-        });
-      },
-      { rootMargin: '-40% 0px -40% 0px' }
-    );
-    els.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const { currentStep, stepsRef } = useScrollama(STEPS.length);
 
   return (
-    <div>
-      {/* Sticky ビジュアル */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ background: '#1a0e00' }}>
-        <SchoolViz currentStep={currentStep} />
-      </div>
-
-      {/* スクロールするテキスト */}
-      <div ref={stepsRef} style={{ marginTop: '-100vh', position: 'relative' }}>
-        {STEPS.map((s, i) => (
-          <div
-            key={i}
-            data-step={i}
-            className="min-h-screen flex items-center px-6 md:px-12 pointer-events-auto"
-            style={{ paddingTop: i === 0 ? '20vh' : 0 }}
-          >
-            <div
-              className="max-w-sm w-full ml-auto mr-0 md:mr-12 p-8 md:p-10"
-              style={{ background: 'rgba(245,230,200,0.92)', border: '1px solid rgba(0,0,0,0.08)' }}
-            >
-              <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '10px', letterSpacing: '.2em', opacity: .4, textTransform: 'uppercase', marginBottom: '1rem' }}>
-                {s.chapter}
-              </p>
-              <h2 style={{ fontFamily: "'Shippori Mincho',serif", fontSize: '1.4rem', lineHeight: 1.6, letterSpacing: '.04em', marginBottom: '1rem', fontFeatureSettings: "'palt'" }}>
-                {s.title}
-              </h2>
-              <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '.8rem', lineHeight: 1.9, opacity: .7 }}>
-                {s.body}
-              </p>
-              {s.stat && (
-                <div style={{ marginTop: '1rem', padding: '.75rem', border: `1px solid ${s.stat.color}44`, background: `${s.stat.color}0d` }}>
-                  <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '10px', opacity: .5, marginBottom: '.25rem' }}>{s.stat.label}</p>
-                  <p style={{ fontFamily: "'Shippori Mincho',serif", fontSize: '2rem', color: s.stat.color }}>{s.stat.value}<span style={{ fontSize: '1rem', marginLeft: '4px', opacity: .6 }}>{s.stat.unit}</span></p>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <ScrollyLayout
+      stepsRef={stepsRef}
+      steps={STEPS}
+      visual={<SchoolViz currentStep={currentStep} />}
+      bg="#1a0e00"
+      panelSide="right"
+      panelTheme={PANEL_AMBER}
+    />
   );
 }

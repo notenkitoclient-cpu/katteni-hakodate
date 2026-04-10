@@ -1,14 +1,13 @@
 /**
- * SquidScrolly — イカエッセイ用の自己完結スクローリテリングコンポーネント
- * Astroから client:load で呼び出す
+ * SquidScrolly — イカ漁獲エッセイのスクローリテリング
+ * Scrollama + ScrollyLayout で構成
  */
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import OceanWave from './OceanWave';
-import CatchChart from './CatchChart';
+import { useScrollama } from '../../scrolly/useScrollama';
+import ScrollyLayout from '../../scrolly/ScrollyLayout';
+import { PANEL_DARK, type StepData } from '../../scrolly/StepPanel';
 import SquidViz from './SquidViz';
 
-const STEPS = [
+const STEPS: StepData[] = [
   {
     chapter: 'Chapter 01',
     title: '函館はイカの街だった',
@@ -42,65 +41,15 @@ const STEPS = [
 ];
 
 export default function SquidScrolly() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const stepsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const els = stepsRef.current?.querySelectorAll<HTMLElement>('[data-step]');
-    if (!els) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) setCurrentStep(parseInt((e.target as HTMLElement).dataset.step ?? '0', 10));
-        });
-      },
-      { rootMargin: '-40% 0px -40% 0px' }
-    );
-    els.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const step = STEPS[Math.min(currentStep, STEPS.length - 1)];
+  const { currentStep, stepsRef } = useScrollama(STEPS.length);
 
   return (
-    <div>
-      {/* Sticky ビジュアル */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ background: '#040e1e' }}>
-        <SquidViz currentStep={currentStep} />
-      </div>
-
-      {/* スクロールするテキスト */}
-      <div ref={stepsRef} style={{ marginTop: '-100vh', position: 'relative' }}>
-        {STEPS.map((s, i) => (
-          <div
-            key={i}
-            data-step={i}
-            className="min-h-screen flex items-center px-6 md:px-12 pointer-events-auto"
-            style={{ paddingTop: i === 0 ? '20vh' : 0 }}
-          >
-            <div
-              className="max-w-sm w-full ml-auto mr-0 md:mr-12 p-8 md:p-10 backdrop-blur-sm"
-              style={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.08)' }}
-            >
-              <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '10px', letterSpacing: '.2em', opacity: .4, textTransform: 'uppercase', marginBottom: '1rem', color: 'white' }}>
-                {s.chapter}
-              </p>
-              <h2 style={{ fontFamily: "'Shippori Mincho',serif", fontSize: '1.4rem', lineHeight: 1.6, letterSpacing: '.04em', marginBottom: '1rem', fontFeatureSettings: "'palt'", color: 'white', whiteSpace: 'pre-line' }}>
-                {s.title}
-              </h2>
-              <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '.8rem', lineHeight: 1.9, opacity: .7, color: 'white' }}>
-                {s.body}
-              </p>
-              {s.stat && (
-                <div style={{ marginTop: '1rem', padding: '.75rem', border: `1px solid ${s.stat.color}33`, background: `${s.stat.color}0d` }}>
-                  <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '10px', opacity: .5, marginBottom: '.25rem', color: 'white' }}>{s.stat.label}</p>
-                  <p style={{ fontFamily: "'Shippori Mincho',serif", fontSize: '2rem', color: s.stat.color }}>{s.stat.value}<span style={{ fontSize: '1rem', marginLeft: '4px', opacity: .6 }}>{s.stat.unit}</span></p>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <ScrollyLayout
+      stepsRef={stepsRef}
+      steps={STEPS}
+      visual={<SquidViz currentStep={currentStep} />}
+      bg="#040e1e"
+      panelTheme={PANEL_DARK}
+    />
   );
 }
