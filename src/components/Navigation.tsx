@@ -28,13 +28,16 @@ export default function Navigation({ initialLight = false }: { initialLight?: bo
         }`}
       >
         <div className="flex justify-between items-center px-6 py-4 md:px-10 md:py-6">
-          <a
+          <motion.a
             href="/"
-            className="relative z-50 flex flex-col uppercase font-serif tracking-widest leading-none"
+            className="relative z-50 flex flex-col uppercase font-serif leading-none"
+            style={{ letterSpacing: '0.06em', fontFeatureSettings: "'palt'" }}
+            whileHover={{ rotate: [0, -3, 3, -2, 1, 0] }}
+            transition={{ duration: 0.45, ease: 'easeInOut' }}
           >
             <span className="text-xl md:text-2xl font-bold">カッテニハコダテ</span>
             <span className="text-[10px] mt-1 opacity-70">勝手に調べてしまった。</span>
-          </a>
+          </motion.a>
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="relative z-50 flex items-center gap-2"

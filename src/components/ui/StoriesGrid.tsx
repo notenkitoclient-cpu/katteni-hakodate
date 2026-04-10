@@ -28,15 +28,7 @@ export default function StoriesGrid({ stories }: Props) {
   return (
     <div>
       {/* ── Filters ── */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.75rem',
-          flexWrap: 'wrap',
-          marginBottom: '2.5rem',
-          alignItems: 'center',
-        }}
-      >
+      <div className="flex flex-wrap gap-2 sm:gap-3 mb-8 items-center">
         <span
           style={{
             fontFamily: 'Inter,sans-serif',
@@ -75,21 +67,14 @@ export default function StoriesGrid({ stories }: Props) {
         <div>
           {/* Featured (最初の1枚) */}
           {featured && (
-            <div style={{ marginBottom: '12px' }}>
+            <div className="mb-3">
               <StoryCard story={featured} featured />
             </div>
           )}
 
-          {/* Rest grid */}
+          {/* Rest grid — Tailwindレスポンシブ: mobile:1col / sm:2col / lg:3col */}
           {rest.length > 0 && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '12px',
-                marginBottom: '12px',
-              }}
-            >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
               {rest.map((story, i) => (
                 <StoryCard key={story.id} story={story} />
               ))}

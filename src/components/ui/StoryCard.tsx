@@ -66,13 +66,11 @@ export default function StoryCard({ story, featured = false }: Props) {
 
         {/* Title */}
         <h2
+          className="serif-editorial"
           style={{
-            fontFamily: "'Shippori Mincho',serif",
             fontSize: featured ? 'clamp(1.6rem,3vw,2.8rem)' : 'clamp(1.2rem,2vw,1.7rem)',
             fontWeight: 700,
-            lineHeight: 1.25,
-            letterSpacing: '0.03em',
-            fontFeatureSettings: "'palt'",
+            lineHeight: 1.2,
             margin: '0 0 0.75rem',
             flex: 1,
           }}

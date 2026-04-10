@@ -36,15 +36,34 @@
 .brutalist-card {
   border: 1.5px solid #0d0d0d;
   box-shadow: 4px 4px 0 0 #0d0d0d;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
   cursor: pointer;
   display: block;
   text-decoration: none;
   color: inherit;
+  position: relative;
 }
 .brutalist-card:hover {
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0 0 #0d0d0d;
+  filter: brightness(0.93);
+}
+
+/* Sticker hover scale */
+.sticker-icon {
+  transform: rotate(-18deg);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.brutalist-card:hover .sticker-icon {
+  transform: rotate(-22deg) scale(1.14);
+}
+
+/* Editorial serif — palt全体適用 */
+.serif-editorial {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+  font-feature-settings: 'palt' 1;
+  letter-spacing: -0.01em;
 }
 .brutalist-btn {
   border: 1.5px solid #0d0d0d;
