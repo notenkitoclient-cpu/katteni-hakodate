@@ -71,23 +71,27 @@
   display: block;
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.5s ease;
+  background: #ffffff;
+  /* 色の変化ではなく「位置と影」でインタラクション表現 */
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.42s ease;
 }
 .gallery-card:hover {
-  opacity: 0.75;
+  transform: translateY(-5px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.07);
 }
 
-/* 額縁フレーム — ホバーで一瞬だけブルータリズムの影がのぞく */
+/* 額縁フレーム — 白い余白でカラーブロックを「展示」する */
 .gallery-visual-frame {
   aspect-ratio: 4 / 3;
   width: 100%;
-  background: #fdfdfd;
+  background: #ffffff;
   position: relative;
-  transition: box-shadow 0.4s ease;
+  /* ホバーで伏線：内側の記事に潜むブルータリズムの硬い影がのぞく */
+  transition: box-shadow 0.42s ease;
 }
 .gallery-card:hover .gallery-visual-frame {
-  /* 内側の作品への伏線：ブルータリズムの硬い影がわずかにのぞく */
-  box-shadow: 6px 6px 0 0 rgba(13, 13, 13, 0.09);
+  box-shadow: 6px 6px 0 0 rgba(13, 13, 13, 0.11);
 }
 .gallery-visual-inner {
   width: 100%;
@@ -139,7 +143,7 @@
   box-shadow: 3px 3px 0 0 #0d0d0d;
   transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
   cursor: pointer;
-  background: #fdfdfd;
+  background: #ffffff;
   color: #0d0d0d;
 }
 .brutalist-btn:hover {
@@ -148,7 +152,7 @@
 }
 .brutalist-btn.active {
   background: #0d0d0d;
-  color: #fdfdfd;
+  color: #ffffff;
   transform: translate(3px, 3px);
   box-shadow: none;
 }
@@ -156,7 +160,7 @@
 @layer base {
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background-color: #ffffff;
+    background-color: #ffffff; /* 純白 — カラーブロックのコントラスト最大化 */
     color: #0d0d0d;
     font-family: 'Noto Sans JP', sans-serif;
     -webkit-font-smoothing: antialiased;

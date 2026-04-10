@@ -1,6 +1,7 @@
 /**
  * StoryCard — Gallery View
- * 額縁効果・タイポグラフィの疎と密・ホバーでブルータリズムの影がのぞく
+ * モノクロの世界に、鮮やかなカラーブロックが飛び込んでくる
+ * ホバー = 色の変化ではなく「浮き上がり」で表現
  */
 
 export interface Story {
@@ -10,7 +11,7 @@ export interface Story {
   subtitle: string;
   month: string;
   tags: string[];
-  bg: string;
+  bg: string;          // 高彩度カラー（vivid cyan / magenta / yellow etc.）
   filterTags: string[];
 }
 
@@ -22,19 +23,20 @@ interface Props {
 export default function StoryCard({ story, featured = false }: Props) {
   const { href, id, title, subtitle, month, tags, bg } = story;
 
-  // パステルカラーを hex + alpha で薄く重ねる
-  const washColor = bg + '28'; // ~16% opacity
-
   return (
     <a href={href} className="gallery-card">
-      {/* ── 額縁フレーム ── */}
-      {/* 白い余白がフレームになり、内側のカラー面が「展示された作品」に見える */}
+      {/* ── 額縁フレーム ──
+          白い padding = 美術館の白壁
+          内側の vivid color block = 展示された作品
+      */}
       <div
         className="gallery-visual-frame"
         style={{ padding: featured ? '1.5rem' : '0.875rem' }}
       >
-        <div className="gallery-visual-inner" style={{ background: washColor }}>
-          {/* 極小の ID — 余白の中のアクセント */}
+        <div
+          className="gallery-visual-inner"
+          style={{ background: bg /* 彩度100%で表示 */ }}
+        >
           <span
             style={{
               position: 'absolute',
@@ -43,7 +45,8 @@ export default function StoryCard({ story, featured = false }: Props) {
               fontFamily: "'JetBrains Mono','Courier New',monospace",
               fontSize: '8px',
               letterSpacing: '0.08em',
-              opacity: 0.18,
+              /* 背景が鮮やかでも読めるよう白で表示 */
+              color: 'rgba(255,255,255,0.55)',
             }}
           >
             #{id}
@@ -51,8 +54,8 @@ export default function StoryCard({ story, featured = false }: Props) {
         </div>
       </div>
 
-      {/* ── テキスト ── */}
-      <div className="gallery-text">
+      {/* ── テキスト — 純白の「額縁」として機能 ── */}
+      <div className="gallery-text" style={{ background: '#ffffff' }}>
         <p className="gallery-month">{month}</p>
 
         <h2
@@ -60,14 +63,12 @@ export default function StoryCard({ story, featured = false }: Props) {
           style={
             featured
               ? {
-                  // Featured: 極端に大きく — インパクトで引き込む
                   fontSize: 'clamp(2.6rem, 5vw, 5rem)',
                   fontWeight: 700,
                   letterSpacing: '0.02em',
                   lineHeight: 1.1,
                 }
               : {
-                  // Grid: 極端に小さく + 字間を広げて空気感
                   fontSize: '0.875rem',
                   fontWeight: 400,
                   letterSpacing: '0.16em',
