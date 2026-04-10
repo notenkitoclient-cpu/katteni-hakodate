@@ -1,185 +1,97 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
+import Navigation from '../../components/Navigation.tsx';
+import ArticleGrid from '../../components/ArticleGrid.tsx';
 import Footer from '../../components/Footer.astro';
-import ArticleCard from '../../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
+import '../../styles/global.css';
 
 const allArticles = await getCollection('articles');
-const sortedArticles = allArticles.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const categories = ['グルメ', '暮らし', 'イベント', '人・ビジネス', '特産品'];
+const sorted = allArticles.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const SOURCE_MAP: Record<string, string> = {
+  '暮らし':       '函館市オープンデータ',
+  '人・ビジネス': '函館市統計書',
+  '特産品':       '北海道水産現勢',
+};
+
+function estimateMinutes(body: string) {
+  return Math.max(1, Math.round(body.replace(/\s/g, '').length / 400));
+}
+
+const articles = sorted.map(a => ({
+  slug: a.id,
+  title: a.data.title,
+  description: a.data.description,
+  category: a.data.category,
+  date: a.data.date,
+  readingMinutes: estimateMinutes(a.body ?? ''),
+  source: SOURCE_MAP[a.data.category],
+  isInvestigation: false,
+  href: `/articles/${a.id}`,
+}));
+
+const investigationCard = {
+  slug: 'hakodate-youth-flow',
+  title: '函館から若者が消えていく。20代人口25年間の記録',
+  description: '2000年から2025年にかけて函館市の20代人口は約24%減少した。データで函館の若者流出を読み解く調査報告。',
+  category: '調査報告',
+  date: '2026-04-10',
+  readingMinutes: 5,
+  source: '函館市人口統計',
+  isInvestigation: true,
+  href: '/articles/hakodate-youth-flow',
+};
+
+const allItems = [investigationCard, ...articles];
 ---
 
-<BaseLayout title="勝手に調べた" description="函館・道南の気になることを勝手に調べた記事一覧。ローカルあるある、検証、まとめ。">
-  <Header />
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>調べた | カッテニハコダテ</title>
+  <meta name="description" content="函館・道南の気になることを勝手に調べた記事一覧。データジャーナリズム・ローカル検証・まとめ。" />
+  <meta property="og:title" content="調べた | カッテニハコダテ" />
+  <meta property="og:image" content="https://kattenihakodate.com/icon-512.png" />
+  <meta property="og:url" content="https://kattenihakodate.com/articles" />
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RFE6QTKL22"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RFE6QTKL22');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-spicato-white text-spicato-black">
 
-  <main class="shira-page">
+  <Navigation client:load />
 
-    <!-- Hero -->
-    <div class="page-hero">
-      <div class="hero-texture" aria-hidden="true"></div>
-      <div class="page-hero-inner wrap">
-        <span class="hero-stamp">勝手に</span>
-        <p class="hero-eye">🔍 調べた</p>
-        <h1 class="hero-title">勝手に調べた</h1>
-        <p class="hero-sub">
-          函館市民なら気になるアレを、勝手にリサーチして勝手に記事にしました。<br>
-          ローカルあるある・検証・まとめ、全部ここにあります。
-        </p>
-        <p class="hero-count">{sortedArticles.length}本の記事</p>
-      </div>
+  <div class="pt-40 pb-20 px-6 md:px-10 max-w-6xl mx-auto">
+    <p class="font-sans text-[10px] tracking-[0.3em] text-spicato-black/30 uppercase mb-6">
+      Articles / 調べた
+    </p>
+    <h1 class="font-serif text-[clamp(2.5rem,7vw,6rem)] leading-none tracking-widest mb-8" style="font-feature-settings:'palt'">
+      勝手に、<br />調べた。
+    </h1>
+    <p class="font-sans text-sm leading-loose max-w-xl" style="color: rgba(17,17,17,0.5)">
+      函館市民なら誰でも気になるアレを、頼まれてないのに調べました。<br />
+      データ、現地取材、インタビュー——全部ここにあります。
+    </p>
+    <div class="mt-12 pt-8 flex items-baseline gap-3" style="border-top: 1px solid rgba(17,17,17,0.1)">
+      <span class="font-serif text-4xl font-light">{allItems.length}</span>
+      <span class="font-sans text-xs tracking-widest" style="color: rgba(17,17,17,0.4)">本の記事</span>
     </div>
+  </div>
 
-    <!-- Category Filter -->
-    <div class="filter-bar">
-      <div class="wrap">
-        <div class="filter-list">
-          <a href="/articles" class="filter-btn filter-btn--active">すべて</a>
-          {categories.map(cat => (
-            <a href={`/category/${cat}`} class="filter-btn">{cat}</a>
-          ))}
-        </div>
-      </div>
-    </div>
+  <ArticleGrid articles={allItems} client:load />
 
-    <!-- Article List -->
-    <div class="articles-body wrap">
-      {sortedArticles.length === 0 ? (
-        <div class="empty">
-          <p class="empty-icon">🔍</p>
-          <p class="empty-title">まだ調べた記事がありません</p>
-          <p class="empty-sub">鋭意執筆中です。もう少しお待ちください！</p>
-        </div>
-      ) : (
-        <div class="article-grid">
-          {sortedArticles.map(article => (
-            <ArticleCard
-              title={article.data.title}
-              description={article.data.description}
-              category={article.data.category}
-              date={article.data.date}
-              author={article.data.author}
-              slug={article.id}
-              featured={article.data.featured}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-
-    <!-- Submit CTA -->
-    <div class="submit-band wrap">
-      <div class="submit-inner">
-        <div>
-          <p class="submit-title">「これ調べてほしい」があればぜひ！</p>
-          <p class="submit-sub">函館で気になること、地元民ならではの疑問をお寄せください。勝手に調べます。</p>
-        </div>
-        <a href="/submit" class="submit-btn">情報を投稿する →</a>
-      </div>
-    </div>
-
-  </main>
   <Footer />
-</BaseLayout>
 
-<style>
-.shira-page { background: #F5EDD8; min-height: 100vh; }
-.wrap { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
-
-/* Hero */
-.page-hero {
-  position: relative; overflow: hidden;
-  background: #9E3D26;
-  padding: 96px 0 64px;
-}
-.hero-texture {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.07) 28px, rgba(0,0,0,0.07) 30px),
-    repeating-linear-gradient(90deg, transparent, transparent 56px, rgba(0,0,0,0.05) 56px, rgba(0,0,0,0.05) 58px);
-  background-size: 58px 30px;
-}
-.page-hero-inner { position: relative; z-index: 1; }
-.hero-stamp {
-  display: inline-block; background: #D4A02A; color: #2A2420;
-  font-size: 10px; font-weight: 900; letter-spacing: 0.3em;
-  padding: 4px 16px; transform: rotate(-1.5deg);
-  font-family: 'Shippori Mincho', serif;
-  border: 2px solid #2A2420; margin-bottom: 16px;
-}
-.hero-eye { font-size: 11px; letter-spacing: 0.3em; color: rgba(245,237,216,0.6); font-weight: 700; margin-bottom: 10px; }
-.hero-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: clamp(28px, 5vw, 48px); font-weight: 900;
-  color: #F5EDD8; letter-spacing: 0.04em; margin-bottom: 16px;
-}
-.hero-sub { font-size: 14px; color: rgba(245,237,216,0.75); line-height: 2; margin-bottom: 20px; }
-.hero-count {
-  display: inline-block;
-  font-family: 'Shippori Mincho', serif;
-  font-size: 12px; font-weight: 700;
-  color: #D4A02A; letter-spacing: 0.1em;
-  border-bottom: 1px solid rgba(212,160,42,0.4); padding-bottom: 2px;
-}
-
-/* Filter */
-.filter-bar {
-  background: #FBF7EF;
-  border-top: 3px solid #2A2420;
-  border-bottom: 2px solid #EDE3CC;
-  padding: 16px 0;
-}
-.filter-list { display: flex; gap: 8px; flex-wrap: wrap; }
-.filter-btn {
-  padding: 6px 16px;
-  font-size: 12.5px; font-weight: 700;
-  border: 2px solid #8A7A6A; color: #5A4A3A;
-  font-family: 'Shippori Mincho', serif;
-  letter-spacing: 0.04em;
-  transition: all 0.18s;
-}
-.filter-btn:hover { border-color: #9E3D26; color: #9E3D26; background: #F7E8E2; }
-.filter-btn--active { background: #9E3D26; color: #F5EDD8; border-color: #9E3D26; }
-
-/* Articles */
-.articles-body { padding: 48px 0 80px; }
-.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-
-/* Empty */
-.empty { text-align: center; padding: 80px 20px; }
-.empty-icon { font-size: 48px; margin-bottom: 16px; }
-.empty-title { font-family: 'Shippori Mincho', serif; font-size: 20px; font-weight: 700; color: #2A2420; margin-bottom: 8px; }
-.empty-sub { font-size: 14px; color: #8A7A6A; }
-
-/* Submit band */
-.submit-band { padding-bottom: 80px; }
-.submit-inner {
-  background: #2A2420; border: 2px solid #2A2420;
-  box-shadow: 4px 4px 0 #9E3D26;
-  padding: 32px 40px; display: flex;
-  align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-}
-.submit-title {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 17px; font-weight: 800; color: #F5EDD8; margin-bottom: 6px;
-}
-.submit-sub { font-size: 13px; color: #8A7A6A; line-height: 1.7; }
-.submit-btn {
-  flex-shrink: 0; padding: 12px 24px;
-  background: #D4A02A; color: #2A2420;
-  border: 2px solid #D4A02A;
-  font-size: 13px; font-weight: 800;
-  font-family: 'Shippori Mincho', serif;
-  white-space: nowrap; transition: background 0.2s;
-}
-.submit-btn:hover { background: #E0AD30; }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .wrap { padding: 0 16px; }
-  .page-hero { padding: 88px 0 48px; }
-  .articles-body { padding: 32px 0 56px; }
-  .article-grid { grid-template-columns: 1fr; }
-  .submit-inner { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
-}
-</style>
+</body>
+</html>

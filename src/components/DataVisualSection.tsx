@@ -1,4 +1,4 @@
-import { motion, useInView, useSpring, useTransform } from 'motion/react';
+import { motion, useInView } from 'motion/react';
 import { useRef, useEffect, useState } from 'react';
 
 const data = [
