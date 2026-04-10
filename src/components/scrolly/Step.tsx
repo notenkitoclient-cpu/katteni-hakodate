@@ -1,39 +1,50 @@
 /**
- * Step — スクローリテリングの各テキストブロック
- *
- * - data-step 属性でIntersection Observerが検知
- * - pointer-events-auto でリンク等のインタラクションを復活
- * - 画面の下半分に配置するためにpadding-topで押し下げ
+ * Step — スクローリテリングの1ステップ
+ * ScrollContent の直接の子として使う。id prop でアンカーにもなる。
+ * ScrollContent が data-step-index を自動付与する。
  */
 
 import type { ReactNode } from 'react';
 
 interface StepProps {
-  index: number;
+  id: string;
   children: ReactNode;
-  /** テキストボックスの背景スタイル（デフォルト: 半透明黒） */
   theme?: 'dark' | 'light' | 'ghost';
+  /** ScrollContent が自動付与 */
+  'data-step-index'?: number;
 }
 
 const THEME_STYLES = {
-  dark:  'bg-black/80 text-white border-white/10',
-  light: 'bg-white/90 text-gray-900 border-black/10',
-  ghost: 'bg-transparent text-white border-transparent',
+  dark:  { background: 'rgba(0,0,0,0.82)', color: 'white', border: '1px solid rgba(255,255,255,0.08)' },
+  light: { background: 'rgba(255,255,255,0.92)', color: '#111', border: '1px solid rgba(0,0,0,0.08)' },
+  ghost: { background: 'transparent', color: 'white', border: '1px solid transparent' },
 };
 
-export default function Step({ index, children, theme = 'dark' }: StepProps) {
+export default function Step({ id, children, theme = 'dark', ...rest }: StepProps) {
+  const stepIndex = (rest as Record<string, unknown>)['data-step-index'] as number | undefined;
+
   return (
     <div
-      data-step={index}
-      className="min-h-screen flex items-center px-6 md:px-12 pointer-events-auto"
-      style={{ paddingTop: index === 0 ? '20vh' : 0 }}
+      id={id}
+      data-step-index={stepIndex}
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 1.5rem',
+        pointerEvents: 'auto',
+      }}
     >
       <div
-        className={`
-          max-w-sm md:max-w-md w-full ml-auto mr-0 md:mr-12
-          border backdrop-blur-sm rounded-none p-8 md:p-10
-          ${THEME_STYLES[theme]}
-        `}
+        style={{
+          maxWidth: '26rem',
+          width: '100%',
+          marginLeft: 'auto',
+          marginRight: 0,
+          padding: '2rem 2.5rem',
+          backdropFilter: 'blur(8px)',
+          ...THEME_STYLES[theme],
+        }}
       >
         {children}
       </div>

@@ -75,4 +75,18 @@ const news = defineCollection({
   }),
 });
 
-export const collections = { articles, crowdfunding, events, drafts, news };
+const essays = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/essays' }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string().optional(),
+    date: z.string(),
+    minutes: z.number(),
+    tags: z.array(z.string()).optional(),
+    source: z.string().optional(),
+    coverBg: z.string().optional(),
+    coverAccent: z.string().optional(),
+  }),
+});
+
+export const collections = { articles, crowdfunding, events, drafts, news, essays };

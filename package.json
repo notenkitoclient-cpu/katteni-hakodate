@@ -14,6 +14,7 @@
     "discord-check": "node scripts/discord-screenshot-check.mjs"
   },
   "dependencies": {
+    "@astrojs/mdx": "^5.0.3",
     "@astrojs/react": "^5.0.3",
     "@astrojs/sitemap": "^3.7.2",
     "@tailwindcss/vite": "^4.0.0",
