@@ -72,26 +72,22 @@
   text-decoration: none;
   color: inherit;
   background: #ffffff;
-  /* 色の変化ではなく「位置と影」でインタラクション表現 */
-  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.42s ease;
+  /* ホバー表現：色ではなく「0.5px の輪郭と微細な浮き上がり」 */
+  transition: box-shadow 0.45s ease;
 }
 .gallery-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.07);
+  /* 0.5px グレー輪郭 + 極めて淡いソフトシャドウ */
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.12),
+    0 10px 32px rgba(0, 0, 0, 0.04);
 }
 
-/* 額縁フレーム — 白い余白でカラーブロックを「展示」する */
+/* 額縁フレーム — 白い余白でビビッドカラーを「展示作品」として際立たせる */
 .gallery-visual-frame {
   aspect-ratio: 4 / 3;
   width: 100%;
   background: #ffffff;
   position: relative;
-  /* ホバーで伏線：内側の記事に潜むブルータリズムの硬い影がのぞく */
-  transition: box-shadow 0.42s ease;
-}
-.gallery-card:hover .gallery-visual-frame {
-  box-shadow: 6px 6px 0 0 rgba(13, 13, 13, 0.11);
 }
 .gallery-visual-inner {
   width: 100%;
@@ -99,44 +95,44 @@
   position: relative;
 }
 
+/* テキストエリア — 贅沢な余白でタイポグラフィを際立たせる */
 .gallery-text {
-  padding: 1.25rem 0 0;
+  padding: 1.75rem 0 0;
 }
 .gallery-month {
   font-family: 'Inter', sans-serif;
   font-size: 9px;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.38em;
   text-transform: uppercase;
-  opacity: 0.2;
-  margin: 0 0 1.25rem;
+  opacity: 0.18;
+  margin: 0 0 1.5rem;
 }
-/* featured の場合は JS 側で上書き */
 .gallery-title {
   font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
   font-weight: 400;
-  line-height: 1.55;
+  line-height: 1.7;
   font-feature-settings: 'palt' 1;
-  margin: 0 0 0.75rem;
+  margin: 0 0 1.25rem;
 }
 .gallery-sub {
   font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
-  opacity: 0.28;
-  letter-spacing: 0.06em;
-  line-height: 1.7;
-  margin: 0 0 1.25rem;
+  opacity: 0.25;
+  letter-spacing: 0.07em;
+  line-height: 1.85;
+  margin: 0 0 1.5rem;
 }
 .gallery-tags {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 .gallery-tag {
   font-family: 'Inter', sans-serif;
   font-size: 8px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  opacity: 0.22;
+  opacity: 0.18;
 }
 .brutalist-btn {
   border: 1.5px solid #0d0d0d;

@@ -69,10 +69,10 @@ export default function StoryCard({ story, featured = false }: Props) {
                   lineHeight: 1.1,
                 }
               : {
-                  fontSize: '0.875rem',
+                  fontSize: '0.8125rem',
                   fontWeight: 400,
-                  letterSpacing: '0.16em',
-                  lineHeight: 1.65,
+                  letterSpacing: '0.22em',
+                  lineHeight: 1.9,
                 }
           }
         >

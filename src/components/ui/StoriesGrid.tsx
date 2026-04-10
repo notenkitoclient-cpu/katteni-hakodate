@@ -1,5 +1,5 @@
 /**
- * StoriesGrid — フィルター + Gallery View + スクロール時のStaggerアニメーション
+ * StoriesGrid — フィルター + Gallery View + スクロール Stagger
  * client:load で使用する
  */
 import { useState } from 'react';
@@ -13,20 +13,20 @@ const FILTERS = [
   { label: '教育',   value: '教育' },
 ];
 
-// スクロール時に時間差で浮き上がるアニメーション
+// 静寂な空間に、作品が静かに並べられていく演出
 const containerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
@@ -45,16 +45,24 @@ export default function StoriesGrid({ stories }: Props) {
 
   return (
     <div>
-      {/* ── Filters ── */}
-      <div className="flex flex-wrap gap-2 sm:gap-3 mb-16 items-center">
+      {/* ── Controls — テキストのみ、UIとしての存在感を最小に ── */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.25rem 2rem',
+          alignItems: 'center',
+          marginBottom: '5rem',
+        }}
+      >
         <span
           style={{
             fontFamily: 'Inter,sans-serif',
-            fontSize: '9px',
-            letterSpacing: '0.28em',
-            opacity: 0.22,
+            fontSize: '8px',
+            letterSpacing: '0.38em',
+            opacity: 0.18,
             textTransform: 'uppercase',
-            marginRight: '0.5rem',
+            marginRight: '1rem',
           }}
         >
           Filter
@@ -63,12 +71,27 @@ export default function StoriesGrid({ stories }: Props) {
           <button
             key={f.value}
             onClick={() => setActive(f.value)}
-            className={`brutalist-btn${active === f.value ? ' active' : ''}`}
             style={{
-              fontFamily: "'Shippori Mincho',serif",
-              fontSize: '0.8rem',
-              padding: '0.4rem 1rem',
-              letterSpacing: '0.06em',
+              fontFamily: 'Inter,sans-serif',
+              fontSize: '0.75rem',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.2rem 0',
+              color: '#0d0d0d',
+              opacity: active === f.value ? 0.9 : 0.25,
+              borderBottom: active === f.value
+                ? '1px solid rgba(13,13,13,0.6)'
+                : '1px solid transparent',
+              transition: 'opacity 0.25s, border-bottom-color 0.25s',
+            }}
+            onMouseEnter={e => {
+              if (active !== f.value) e.currentTarget.style.opacity = '0.55';
+            }}
+            onMouseLeave={e => {
+              if (active !== f.value) e.currentTarget.style.opacity = '0.25';
             }}
           >
             {f.label}
@@ -78,28 +101,37 @@ export default function StoriesGrid({ stories }: Props) {
 
       {/* ── Grid ── */}
       {filtered.length === 0 ? (
-        <p style={{ fontFamily: 'Inter,sans-serif', fontSize: '0.8rem', opacity: 0.25, padding: '4rem 0', letterSpacing: '0.08em' }}>
+        <p
+          style={{
+            fontFamily: 'Inter,sans-serif',
+            fontSize: '0.75rem',
+            opacity: 0.2,
+            padding: '5rem 0',
+            letterSpacing: '0.1em',
+          }}
+        >
           該当するエッセイはまだありません。
         </p>
       ) : (
         <div>
-          {/* Featured — full-width、ふわっと浮き上がる */}
+          {/* Featured — ゆっくりと、滑らかに浮き上がる */}
           {featured && (
             <motion.div
-              className="mb-24"
-              initial={{ opacity: 0, y: 40 }}
+              style={{ marginBottom: '8rem' }}
+              initial={{ opacity: 0, y: 36 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
             >
               <StoryCard story={featured} featured />
             </motion.div>
           )}
 
-          {/* Rest — 時間差で浮き上がるグリッド */}
+          {/* Rest — 静寂に時間差で作品が並ぶ */}
           {rest.length > 0 && (
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              style={{ gap: 'clamp(3rem, 6vw, 7rem)' }}
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
@@ -111,26 +143,26 @@ export default function StoriesGrid({ stories }: Props) {
                 </motion.div>
               ))}
 
-              {/* CTA — 静かなスタイル */}
+              {/* CTA — 最小限の存在感 */}
               <motion.div variants={itemVariants}>
                 <div
                   style={{
-                    borderTop: '1px solid rgba(0,0,0,0.08)',
-                    paddingTop: '1.25rem',
+                    paddingTop: '1.75rem',
+                    borderTop: '1px solid rgba(0,0,0,0.06)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    minHeight: '180px',
+                    minHeight: '200px',
                   }}
                 >
                   <p
                     style={{
                       fontFamily: 'Inter,sans-serif',
                       fontSize: '8px',
-                      letterSpacing: '0.28em',
-                      opacity: 0.2,
+                      letterSpacing: '0.32em',
+                      opacity: 0.18,
                       textTransform: 'uppercase',
-                      marginBottom: '1.25rem',
+                      marginBottom: '1.5rem',
                     }}
                   >
                     Your Info
@@ -140,11 +172,11 @@ export default function StoriesGrid({ stories }: Props) {
                       style={{
                         fontFamily: "'Shippori Mincho',serif",
                         fontSize: '1rem',
-                        lineHeight: 1.7,
-                        letterSpacing: '0.06em',
-                        marginBottom: '1.5rem',
+                        lineHeight: 1.8,
+                        letterSpacing: '0.07em',
+                        marginBottom: '2rem',
                         fontFeatureSettings: "'palt'",
-                        opacity: 0.45,
+                        opacity: 0.4,
                       }}
                     >
                       「そういえば<br />あのお店が…」<br />
@@ -156,14 +188,15 @@ export default function StoriesGrid({ stories }: Props) {
                         display: 'inline-block',
                         fontFamily: 'Inter,sans-serif',
                         fontSize: '0.7rem',
-                        letterSpacing: '0.14em',
-                        opacity: 0.3,
+                        letterSpacing: '0.16em',
+                        textTransform: 'uppercase',
+                        opacity: 0.25,
                         borderBottom: '1px solid currentColor',
                         paddingBottom: '2px',
-                        transition: 'opacity 0.25s',
+                        transition: 'opacity 0.3s',
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-                      onMouseLeave={e => (e.currentTarget.style.opacity = '0.3')}
+                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.65')}
+                      onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
                     >
                       情報を投稿する →
                     </a>
@@ -175,9 +208,9 @@ export default function StoriesGrid({ stories }: Props) {
               <motion.div variants={itemVariants}>
                 <div
                   style={{
-                    borderTop: '1px dashed rgba(0,0,0,0.1)',
-                    paddingTop: '1.25rem',
-                    minHeight: '180px',
+                    paddingTop: '1.75rem',
+                    borderTop: '1px dashed rgba(0,0,0,0.08)',
+                    minHeight: '200px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'flex-end',
@@ -187,10 +220,10 @@ export default function StoriesGrid({ stories }: Props) {
                     style={{
                       fontFamily: 'Inter,sans-serif',
                       fontSize: '8px',
-                      letterSpacing: '0.28em',
-                      opacity: 0.15,
+                      letterSpacing: '0.32em',
+                      opacity: 0.13,
                       textTransform: 'uppercase',
-                      marginBottom: '0.75rem',
+                      marginBottom: '1rem',
                     }}
                   >
                     Coming Soon
@@ -199,9 +232,9 @@ export default function StoriesGrid({ stories }: Props) {
                     style={{
                       fontFamily: "'Shippori Mincho',serif",
                       fontSize: '0.875rem',
-                      lineHeight: 1.7,
-                      letterSpacing: '0.12em',
-                      opacity: 0.15,
+                      lineHeight: 1.8,
+                      letterSpacing: '0.14em',
+                      opacity: 0.13,
                       fontFeatureSettings: "'palt'",
                     }}
                   >
