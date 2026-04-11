@@ -1,7 +1,7 @@
 ---
 title: "大正9年築の歴史建築を再生したホテル＋クラフトビール醸造所「T9 HAKODATE」が末広町にオープン"
 type: "開店"
-date: "2026-04-22"
+date: "2026-04-11"
 area: "末広町"
 reporter: "編集部"
 source: "https://travel.watch.impress.co.jp/docs/news/2092363.html"
