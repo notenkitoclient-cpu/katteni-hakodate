@@ -1,7 +1,7 @@
 ---
 title: "札幌の人気コーヒーブランド「MORIHICO.」が道南初進出。大三坂ビルヂングに4月末オープン予定"
 type: "開店"
-date: "2026-04-30"
+date: "2026-04-11"
 area: "末広町（大三坂）"
 reporter: "編集部"
 source: "https://www.hokkaido-np.co.jp/article/1294981/"
