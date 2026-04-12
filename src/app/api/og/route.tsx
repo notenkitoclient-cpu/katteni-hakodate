@@ -20,7 +20,7 @@ export async function GET(request: Request) {
             position: 'relative',
           }}
         >
-          {/* 上部の装飾ライン（アクセント） */}
+          {/* 上部のブランドライン */}
           <div
             style={{
               position: 'absolute',
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
               left: 0,
               right: 0,
               height: '12px',
-              backgroundColor: '#333',
+              backgroundColor: '#000',
             }}
           />
 
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
               justifyContent: 'space-between',
             }}
           >
-            {/* メインタイトルエリア */}
+            {/* メインエリア */}
             <div
               style={{
                 display: 'flex',
@@ -50,20 +50,31 @@ export async function GET(request: Request) {
             >
               <div
                 style={{
-                  fontSize: 24,
-                  color: '#666',
-                  marginBottom: '16px',
-                  letterSpacing: '0.1em',
+                  fontSize: 26,
+                  fontWeight: 'bold',
+                  color: '#333',
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
-                函館の「いいもの」、みんなで勝手にPR。
+                カッテニハコダテ ｜ 函館まち図鑑
+              </div>
+              <div
+                style={{
+                  fontSize: 20,
+                  color: '#888',
+                  marginBottom: '30px',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                勝手に函館で応援されるサイト・掲載も使用も全部無料
               </div>
               <div
                 style={{
                   fontSize: 72,
                   fontWeight: '900',
                   color: '#000',
-                  textAlign: 'left',
                   lineHeight: 1.1,
                   wordBreak: 'break-all',
                 }}
@@ -84,26 +95,26 @@ export async function GET(request: Request) {
             >
               <div
                 style={{
-                  fontSize: 32,
-                  fontWeight: 'bold',
-                  color: '#000',
-                  letterSpacing: '-0.02em',
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
-                函館まち図鑑
+                <span style={{ fontSize: 24, fontWeight: '900', color: '#000' }}>
+                  HAKODATE MACHI-ZUKAN
+                </span>
               </div>
               <div
                 style={{
-                  fontSize: 20,
-                  color: '#888',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  backgroundColor: '#f5f5f5',
-                  padding: '8px 20px',
-                  borderRadius: '30px',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: '#fff',
+                  backgroundColor: '#000',
+                  padding: '6px 18px',
+                  borderRadius: '4px',
+                  letterSpacing: '0.1em',
                 }}
               >
-                Open & Free
+                OPEN DATA
               </div>
             </div>
           </div>
