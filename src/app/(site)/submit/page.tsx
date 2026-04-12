@@ -42,16 +42,28 @@ export default function SubmitWizard() {
   return (
     <div className="popeye-container max-w-2xl py-20 min-h-[70vh]">
 
-      <div className="mb-12">
-        <h1 className="text-3xl font-serif mb-4 flex flex-wrap items-baseline gap-4">
-          <span>お店を掲載する</span>
-          <span className="text-sm font-tele text-subtext">
-            {!isPreviewStep ? `0${step}/05` : 'PREVIEW'}
-          </span>
+      {/* ヒーロー */}
+      <div className="mb-12 pb-10 border-b-2 border-black">
+        <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-subtext mb-4">函館まち図鑑 — 掲載申請</p>
+        <h1 className="font-serif text-3xl md:text-4xl font-black leading-snug mb-4">
+          頑張っている人が、<br />もっと知られないのはもったいない。
         </h1>
+        <p className="font-serif text-base text-gray-700 leading-relaxed mb-4">
+          掲載も、情報更新も、ぜんぶ無料。<br />
+          函館で何かを仕掛けている人は、ここを自由に使い倒してください。
+        </p>
+        <p className="font-mono text-xs text-subtext">── 審査はあります。でも、本気の人なら全力で載せます。</p>
+      </div>
+
+      <div className="mb-12">
+        <div className="flex flex-wrap items-baseline gap-4 mb-4">
+          <span className="text-xl font-bold">
+            {!isPreviewStep ? `Step ${step} / 5` : 'PREVIEW'}
+          </span>
+        </div>
         <div className="bg-gray-50 border-l-4 border-accent p-4 mb-6">
           <p className="text-sm md:text-base font-bold text-gray-800">
-            操作や更新が難しければ、自分が助けます。お気軽にDMください！
+            書き方が分からなくても大丈夫。DMをくれたら、一緒に作ります。
           </p>
         </div>
         <div className="w-full h-1 bg-border rounded-full overflow-hidden">
@@ -69,7 +81,7 @@ export default function SubmitWizard() {
 
         {/* STEP 1: 基本情報 */}
         <div className={step === 1 ? 'block' : 'hidden'}>
-          <h2 className="text-xl font-bold mb-8">まずは、お店の基本を教えてください。</h2>
+          <h2 className="text-xl font-bold mb-8">お店の名前から、始めましょう。</h2>
           <div className="space-y-6">
             <div>
               <label className="block text-sm text-subtext mb-2 tracking-widest uppercase">STORE NAME *</label>
@@ -102,7 +114,7 @@ export default function SubmitWizard() {
 
         {/* STEP 2: 場所・連絡先 */}
         <div className={step === 2 ? 'block' : 'hidden'}>
-          <h2 className="text-xl font-bold mb-8">お客様が迷わず行けるように。</h2>
+          <h2 className="text-xl font-bold mb-8">来てほしい人が、迷わないように。</h2>
           <div className="space-y-6">
             <div>
               <label className="block text-sm text-subtext mb-2 tracking-widest uppercase">ADDRESS</label>
@@ -118,7 +130,7 @@ export default function SubmitWizard() {
 
         {/* STEP 3: アクション情報 */}
         <div className={step === 3 ? 'block' : 'hidden'}>
-          <h2 className="text-xl font-bold mb-8">どうやって予約や問い合わせをしますか？</h2>
+          <h2 className="text-xl font-bold mb-8">興味を持った人が、次に進める場所を。</h2>
           <div className="space-y-6">
             <div>
               <label className="block text-sm text-subtext mb-2 tracking-widest uppercase">OFFICIAL WEBSITE</label>
@@ -141,7 +153,7 @@ export default function SubmitWizard() {
 
         {/* STEP 4: こだわり・PR */}
         <div className={step === 4 ? 'block' : 'hidden'}>
-          <h2 className="text-xl font-bold mb-8">あなたのお店の「体温」を伝えてください。</h2>
+          <h2 className="text-xl font-bold mb-8">一番伝えたいことを、ここで叫んでください。</h2>
           <div className="space-y-6">
             <div>
               <label className="block text-sm text-subtext mb-2 tracking-widest uppercase flex justify-between">
@@ -154,7 +166,7 @@ export default function SubmitWizard() {
                 className="w-full border-2 border-border p-4 outline-none focus:border-accent resize-none placeholder:text-gray-300"
                 placeholder="今年から地元の野菜を使ったメニューに切り替えました。常連さんにも好評で..."
               />
-              <p className="text-xs text-subtext mt-2">今お店で取り組んでいること、想いなどを自由に書いてください。</p>
+              <p className="text-xs text-subtext mt-2">クラウドファンディング中でも、新店オープンでも、新メニュー開発中でも。今まさに知ってほしいことを、ここで全部書いてください。</p>
             </div>
             <div>
               <label className="block text-sm text-subtext mb-2 tracking-widest uppercase">
@@ -168,7 +180,7 @@ export default function SubmitWizard() {
 
         {/* STEP 5: 画像 */}
         <div className={step === 5 ? 'block' : 'hidden'}>
-          <h2 className="text-xl font-bold mb-8">外観やメニューの写真を（任意）。</h2>
+          <h2 className="text-xl font-bold mb-8">写真があると、もっと伝わります。（任意）</h2>
           <div className="border-2 border-dashed border-border p-12 text-center bg-white opacity-50 cursor-not-allowed">
             <span className="font-tele text-subtext block mb-2">IMAGE UPLOAD</span>
             <span className="text-sm">画像アップロードは近日対応予定</span>
