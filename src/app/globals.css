@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FAFAF8;
+  --foreground: #1A1A1A;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.font-tele {
+  font-family: "Space Mono", monospace;
+}
+
+/* POPEYE-style margins and layout classes */
+.popeye-container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.popeye-section {
+  margin-top: 80px;
+  margin-bottom: 80px;
+}
+
+@media (min-width: 768px) {
+  .popeye-section {
+    margin-top: 120px;
+    margin-bottom: 120px;
+  }
+}
+
+/* Base custom inputs */
+.form-input {
+  @apply w-full border-b-2 border-border bg-transparent px-2 py-3 outline-none transition-colors focus:border-accent;
+}

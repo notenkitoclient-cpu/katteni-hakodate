@@ -1,0 +1,54 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model News {
+  id           Int      @id @default(autoincrement())
+  title        String
+  type         String   @default("その他")
+  area         String?
+  body         String?
+  url          String?
+  source       String?
+  reporter     String   @default("編集部")
+  published_at DateTime @default(now())
+  created_at   DateTime @default(now())
+}
+
+model Store {
+  id               Int      @id @default(autoincrement())
+  slug             String   @unique
+  store_name       String
+  category         String
+  location_area    String
+  address          String?
+  contact_tel      String?
+  
+  website_url      String?
+  reservation_url  String?
+  sns_instagram    String?
+  sns_x            String?
+  sns_facebook     String?
+  sns_line         String?
+  
+  video_url        String?
+  images           String   @default("[]") // JSON string of paths
+  
+  our_challenge    String?
+  user_comment     String?
+  hidden_gem       String?
+  vibe_level       Int?
+  opening_hours    String?
+  
+  is_approved      Boolean  @default(false)
+  share_banner_url String?
+  
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}

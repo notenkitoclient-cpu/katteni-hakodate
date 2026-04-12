@@ -1,8 +1,6 @@
+.vercel
+.env*
+.next/
 node_modules/
-dist/
-.venv/
-.env
-.env.*
-config/mcporter.json
-*.output
-.DS_Store
+prisma/dev.db
+prisma/*.db
