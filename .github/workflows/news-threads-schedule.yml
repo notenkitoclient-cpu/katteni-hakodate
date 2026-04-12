@@ -88,7 +88,7 @@ jobs:
           text = (
               f"{emoji}【{type_}】{title}\n\n"
               f"📍 {area}\n\n"
-              f"詳細はこちら→ {site}/news/{slug}\n\n"
+              f"詳細はこちら→ {site}/news\n\n"
               f"#函館 #函館情報 #函館開店 #函館閉店 #カッテニハコダテ"
           )
 
