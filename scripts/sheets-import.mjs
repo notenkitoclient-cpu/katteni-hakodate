@@ -28,10 +28,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const NEWS_DIR        = path.join(__dirname, '../src/content/news');
 const PROCESSED_FILE  = path.join(__dirname, '../src/data/sheets-processed-ids.json');
 
-const SHEET_ID      = '1pahfD31CQu4Gk3-DO_Oski001F6n_givsfg0KMjS_AA';
-const GID           = '754262894';
-const EARLIEST_DATE = '2026-04-01'; // これより古い記事は一切取り込まない
-const BATCH_SIZE    = 20;   // 1回の実行で追加する最大件数
+const SHEET_ID         = '1pahfD31CQu4Gk3-DO_Oski001F6n_givsfg0KMjS_AA';
+const GID              = '754262894';
+const EARLIEST_DATE    = '2026-04-01'; // これより古い記事は一切取り込まない
+const BATCH_SIZE       = 20;           // 1回の実行で追加する最大件数
+const VERCEL_SITE_URL  = process.env.SITE_URL || 'https://katteni-hakodate.vercel.app';
+const API_SECRET_TOKEN = process.env.API_SECRET_TOKEN || '';
 
 // ── ユーティリティ ─────────────────────────────────────────────
 
@@ -424,7 +426,7 @@ async function main() {
 
     processedIds.add(rawId);
     existingTitles.add(title);
-    saved.push({ slug, title, type, area });
+    saved.push({ slug, title, type, area, rawId, date: today });
     console.log(`✅ [${type}][${area}] ${title.slice(0, 45)}`);
   }
 
@@ -434,35 +436,93 @@ async function main() {
   console.log(`\n完了: ${saved.length}件追加 / ${skipped}件スキップ / 残り約${remaining}件（次回以降）`);
   fs.writeFileSync('/tmp/sheets-result.json', JSON.stringify({ saved }), 'utf-8');
 
-  // ── スプレッドシートのステータスを「処理済み」に更新 ──────────
-  await updateSheetStatus([...processedIds]);
+  // ── Vercel API に送信 ────────────────────────────────────────
+  const apiSuccess = await sendToVercelApi(saved, today);
+
+  // ── 処理済み行をシートから削除 ───────────────────────────────
+  // API送信成功 → saved行を削除
+  // スキップ行   → 再処理しないので常に削除
+  // （processedIds はJSONで重複防止を継続担保）
+  const idsToDelete = apiSuccess
+    ? [...processedIds]                          // 全処理済み（saved + skip）
+    : [...processedIds].filter(id =>             // API失敗時はsaved以外を削除
+        !saved.some(s => s.rawId === id));
+  await deleteSheetRows(idsToDelete);
 }
 
 /**
- * Apps Script ウェブアプリ経由でステータスを「処理済み」に更新する。
+ * Vercel ディレクトリサイトの /api/news に新規ニュースを送信する。
+ * 成功時 true、失敗時 false を返す。
+ */
+async function sendToVercelApi(savedItems, today) {
+  if (!API_SECRET_TOKEN) {
+    console.log('ℹ️  API_SECRET_TOKEN未設定 — Vercel API送信をスキップ');
+    return false;
+  }
+  if (savedItems.length === 0) {
+    console.log('ℹ️  送信対象なし');
+    return true;
+  }
+
+  const payload = savedItems.map(item => ({
+    title:        item.title,
+    type:         item.type,
+    area:         item.area,
+    url:          '',
+    source:       'Google News',
+    reporter:     '編集部',
+    published_at: item.date || today,
+  }));
+
+  try {
+    const res = await fetch(`${VERCEL_SITE_URL}/api/news`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${API_SECRET_TOKEN}`,
+      },
+      body: JSON.stringify({ items: payload }),
+    });
+    const result = await res.json();
+    if (res.ok) {
+      console.log(`📡 Vercel API送信完了: ${result.count}件`);
+      return true;
+    }
+    console.warn(`⚠️  Vercel API送信失敗: HTTP ${res.status} — ${JSON.stringify(result)}`);
+    return false;
+  } catch (err) {
+    console.warn('⚠️  Vercel API送信エラー:', err.message);
+    return false;
+  }
+}
+
+/**
+ * Apps Script ウェブアプリ経由でシートの行を物理削除する。
  * SHEETS_WEBHOOK_URL が未設定の場合はスキップ。
  */
-async function updateSheetStatus(processedRawIds) {
+async function deleteSheetRows(idsToDelete) {
   const webhookUrl = process.env.SHEETS_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.log('ℹ️  SHEETS_WEBHOOK_URL未設定 — スプレッドシートのステータス更新をスキップ');
+    console.log('ℹ️  SHEETS_WEBHOOK_URL未設定 — スプレッドシート行削除をスキップ');
     return;
   }
+  if (idsToDelete.length === 0) return;
+
   try {
     const res = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ids: processedRawIds }),
+      method:   'POST',
+      headers:  { 'Content-Type': 'application/json' },
+      body:     JSON.stringify({ action: 'delete', ids: idsToDelete }),
       redirect: 'follow',
     });
     const result = await res.json();
-    if (result.updated !== undefined) {
-      console.log(`📝 スプレッドシート更新: ${result.updated}件を「処理済み」に変更`);
+    if (result.deleted !== undefined) {
+      console.log(`🗑  スプレッドシート削除: ${result.deleted}行`);
     } else {
-      console.warn('⚠️  Sheets更新レスポンス異常:', JSON.stringify(result));
+      console.warn('⚠️  Sheets削除レスポンス異常:', JSON.stringify(result));
     }
   } catch (err) {
-    console.warn('⚠️  Sheets更新失敗（インポート結果には影響なし）:', err.message);
+    console.warn('⚠️  Sheets削除失敗（インポート結果には影響なし）:', err.message);
   }
 }
 

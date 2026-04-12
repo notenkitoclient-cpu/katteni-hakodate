@@ -24,9 +24,10 @@ jobs:
         with:
           node-version: '24'
 
-      - name: スプレッドシートからインポート
+      - name: スプレッドシートからインポート・API送信
         env:
           SHEETS_WEBHOOK_URL: ${{ secrets.SHEETS_WEBHOOK_URL }}
+          API_SECRET_TOKEN: ${{ secrets.API_SECRET_TOKEN }}
         run: node scripts/sheets-import.mjs
 
       - name: 新規ニュースをコミット＆プッシュ
@@ -43,7 +44,3 @@ jobs:
             echo "✅ ${COUNT}件をプッシュ完了"
           fi
 
-      - name: ディレクトリサイト(Vercel)にニュースを送信
-        env:
-          API_SECRET_TOKEN: ${{ secrets.API_SECRET_TOKEN }}
-        run: python3 scripts/send-news-to-api.py
