@@ -13,6 +13,18 @@ from urllib import request, error
 SITE_URL = os.environ.get('SITE_URL', 'https://katteni-hakodate.vercel.app')
 TOKEN    = os.environ.get('API_SECRET_TOKEN', '')
 
+# 函館・道南に関連するキーワード（いずれかが title か area に含まれれば通過）
+HAKODATE_KEYWORDS = [
+    '函館', 'はこだて', 'ハコダテ', 'hakodate',
+    '北斗', '七飯', '森町', '八雲', '長万部', '松前', '江差', '乙部',
+    '道南',
+]
+
+def is_hakodate(title: str, area: str) -> bool:
+    text = (title + area).lower()
+    return any(kw.lower() in text for kw in HAKODATE_KEYWORDS)
+
+
 # 直前コミットで追加されたニュースファイルを取得
 result = os.popen(
     "git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'src/content/news/*.md' 2>/dev/null"
@@ -23,7 +35,7 @@ if not files:
     print('新規ニュースなし。API送信をスキップ。')
     sys.exit(0)
 
-print(f'送信対象: {len(files)}件')
+print(f'検出ファイル: {len(files)}件')
 
 
 def parse_fm(text):
@@ -39,23 +51,32 @@ def parse_fm(text):
 
 
 items = []
+skipped = []
 for f in files:
     try:
         with open(f, encoding='utf-8') as fh:
             fm = parse_fm(fh.read())
-        if not fm.get('title'):
+        title = fm.get('title', '')
+        area  = fm.get('area', '')
+        if not title:
+            continue
+        if not is_hakodate(title, area):
+            skipped.append(title)
+            print(f'  SKIP（函館外）: {title}')
             continue
         items.append({
-            'title':        fm.get('title', ''),
+            'title':        title,
             'type':         fm.get('type', 'その他'),
-            'area':         fm.get('area', ''),
+            'area':         area,
             'url':          fm.get('source', ''),
             'source':       'Google News',
             'reporter':     fm.get('reporter', '編集部'),
             'published_at': fm.get('date', ''),
         })
     except Exception as e:
-        print(f'SKIP {f}: {e}')
+        print(f'SKIP（エラー）: {f}: {e}')
+
+print(f'送信対象: {len(items)}件 / スキップ: {len(skipped)}件')
 
 if not items:
     print('有効なアイテムなし。スキップ。')
