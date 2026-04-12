@@ -7,18 +7,62 @@
   SITE_URL          - 送信先URL（デフォルト: https://katteni-hakodate.vercel.app）
 """
 
-import os, json, re, sys
-from urllib import request, error
+import json
+import os
+import re
+import sys
+from urllib import error, request
 
-SITE_URL = os.environ.get('SITE_URL', 'https://katteni-hakodate.vercel.app')
-TOKEN    = os.environ.get('API_SECRET_TOKEN', '')
+SITE_URL = os.environ.get("SITE_URL", "https://katteni-hakodate.vercel.app")
+TOKEN = os.environ.get("API_SECRET_TOKEN", "")
 
-# 函館・道南に関連するキーワード（いずれかが title か area に含まれれば通過）
+# 函館・道南に関連するキーワード
 HAKODATE_KEYWORDS = [
-    '函館', 'はこだて', 'ハコダテ', 'hakodate',
-    '北斗', '七飯', '森町', '八雲', '長万部', '松前', '江差', '乙部',
-    '道南',
+    "函館",
+    "はこだて",
+    "ハコダテ",
+    "hakodate",
+    "北斗",
+    "ほくと",
+    "ホクト",
+    "七飯",
+    "ななえ",
+    "ナナエ",
+    "鹿部",
+    "しかべ",
+    "森町",
+    "もりまち",
+    "木古内",
+    "きこない",
+    "知内",
+    "しりうち",
+    "福島町",
+    "ふくしま",
+    "松前",
+    "まつまえ",
+    "江差",
+    "えさし",
+    "上ノ国",
+    "かみのくに",
+    "厚沢部",
+    "あっさぶ",
+    "乙部",
+    "おとべ",
+    "奥尻",
+    "おくしり",
+    "今金",
+    "いまかね",
+    "せんたな",
+    "せたな",
+    "長万部",
+    "おしゃまんべ",
+    "八雲",
+    "やくも",
+    "道南",
+    "渡島",
+    "檜山",
 ]
+
 
 def is_hakodate(title: str, area: str) -> bool:
     text = (title + area).lower()
@@ -26,24 +70,28 @@ def is_hakodate(title: str, area: str) -> bool:
 
 
 # 直前コミットで追加されたニュースファイルを取得
-result = os.popen(
-    "git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'src/content/news/*.md' 2>/dev/null"
-).read().strip()
-files = [f for f in result.split('\n') if f.strip()]
+result = (
+    os.popen(
+        "git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'src/content/news/*.md' 2>/dev/null"
+    )
+    .read()
+    .strip()
+)
+files = [f for f in result.split("\n") if f.strip()]
 
 if not files:
-    print('新規ニュースなし。API送信をスキップ。')
+    print("新規ニュースなし。API送信をスキップ。")
     sys.exit(0)
 
-print(f'検出ファイル: {len(files)}件')
+print(f"検出ファイル: {len(files)}件")
 
 
 def parse_fm(text):
-    m = re.match(r'^---\s*\n(.*?)\n---', text, re.DOTALL)
+    m = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
     if not m:
         return {}
     out = {}
-    for line in m.group(1).split('\n'):
+    for line in m.group(1).split("\n"):
         kv = re.match(r'^(\w+):\s*["\']?(.*?)["\']?\s*$', line)
         if kv:
             out[kv.group(1)] = kv.group(2).strip()
@@ -54,54 +102,56 @@ items = []
 skipped = []
 for f in files:
     try:
-        with open(f, encoding='utf-8') as fh:
+        with open(f, encoding="utf-8") as fh:
             fm = parse_fm(fh.read())
-        title = fm.get('title', '')
-        area  = fm.get('area', '')
+        title = fm.get("title", "")
+        area = fm.get("area", "")
         if not title:
             continue
         if not is_hakodate(title, area):
             skipped.append(title)
-            print(f'  SKIP（函館外）: {title}')
+            print(f"  SKIP（函館外）: {title}")
             continue
-        items.append({
-            'title':        title,
-            'type':         fm.get('type', 'その他'),
-            'area':         area,
-            'url':          fm.get('source', ''),
-            'source':       'Google News',
-            'reporter':     fm.get('reporter', '編集部'),
-            'published_at': fm.get('date', ''),
-        })
+        items.append(
+            {
+                "title": title,
+                "type": fm.get("type", "その他"),
+                "area": area,
+                "url": fm.get("source", ""),
+                "source": "Google News",
+                "reporter": fm.get("reporter", "編集部"),
+                "published_at": fm.get("date", ""),
+            }
+        )
     except Exception as e:
-        print(f'SKIP（エラー）: {f}: {e}')
+        print(f"SKIP（エラー）: {f}: {e}")
 
-print(f'送信対象: {len(items)}件 / スキップ: {len(skipped)}件')
+print(f"送信対象: {len(items)}件 / スキップ: {len(skipped)}件")
 
 if not items:
-    print('有効なアイテムなし。スキップ。')
+    print("有効なアイテムなし。スキップ。")
     sys.exit(0)
 
-payload = json.dumps({'items': items}, ensure_ascii=False).encode('utf-8')
+payload = json.dumps({"items": items}, ensure_ascii=False).encode("utf-8")
 
 req = request.Request(
-    f'{SITE_URL}/api/news',
+    f"{SITE_URL}/api/news",
     data=payload,
     headers={
-        'Content-Type':  'application/json',
-        'Authorization': f'Bearer {TOKEN}',
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {TOKEN}",
     },
-    method='POST',
+    method="POST",
 )
 
 try:
     with request.urlopen(req, timeout=30) as res:
         body = res.read().decode()
-        print(f'✅ 送信完了: HTTP {res.status} — {body}')
+        print(f"✅ 送信完了: HTTP {res.status} — {body}")
 except error.HTTPError as e:
     body = e.read().decode()
-    print(f'⚠️ 送信失敗: HTTP {e.code} — {body}')
+    print(f"⚠️ 送信失敗: HTTP {e.code} — {body}")
     sys.exit(1)
 except Exception as e:
-    print(f'⚠️ 送信エラー: {e}')
+    print(f"⚠️ 送信エラー: {e}")
     sys.exit(1)
