@@ -1,77 +1,122 @@
-import { ImageResponse } from 'next/og';
-import { NextRequest } from 'next/server';
+import { ImageResponse } from '@vercel/og';
 
 export const runtime = 'edge';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl;
-  const title = searchParams.get('title') ?? 'カッテニハコダテ';
-  const sub   = searchParams.get('sub')   ?? '函館まち図鑑 — OPEN & FREE';
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const title = searchParams.get('title') || '函館まち図鑑';
 
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: '1200px',
-          height: '630px',
-          background: '#0a0a0a',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '80px',
-        }}
-      >
-        {/* アクセントライン */}
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <div style={{ width: '40px', height: '4px', background: '#D94F3D' }} />
-          <div style={{ width: '12px', height: '4px', background: '#D94F3D', opacity: 0.4 }} />
-        </div>
-
-        {/* メインテキスト */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#fff',
+            padding: '60px 80px',
+            position: 'relative',
+          }}
+        >
+          {/* 上部の装飾ライン（アクセント） */}
           <div
             style={{
-              fontSize: title.length > 20 ? '48px' : '60px',
-              fontWeight: 900,
-              color: '#FAFAF8',
-              lineHeight: 1.2,
-              letterSpacing: '-0.02em',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '12px',
+              backgroundColor: '#333',
             }}
-          >
-            {title}
-          </div>
-          <div
-            style={{
-              fontSize: '24px',
-              color: '#666',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {sub}
-          </div>
-        </div>
+          />
 
-        {/* フッター */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div
             style={{
-              fontSize: '28px',
-              fontWeight: 900,
-              color: '#FAFAF8',
-              letterSpacing: '0.1em',
               display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              justifyContent: 'space-between',
             }}
           >
-            KATTENI
-            <span style={{ color: '#D94F3D' }}>.</span>
-            HAKODATE
-          </div>
-          <div style={{ fontSize: '14px', color: '#444', letterSpacing: '0.15em' }}>
-            kattenihakodate.com
+            {/* メインタイトルエリア */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginTop: '40px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 24,
+                  color: '#666',
+                  marginBottom: '16px',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                函館の「いいもの」、みんなで勝手にPR。
+              </div>
+              <div
+                style={{
+                  fontSize: 72,
+                  fontWeight: '900',
+                  color: '#000',
+                  textAlign: 'left',
+                  lineHeight: 1.1,
+                  wordBreak: 'break-all',
+                }}
+              >
+                {title}
+              </div>
+            </div>
+
+            {/* フッターエリア */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderTop: '1px solid #eee',
+                paddingTop: '30px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 32,
+                  fontWeight: 'bold',
+                  color: '#000',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                函館まち図鑑
+              </div>
+              <div
+                style={{
+                  fontSize: 20,
+                  color: '#888',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  backgroundColor: '#f5f5f5',
+                  padding: '8px 20px',
+                  borderRadius: '30px',
+                }}
+              >
+                Open & Free
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    ),
-    { width: 1200, height: 630 }
-  );
+      ),
+      {
+        width: 1200,
+        height: 630,
+      }
+    );
+  } catch (e: any) {
+    return new Response(`Failed to generate the image`, {
+      status: 500,
+    });
+  }
 }
