@@ -35,23 +35,35 @@ export default async function Home() {
       <section className="bg-background border-b-2 border-black py-16 md:py-32 px-4">
         <div className="popeye-container">
           <div className="max-w-2xl px-0 md:px-2">
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-black leading-[1.2] mb-6 md:mb-8 tracking-tight break-keep">
-              リアルな函館
+            <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-subtext mb-6">
+              函館まち図鑑
+            </p>
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-black leading-[1.2] mb-6 md:mb-8 tracking-tight break-keep">
+              函館の「いいもの」、<br />みんなで勝手にPR。
             </h1>
-            <p className="text-base sm:text-lg md:text-2xl leading-relaxed mb-6 font-serif font-medium text-gray-800">
-              地元の人が知るべき店を集めた<br className="hidden sm:block" />
-              みんなで作る函館まち図鑑。
+            <p className="text-base sm:text-lg md:text-xl leading-relaxed mb-10 font-serif text-gray-800">
+              誰でも、自由に、無料で使える。<br />
+              地元民の「推し」と「応援」が詰め込まれた、<br />
+              函館最大級の市民参加型・公開データベース。
             </p>
-            <p className="text-lg md:text-xl font-bold mb-12 bg-black text-white inline-block px-4 py-2">
-              掲載もなにもかも無料。
-            </p>
-            <div>
-              <Link
-                href="/submit"
-                className="block md:inline-block text-center bg-accent text-white px-6 md:px-8 py-4 md:py-5 text-base md:text-lg font-bold hover:bg-red-700 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-none w-full md:w-auto"
-              >
-                掲載する（もちろん無料）
-              </Link>
+
+            {/* 黒帯CTA */}
+            <div className="bg-black text-white px-6 py-8 mb-8 md:mb-10">
+              <p className="font-serif text-lg md:text-xl leading-relaxed mb-6 text-gray-200">
+                あなたの「知ってほしい」のために、<br />ここを自由に使ってください。<br />
+                <span className="text-gray-400 text-base">それが誰かの新しい発見になり、街の応援に繋がるはず。</span>
+              </p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Link
+                  href="/submit"
+                  className="block text-center bg-accent text-white px-6 md:px-8 py-4 text-base md:text-lg font-bold hover:bg-red-700 transition-colors shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none"
+                >
+                  お店を掲載する（無料）
+                </Link>
+                <span className="font-mono text-xs tracking-widest text-gray-500 border border-gray-700 px-3 py-1">
+                  勝手に応援中 ✔
+                </span>
+              </div>
             </div>
           </div>
         </div>

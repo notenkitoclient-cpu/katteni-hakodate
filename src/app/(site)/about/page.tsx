@@ -3,10 +3,10 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'このサイトについて',
-  description: 'カッテニハコダテは、誰でも自由に使える函館まち図鑑です。技術と愛情で、函館の「今」を記録します。',
+  description: 'カッテニハコダテは、函館を勝手に応援するプロジェクトです。誰でも自由に使える、みんなで作る函館まち図鑑。',
   openGraph: {
     title: 'このサイトについて | カッテニハコダテ',
-    description: 'カッテニハコダテは、誰でも自由に使える函館まち図鑑です。技術と愛情で、函館の「今」を記録します。',
+    description: 'カッテニハコダテは、函館を勝手に応援するプロジェクトです。誰でも自由に使える、みんなで作る函館まち図鑑。',
   },
 };
 
@@ -19,11 +19,11 @@ export default function AboutPage() {
         <div className="popeye-container py-16 md:py-28 px-4">
           <div className="max-w-3xl">
             <p className="font-mono text-[11px] tracking-[0.4em] uppercase text-subtext mb-6">
-              Vol. 01 &nbsp;/&nbsp; About the Project
+              About the Project
             </p>
             <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
-              届けるための、<br />
-              場所をつくる。
+              函館を、<br />
+              勝手に応援する。
             </h1>
           </div>
         </div>
@@ -33,6 +33,12 @@ export default function AboutPage() {
       <article className="popeye-container px-4 py-16 md:py-24">
         <div className="max-w-2xl mx-auto space-y-20">
 
+          {/* リード */}
+          <p className="font-serif text-xl md:text-2xl leading-relaxed text-gray-800">
+            「函館まち図鑑」は、街のいいもの・面白いもの・みんなに知ってほしいものを、<br className="hidden md:block" />
+            みんなでPRし合うための「お節介な」プラットフォームです。
+          </p>
+
           {/* 章 01 */}
           <section>
             <div className="flex items-center gap-6 mb-8">
@@ -40,19 +46,18 @@ export default function AboutPage() {
               <div className="flex-1 border-t-2 border-black" />
             </div>
             <h2 className="font-serif text-2xl md:text-3xl font-black mb-6 leading-snug">
-              技術はあった。<br className="hidden md:block" />でも、届かなかった。
+              みんなの「伝えたい」が<br className="hidden md:block" />集まった場所
             </h2>
             <div className="space-y-5 font-serif text-lg leading-[2] text-gray-800">
               <p>
-                SNS投稿もできる。ホームページも作れる。それなりに発信してきたつもりだった。
+                「うちの店のこれが美味しい」「これをいま応援してほしい！」
               </p>
               <p>
-                でも、いくら発信しても、函館の外まで届かない。<br />
-                地元の人でさえ、すぐ近くにある素晴らしいお店を知らないままでいる。
+                そんな、普段は埋もれてしまいがちなみんなの「知ってほしい」を持ち寄ってください。<br />
+                ここは単なる記録の場所ではありません。
               </p>
               <p>
-                個人の発信力だけでは、どこかに限界がある。<br />
-                その壁に、何度もぶつかった。
+                函館をもっと盛り上げるために、みんなで情報を出し合い、広めていくための場所です。
               </p>
             </div>
           </section>
@@ -72,22 +77,14 @@ export default function AboutPage() {
               <div className="flex-1 border-t-2 border-black" />
             </div>
             <h2 className="font-serif text-2xl md:text-3xl font-black mb-6 leading-snug">
-              街の手触りが、<br className="hidden md:block" />検索に出てこない。
+              誰でも自由に、<br className="hidden md:block" />使い倒せる
             </h2>
             <div className="space-y-5 font-serif text-lg leading-[2] text-gray-800">
               <p>
-                函館の路地を歩くと、至るところに店主の息づかいがある。<br />
-                手書きの看板、窓越しに見える厨房、年季の入った暖簾。<br />
-                どれも、その人の歴史が刻まれたものだ。
+                ここに集まったPR情報は、誰でも無料で自由に活用できます。商用利用もOK。
               </p>
               <p>
-                そういう場所が、検索してもひっかからない。<br />
-                SNSをやっていない。ホームページもない。<br />
-                でも確かに、街のそこにある。
-              </p>
-              <p>
-                そのリアルな街の手触りを、デジタルに刻む方法はないか。<br />
-                ずっとそれを考えてきた。
+                いい情報を独り占めせず、みんなで共有して、街全体の力に変えていきましょう。
               </p>
             </div>
           </section>
@@ -99,43 +96,41 @@ export default function AboutPage() {
               <div className="flex-1 border-t-2 border-black" />
             </div>
             <h2 className="font-serif text-2xl md:text-3xl font-black mb-6 leading-snug">
-              あの日の自分が、<br className="hidden md:block" />欲しかった場所。
+              勝手にやってるから、<br className="hidden md:block" />無料です。<span className="text-base font-normal text-subtext ml-2">※審査あり</span>
             </h2>
             <div className="space-y-5 font-serif text-lg leading-[2] text-gray-800">
               <p>
-                「カッテニハコダテ」は、そういう問いから生まれた。
+                誰かに頼まれたわけじゃない。自分たちが函館を応援したいから、勝手に作っているプロジェクトです。<br />
+                だから、利用料も、掲載料も、一切いりません。
               </p>
               <p>
-                技術に不慣れな店主さんのためでもある。<br />
-                そして、発信する手段を持っていても届かないと感じていた、<br />
-                あの頃の自分のためでもある。
-              </p>
-              <p>
-                ここを入り口に、お客さんがお店の息づかいを感じてほしい。<br />
-                店主さんは本業に集中しながら、街に存在を刻んでほしい。
-              </p>
-              <p>
-                ITが苦手でも大丈夫。操作や更新は、こちらが全力でサポートします。
+                ただし、「本当に函館のためになるか」の審査はあります。<br />
+                自信を持って「これ、いいよ！」と言えるものだけを、勝手に応援し続けます。
               </p>
             </div>
           </section>
 
           {/* CTA */}
-          <div className="border-4 border-black p-8 md:p-12 bg-background">
-            <p className="font-mono text-xs tracking-widest uppercase text-subtext mb-4">Join Us</p>
-            <h3 className="font-serif text-2xl md:text-3xl font-black leading-snug mb-6">
-              街の手触りを、<br />一緒に記録しよう。
+          <div className="bg-black text-white p-8 md:p-12">
+            <p className="font-mono text-xs tracking-widest text-gray-500 mb-4">Join Us</p>
+            <h3 className="font-serif text-2xl md:text-3xl font-black leading-snug mb-6 text-white">
+              あなたの「知ってほしい」のために、<br />ここを自由に使ってください。
             </h3>
-            <p className="font-serif text-base text-gray-700 mb-8 leading-relaxed">
-              掲載も、情報更新も、ぜんぶ無料です。<br />
-              函館をもっと面白くするために、あなたのお店の話を聞かせてください。
+            <p className="font-serif text-base text-gray-400 mb-8 leading-relaxed">
+              それが誰かの新しい発見になり、街の応援に繋がるはず。<br />
+              掲載も、情報更新も、ぜんぶ無料です。
             </p>
-            <Link
-              href="/submit"
-              className="block sm:inline-block text-center bg-accent text-white px-8 py-4 font-bold tracking-widest hover:bg-black transition-colors shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-none"
-            >
-              お店を掲載する（無料）
-            </Link>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <Link
+                href="/submit"
+                className="block text-center bg-accent text-white px-8 py-4 font-bold tracking-widest hover:bg-red-700 transition-colors"
+              >
+                お店を掲載する（無料）
+              </Link>
+              <span className="font-mono text-xs tracking-widest text-gray-600 border border-gray-700 px-3 py-1">
+                勝手に応援中 ✔
+              </span>
+            </div>
           </div>
 
         </div>
