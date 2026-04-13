@@ -67,7 +67,7 @@ export default async function StoresPage({
 
         {/* Main Grid */}
         <div className="md:col-span-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-x-6 md:gap-y-10 items-stretch">
             {stores.map((store, i) => {
               let img = '/uploads/placeholder.jpg';
               try {
@@ -90,7 +90,7 @@ export default async function StoresPage({
                         {store.category}
                       </div>
                     </div>
-                    <div className="p-4 flex-grow flex flex-col justify-between">
+                    <div className="p-4 md:p-6 flex-grow flex flex-col justify-between">
                       <div>
                         <h2 className="font-serif text-2xl font-bold mb-2 group-hover:text-accent transition-colors flex items-center justify-between">
                           <span className="line-clamp-2">{store.store_name}</span>
