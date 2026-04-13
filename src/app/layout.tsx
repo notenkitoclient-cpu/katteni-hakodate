@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     siteName: 'カッテニハコダテ',
     title: '函館まち図鑑 | カッテニハコダテ',
     description: '誰でも自由に使える、みんなで作る函館のオープンデータ図鑑。',
-    images: [{ url: '/api/og', width: 1200, height: 630 }],
+    images: [{ url: '/ogp.png', width: 1200, height: 630, alt: '函館まち図鑑 | カッテニハコダテ' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: '函館まち図鑑 | カッテニハコダテ',
     description: '誰でも自由に使える、みんなで作る函館のオープンデータ図鑑。',
-    images: ['/api/og'],
+    images: ['/ogp.png'],
   },
   alternates: {
     canonical: 'https://kattenihakodate.com',
