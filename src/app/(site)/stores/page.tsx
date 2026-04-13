@@ -66,8 +66,8 @@ export default async function StoresPage({
         </aside>
 
         {/* Main Grid */}
-        <div className="md:col-span-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-x-6 md:gap-y-10 items-stretch">
+        <div className="md:col-span-3 py-8 md:py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4 items-stretch">
             {stores.map((store, i) => {
               let img = '/uploads/placeholder.jpg';
               try {
@@ -90,9 +90,9 @@ export default async function StoresPage({
                         {store.category}
                       </div>
                     </div>
-                    <div className="p-4 md:p-6 flex-grow flex flex-col justify-between">
+                    <div className="px-4 pt-6 pb-6 md:px-6 flex-grow flex flex-col justify-between">
                       <div>
-                        <h2 className="font-serif text-2xl font-bold mb-2 group-hover:text-accent transition-colors flex items-center justify-between">
+                        <h2 className="font-serif text-2xl font-bold mb-3 group-hover:text-accent transition-colors flex items-center justify-between">
                           <span className="line-clamp-2">{store.store_name}</span>
                           <div className="scale-75 origin-right shrink-0">
                             <OpenBadge hoursString={store.opening_hours} />
