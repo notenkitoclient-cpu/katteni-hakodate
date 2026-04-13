@@ -65,9 +65,9 @@ export default async function StoresPage({
           </div>
         </aside>
 
-        {/* Main Grid (Collage style) */}
+        {/* Main Grid */}
         <div className="md:col-span-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
             {stores.map((store, i) => {
               let img = '/uploads/placeholder.jpg';
               try {
@@ -75,32 +75,36 @@ export default async function StoresPage({
                 if (arr.length > 0) img = arr[0];
               } catch {}
 
-              const marginTop = i % 2 !== 0 ? 'sm:mt-12' : '';
-
               return (
-                <Link href={`/stores/${store.slug}`} key={store.id} className={`group block ${marginTop}`}>
-                  <div className="aspect-[3/4] bg-gray-200 mb-4 overflow-hidden border border-border relative">
-                    {img !== '/uploads/placeholder.jpg' ? (
-                      <img src={img} alt={store.store_name} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105" />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-subtext font-tele p-4 text-center">
-                        NO IMAGE<br/><span className="text-xs mt-2">Check the details inside.</span>
+                <Link href={`/stores/${store.slug}`} key={store.id} className="group block h-full">
+                  <div className="h-full flex flex-col border border-border overflow-hidden">
+                    <div className="relative aspect-square bg-gray-200 overflow-hidden">
+                      {img !== '/uploads/placeholder.jpg' ? (
+                        <img src={img} alt={store.store_name} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105" />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-subtext font-tele p-4 text-center">
+                          NO IMAGE<br/><span className="text-xs mt-2">Check the details inside.</span>
+                        </div>
+                      )}
+                      <div className="absolute top-4 left-4 bg-background text-foreground text-xs font-tele font-bold px-3 py-1 border border-foreground">
+                        {store.category}
                       </div>
-                    )}
-                    <div className="absolute top-4 left-4 bg-background text-foreground text-xs font-tele font-bold px-3 py-1 border border-foreground">
-                      {store.category}
                     </div>
-                  </div>
-                  <div>
-                    <h2 className="font-serif text-2xl font-bold mb-2 group-hover:text-accent transition-colors flex items-center justify-between">
-                      <span className="line-clamp-2">{store.store_name}</span>
-                      <div className="scale-75 origin-right shrink-0">
-                        <OpenBadge hoursString={store.opening_hours} />
+                    <div className="p-4 flex-grow flex flex-col justify-between">
+                      <div>
+                        <h2 className="font-serif text-2xl font-bold mb-2 group-hover:text-accent transition-colors flex items-center justify-between">
+                          <span className="line-clamp-2">{store.store_name}</span>
+                          <div className="scale-75 origin-right shrink-0">
+                            <OpenBadge hoursString={store.opening_hours} />
+                          </div>
+                        </h2>
                       </div>
-                    </h2>
-                    <p className="font-tele text-xs text-subtext border-t border-border pt-2">
-                      📍 {store.location_area} <span className="mx-2">|</span> 📞 {store.contact_tel || '非公開'}
-                    </p>
+                      <div className="mt-4 pt-2 border-t border-border">
+                        <p className="font-tele text-xs text-subtext">
+                          📍 {store.location_area} <span className="mx-2">|</span> 📞 {store.contact_tel || '非公開'}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </Link>
               );
