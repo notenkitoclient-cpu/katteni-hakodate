@@ -46,7 +46,7 @@ export default function SubmitWizard() {
       <div className="mb-12 pb-10 border-b-2 border-black">
         <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-subtext mb-4">函館まち図鑑 — 掲載申請</p>
         <h1 className="font-serif text-3xl md:text-4xl font-black leading-snug mb-4">
-          頑張っている人が、<br />もっと知られないのはもったいない。
+          頑張っている人が、<br />知られないのはもったいない。
         </h1>
         <p className="font-serif text-base text-gray-700 leading-relaxed mb-4">
           掲載も、情報更新も、ぜんぶ無料。<br />
