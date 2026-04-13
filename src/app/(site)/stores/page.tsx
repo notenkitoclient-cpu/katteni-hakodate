@@ -41,10 +41,10 @@ export default async function StoresPage({
         </div>
       </div>
 
-      <div className="popeye-container py-12 grid grid-cols-1 md:grid-cols-4 gap-12">
-        
+      <div className="popeye-container py-12 grid grid-cols-1 md:grid-cols-4 gap-12 items-start">
+
         {/* Navigation Sidebar */}
-        <aside className="md:col-span-1 space-y-8 font-tele text-sm">
+        <aside className="md:col-span-1 space-y-8 font-tele text-sm pt-1">
           <div>
             <h3 className="font-bold border-b-2 border-foreground pb-2 mb-4 tracking-widest">AREA</h3>
             <ul className="space-y-3">
@@ -66,8 +66,8 @@ export default async function StoresPage({
         </aside>
 
         {/* Main Grid */}
-        <div className="md:col-span-3 py-8 md:py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4 items-stretch">
+        <div className="md:col-span-3 pt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-stretch">
             {stores.map((store, i) => {
               let img = '/uploads/placeholder.jpg';
               try {
