@@ -210,7 +210,8 @@ export default function SubmitWizard() {
               )}
             </div>
             <div className="bg-gray-100 p-5 text-sm leading-relaxed">
-              当ポータルは<strong>承認制</strong>です。送信後にプレビューURLが発行されます。運営者が確認後、数日以内に本公開となります。
+              当ポータルは<strong>承認制</strong>です。送信後にプレビューURLが発行されます。運営者が確認後、数日以内に本公開となります。<br />
+              公開後、SNSでの発信を行います！ご了承ください！
             </div>
           </div>
         )}
