@@ -41,7 +41,7 @@ export default async function StoresPage({
         </div>
       </div>
 
-      <div className="popeye-container py-12 grid grid-cols-1 md:grid-cols-4 gap-12 items-start">
+      <div className="popeye-container py-8 md:py-16 grid grid-cols-1 md:grid-cols-4 gap-12 items-start">
 
         {/* Navigation Sidebar */}
         <aside className="md:col-span-1 space-y-8 font-tele text-sm pt-1">
