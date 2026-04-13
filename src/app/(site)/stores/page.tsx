@@ -65,42 +65,42 @@ export default async function StoresPage({
           </div>
         </aside>
 
-        {/* Main Grid */}
+        {/* Main Grid (Collage style) */}
         <div className="md:col-span-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stores.map((store) => {
-              let img: string | null = null;
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 gap-y-16">
+            {stores.map((store, i) => {
+              let img = '/uploads/placeholder.jpg';
               try {
                 const arr = JSON.parse(store.images);
                 if (arr.length > 0) img = arr[0];
               } catch {}
 
+              const marginTop = i % 2 !== 0 ? 'sm:mt-12' : '';
+
               return (
-                <Link href={`/stores/${store.slug}`} key={store.id} className="group block">
-                  {/* 画像エリア：固定アスペクト比で統一 */}
-                  <div className="aspect-[4/3] bg-gray-100 mb-3 overflow-hidden border border-border relative">
-                    {img ? (
-                      <img
-                        src={img}
-                        alt={store.store_name}
-                        className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
-                      />
+                <Link href={`/stores/${store.slug}`} key={store.id} className={`group block ${marginTop}`}>
+                  <div className="aspect-[3/4] bg-gray-200 mb-4 overflow-hidden border border-border relative">
+                    {img !== '/uploads/placeholder.jpg' ? (
+                      <img src={img} alt={store.store_name} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-subtext font-tele text-xs">
-                        NO IMAGE
+                      <div className="w-full h-full flex flex-col items-center justify-center text-subtext font-tele p-4 text-center">
+                        NO IMAGE<br/><span className="text-xs mt-2">Check the details inside.</span>
                       </div>
                     )}
-                    <div className="absolute top-3 left-3 bg-background text-foreground text-xs font-tele font-bold px-2 py-0.5 border border-foreground">
+                    <div className="absolute top-4 left-4 bg-background text-foreground text-xs font-tele font-bold px-3 py-1 border border-foreground">
                       {store.category}
                     </div>
                   </div>
-                  {/* テキストエリア */}
-                  <h2 className="font-serif text-lg font-bold leading-snug group-hover:text-accent transition-colors mb-1">
-                    {store.store_name}
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <p className="font-tele text-xs text-subtext">📍 {store.location_area}</p>
-                    <OpenBadge hoursString={store.opening_hours} />
+                  <div>
+                    <h2 className="font-serif text-2xl font-bold mb-2 group-hover:text-accent transition-colors flex items-center justify-between">
+                      <span className="line-clamp-2">{store.store_name}</span>
+                      <div className="scale-75 origin-right shrink-0">
+                        <OpenBadge hoursString={store.opening_hours} />
+                      </div>
+                    </h2>
+                    <p className="font-tele text-xs text-subtext border-t border-border pt-2">
+                      📍 {store.location_area} <span className="mx-2">|</span> 📞 {store.contact_tel || '非公開'}
+                    </p>
                   </div>
                 </Link>
               );
