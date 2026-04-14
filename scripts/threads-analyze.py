@@ -38,7 +38,8 @@ def api_get(path, params=None):
 
 
 def fetch_profile():
-    fields = "id,username,name,threads_biography,followers_count,following_count"
+    # followers_count/following_count は threads_manage_insights 権限が必要なため除外
+    fields = "id,username,name,threads_biography"
     return api_get("/me", {"fields": fields})
 
 
@@ -127,9 +128,10 @@ def ai_comment(profile, stats):
         f"{i+1}. 「{(p.get('text') or '')[:80]}」 ❤️{p.get('like_count', 0)}"
         for i, p in enumerate(stats.get("top3", []))
     )
+    followers = "N/A"
     prompt = f"""以下はThreadsアカウント「@{profile.get('username')}」の分析データです。
 
-フォロワー数: {profile.get('followers_count', 'N/A')}
+フォロワー数: {followers}
 直近{stats['post_count']}件 ({stats['date_range']})
 　総いいね: {stats['total_likes']}  総リプライ: {stats['total_replies']}
 　平均いいね/投稿: {stats['avg_likes']}  平均閲覧数: {stats['avg_views']}
@@ -163,9 +165,10 @@ def fmt_int(v):
 
 def build_report(profile, stats, insights, ai_text):
     now = datetime.now(JST).strftime("%Y-%m-%d %H:%M JST")
+    followers = insights.get("followers_count", "?")
     lines = [
         f"📊 **Threads分析レポート** | {now}",
-        f"@{profile.get('username')} / フォロワー {fmt_int(profile.get('followers_count', '?'))}",
+        f"@{profile.get('username')}" + (f" / フォロワー {fmt_int(followers)}" if followers != "?" else ""),
         "",
         "━━━ 直近投稿サマリー ━━━",
         f"期間: {stats.get('date_range', 'N/A')}  投稿数: {stats['post_count']}件",
