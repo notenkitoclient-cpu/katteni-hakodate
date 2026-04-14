@@ -4,3 +4,11 @@
 node_modules/
 prisma/dev.db
 prisma/*.db
+# Astro残骸
+dist/
+.astro/
+# macOS
+.DS_Store
+# その他
+config/mcporter.json
+image/
