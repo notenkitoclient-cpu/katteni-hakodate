@@ -40,6 +40,31 @@ export async function submitStore(formData: FormData) {
     }
   });
 
+  // Discord通知
+  const webhookUrl = process.env.DISCORD_SUBMIT_WEBHOOK_URL;
+  if (webhookUrl) {
+    const lines = [
+      `📬 **新規掲載依頼が届きました**`,
+      ``,
+      `🏪 **${store_name}**`,
+      category      ? `カテゴリ: ${category}`            : null,
+      location_area ? `エリア: ${location_area}`         : null,
+      address       ? `住所: ${address}`                 : null,
+      contact_tel   ? `電話: ${contact_tel}`             : null,
+      website_url   ? `Web: ${website_url}`              : null,
+      sns_instagram ? `Instagram: ${sns_instagram}`      : null,
+      our_challenge ? `\n> ${our_challenge.slice(0, 100)}${our_challenge.length > 100 ? '…' : ''}` : null,
+      ``,
+      `🔗 管理画面: ${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kattenihakodate.com'}/admin`,
+    ].filter(Boolean).join('\n');
+
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: lines }),
+    }).catch(() => {}); // 通知失敗してもフォーム送信は成功扱い
+  }
+
   // Redirect to completion page passing the slug
   redirect(`/submit/complete?slug=${newStore.slug}`);
 }
