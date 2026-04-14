@@ -34,9 +34,32 @@ def fetch_profile():
 
 
 def fetch_posts(limit=25):
-    fields = "id,text,timestamp,media_type,like_count,reply_count,repost_count,quote_count,views"
+    # メトリクス系フィールドは /insights で個別取得するためここでは除外
+    fields = "id,text,timestamp,media_type"
     data = api_get("/me/threads", {"fields": fields, "limit": limit})
-    return (data or {}).get("data", [])
+    posts = (data or {}).get("data", [])
+
+    # 各投稿のメトリクスを /insights で取得（最大limit件）
+    for post in posts:
+        insights = api_get(
+            f"/{post['id']}/insights",
+            {"metric": "likes,views,replies,reposts,quotes"},
+        )
+        if insights:
+            for item in (insights.get("data") or []):
+                name = item["name"]
+                value = (item.get("values") or [{}])[0].get("value", 0)
+                # like_count/reply_count 等の命名に合わせる
+                key_map = {
+                    "likes":   "like_count",
+                    "views":   "views",
+                    "replies": "reply_count",
+                    "reposts": "repost_count",
+                    "quotes":  "quote_count",
+                }
+                post[key_map.get(name, name)] = value
+
+    return posts
 
 
 def fetch_account_insights():
