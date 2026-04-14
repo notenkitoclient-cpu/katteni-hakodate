@@ -42,6 +42,7 @@ export async function submitStore(formData: FormData) {
 
   // Discord通知
   const webhookUrl = process.env.DISCORD_SUBMIT_WEBHOOK_URL;
+  console.log('[submit] DISCORD_SUBMIT_WEBHOOK_URL set:', !!webhookUrl);
   if (webhookUrl) {
     const lines = [
       `📬 **新規掲載依頼が届きました**`,
@@ -58,11 +59,12 @@ export async function submitStore(formData: FormData) {
       `🔗 管理画面: ${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kattenihakodate.com'}/admin`,
     ].filter(Boolean).join('\n');
 
-    await fetch(webhookUrl, {
+    const res = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: lines }),
-    }).catch(() => {}); // 通知失敗してもフォーム送信は成功扱い
+    }).catch((e) => { console.error('[submit] Discord fetch error:', e); return null; });
+    console.log('[submit] Discord status:', res?.status);
   }
 
   // Redirect to completion page passing the slug
