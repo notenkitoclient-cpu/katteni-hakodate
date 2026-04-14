@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "exa": {
+      "baseUrl": "https://mcp.exa.ai/mcp?exaApiKey=6146bbcf-85b9-4839-a3ef-cf992cc2e08d"
+    }
+  }
+}
