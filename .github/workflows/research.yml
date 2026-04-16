@@ -26,7 +26,7 @@ jobs:
           node-version: '24'
 
       - name: 依存パッケージをインストール
-        run: npm install exa-js
+        run: npm install exa-js --legacy-peer-deps
 
       - name: リサーチ実行 → 情報収集に追加 → Discord に通知
         env:
