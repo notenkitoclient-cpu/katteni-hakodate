@@ -10,11 +10,12 @@ on:
 
 jobs:
   research:
-    name: 函館ネタリサーチ＆情報収集更新
+    name: 函館ネタリサーチ＆承認用PR作成
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: リポジトリをチェックアウト
@@ -28,23 +29,33 @@ jobs:
       - name: 依存パッケージをインストール
         run: npm install exa-js --legacy-peer-deps
 
-      - name: リサーチ実行 → 情報収集に追加 → Discord に通知
+      - name: リサーチ実行
         env:
           EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
           DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
           SITE_URL: ${{ secrets.SITE_URL }}
         run: node scripts/research.mjs
 
-      - name: 新規ニュースをコミット＆プッシュ
+      - name: 候補ニュースをPRとして作成（要承認）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
+          mkdir -p src/content/news/
           git add src/content/news/
           if git diff --staged --quiet; then
-            echo "新規ニュースなし。コミットをスキップ。"
-          else
-            COUNT=$(git diff --staged --name-only | wc -l | tr -d ' ')
-            git commit -m "news: リサーチから${COUNT}件を情報収集に自動追加 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
-            git push
-            echo "✅ ${COUNT}件をプッシュ完了"
+            echo "新規ニュースなし。スキップ。"
+            exit 0
           fi
+          COUNT=$(git diff --staged --name-only | wc -l | tr -d ' ')
+          BRANCH="news-draft/$(TZ=Asia/Tokyo date +'%Y-%m-%d-%H%M')"
+          git checkout -b "$BRANCH"
+          git commit -m "draft: リサーチ候補 ${COUNT}件 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "📋 リサーチ候補 $(TZ=Asia/Tokyo date +'%Y-%m-%d'): ${COUNT}件" \
+            --body "$(printf 'リサーチスクリプトが検出したニュース候補です。\n\n不要な記事のファイルを削除してからマージしてください。\nマージ後にThreadsへの自動投稿が行われます。')"
+          echo "✅ PR作成完了: ${COUNT}件"

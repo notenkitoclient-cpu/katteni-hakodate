@@ -9,11 +9,12 @@ on:
 
 jobs:
   import:
-    name: スプレッドシートからニュースをインポート
+    name: スプレッドシートからニュースをインポート（承認用PR作成）
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: write
+      pull-requests: write
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -24,24 +25,42 @@ jobs:
         with:
           node-version: '24'
 
-      - name: スプレッドシートからインポート・API送信
+      - name: スプレッドシートからインポート
         env:
           SHEETS_WEBHOOK_URL: ${{ secrets.SHEETS_WEBHOOK_URL }}
           API_SECRET_TOKEN: ${{ secrets.API_SECRET_TOKEN }}
         run: node scripts/sheets-import.mjs
 
-      - name: 新規ニュースをコミット＆プッシュ
+      - name: 処理済みIDをmainにコミット（再処理防止）
         run: |
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
-          mkdir -p src/content/news/
-          git add src/content/news/ src/data/sheets-processed-ids.json
+          git add src/data/sheets-processed-ids.json
           if git diff --staged --quiet; then
-            echo "新規ニュースなし"
+            echo "処理済みIDに変更なし"
           else
-            COUNT=$(git diff --staged --name-only -- 'src/content/news/*.md' | wc -l | tr -d ' ')
-            git commit -m "news: Sheetsから${COUNT}件をインポート [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+            git commit -m "chore: sheets処理済みID更新 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
             git push
-            echo "✅ ${COUNT}件をプッシュ完了"
           fi
 
+      - name: 候補ニュースをPRとして作成（要承認）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p src/content/news/
+          git add src/content/news/
+          if git diff --staged --quiet; then
+            echo "新規ニュースなし。スキップ。"
+            exit 0
+          fi
+          COUNT=$(git diff --staged --name-only -- 'src/content/news/*.md' | wc -l | tr -d ' ')
+          BRANCH="news-draft/sheets-$(TZ=Asia/Tokyo date +'%Y-%m-%d-%H%M')"
+          git checkout -b "$BRANCH"
+          git commit -m "draft: Sheets候補 ${COUNT}件 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "📋 Sheets候補 $(TZ=Asia/Tokyo date +'%Y-%m-%d'): ${COUNT}件" \
+            --body "$(printf 'Sheetsからインポートしたニュース候補です。\n\n不要な記事のファイルを削除してからマージしてください。\nマージ後にThreadsへの自動投稿が行われます。')"
+          echo "✅ PR作成完了: ${COUNT}件"
