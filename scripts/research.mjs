@@ -241,7 +241,8 @@ function sendDiscord(webhookUrl, message) {
 
 async function main() {
   const today     = todayJST();
-  const yesterday = yesterdayJST();
+  // RESEARCH_START_DATE で開始日を上書き可能（例: '2026-04-13'）
+  const yesterday = process.env.RESEARCH_START_DATE || yesterdayJST();
   console.log(`📅 リサーチ開始: ${yesterday} → ${today}`);
 
   // 検索実行
