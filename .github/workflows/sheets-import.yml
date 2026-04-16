@@ -34,6 +34,7 @@ jobs:
         run: |
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
+          mkdir -p src/content/news/
           git add src/content/news/ src/data/sheets-processed-ids.json
           if git diff --staged --quiet; then
             echo "新規ニュースなし"
