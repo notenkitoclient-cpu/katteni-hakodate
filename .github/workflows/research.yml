@@ -49,6 +49,15 @@ jobs:
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
           mkdir -p src/content/news/
+
+          # 処理済みURLファイルをmainに先にコミット（重複防止のため次回実行前に反映）
+          git add src/data/research-processed-urls.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: リサーチ処理済みURL更新 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
+            git push origin main
+          fi
+
+          # ニュース候補をPRブランチへ
           git add src/content/news/
           if git diff --staged --quiet; then
             echo "新規ニュースなし。スキップ。"

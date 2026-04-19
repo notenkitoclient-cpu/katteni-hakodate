@@ -59,12 +59,11 @@ function isGoogleNewsUrl(url) {
   return /news\.google\.com/.test(url);
 }
 
-// ── ニュースタイプ分類 ────────────────────────────────────────
+// ── ニュースタイプ分類（タイトルのみで判定）────────────────────
 
-function classifyType(title, text) {
-  const c = title + ' ' + (text || '');
-  if (/開店|オープン|新店|ニューオープン|grand open/i.test(c)) return '開店';
-  if (/閉店|クローズ|撤退|終了|破産|廃業|営業終了/.test(c))   return '閉店';
+function classifyType(title) {
+  if (/開店|オープン|新店|ニューオープン|リニューアルオープン|grand open/i.test(title)) return '開店';
+  if (/閉店|クローズ|撤退|終了|破産|廃業|営業終了/.test(title)) return '閉店';
   return null;
 }
 
@@ -91,11 +90,25 @@ function isSimilarTitle(a, b) {
   return extractKeyTerms(b).filter(t => setA.has(t)).length >= 2;
 }
 
+// ── 処理済みURL永続管理 ──────────────────────────────────────
+
+const PROCESSED_URLS_FILE = path.join(__dirname, '../src/data/research-processed-urls.json');
+
+function loadProcessedUrls() {
+  try {
+    return new Set(JSON.parse(fs.readFileSync(PROCESSED_URLS_FILE, 'utf-8')));
+  } catch { return new Set(); }
+}
+
+function saveProcessedUrls(urlSet) {
+  fs.writeFileSync(PROCESSED_URLS_FILE, JSON.stringify([...urlSet], null, 2) + '\n', 'utf-8');
+}
+
 // ── 既存ニュース読み込み ──────────────────────────────────────
 
 function loadExistingNews() {
   if (!fs.existsSync(NEWS_DIR)) return { urls: new Set(), titles: [] };
-  const urls   = new Set();
+  const urls   = loadProcessedUrls();
   const titles = [];
   for (const file of fs.readdirSync(NEWS_DIR).filter(f => f.endsWith('.md'))) {
     const raw = fs.readFileSync(path.join(NEWS_DIR, file), 'utf-8');
@@ -279,8 +292,8 @@ async function main() {
       continue;
     }
 
-    // ニュースタイプ判定
-    const type = classifyType(r.title, r.summary);
+    // ニュースタイプ判定（タイトルのみ）
+    const type = classifyType(r.title);
     if (!type) {
       console.log(`⏭  対象外タイプ: ${r.title.slice(0, 40)}`);
       continue;
@@ -294,6 +307,8 @@ async function main() {
     console.log(`✅ [${type}][${area}] ${r.title.slice(0, 45)}`);
   }
 
+  // 処理済みURLをmainブランチ用ファイルに保存（次回実行時の重複防止）
+  saveProcessedUrls(existingUrls);
   console.log(`\n完了: ${savedThisRun.length}件追加 (検索結果${rawResults.length}件中)`);
 
   // Discord通知
