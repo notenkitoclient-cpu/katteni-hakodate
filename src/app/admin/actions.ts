@@ -4,12 +4,15 @@ import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 async function geocode(address: string | null, locationArea: string): Promise<{ lat: number; lng: number } | null> {
-  const query = address || `${locationArea} 函館市`;
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ' 北海道函館市')}&format=json&limit=1`;
+  const query = address ? `北海道函館市${address}` : `北海道函館市${locationArea}`;
+  const url = `https://msearch.gsi.go.jp/address-search/AddressSearch?q=${encodeURIComponent(query)}`;
   try {
-    const res = await fetch(url, { headers: { 'User-Agent': 'katteni-hakodate/1.0' } });
+    const res = await fetch(url);
     const data = await res.json();
-    if (data[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    if (data[0]?.geometry?.coordinates) {
+      const [lng, lat] = data[0].geometry.coordinates;
+      return { lat, lng };
+    }
   } catch {}
   return null;
 }
