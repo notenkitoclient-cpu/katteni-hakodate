@@ -3,13 +3,33 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
+async function geocode(address: string | null, locationArea: string): Promise<{ lat: number; lng: number } | null> {
+  const query = address || `${locationArea} 函館市`;
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ' 北海道函館市')}&format=json&limit=1`;
+  try {
+    const res = await fetch(url, { headers: { 'User-Agent': 'katteni-hakodate/1.0' } });
+    const data = await res.json();
+    if (data[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  } catch {}
+  return null;
+}
+
 export async function approveStore(id: number) {
+  const store = await prisma.store.findUnique({ where: { id } });
+  const coords = store && (!store.lat || !store.lng)
+    ? await geocode(store.address, store.location_area)
+    : null;
+
   await prisma.store.update({
     where: { id },
-    data: { is_approved: true }
+    data: {
+      is_approved: true,
+      ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
+    },
   });
   revalidatePath('/admin');
   revalidatePath('/stores');
+  revalidatePath('/');
 }
 
 export async function deleteStore(id: number) {

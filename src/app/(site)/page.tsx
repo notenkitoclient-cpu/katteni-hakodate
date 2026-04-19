@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import StoreCard from '@/components/store/StoreCard';
+import StoreMapDynamic from '@/components/store/StoreMapDynamic';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ function formatDate(d: Date) {
 }
 
 export default async function Home() {
-  const [stores, news] = await Promise.all([
+  const [stores, news, mapStores] = await Promise.all([
     prisma.store.findMany({
       where: { is_approved: true },
       orderBy: { created_at: 'desc' },
@@ -26,6 +27,10 @@ export default async function Home() {
     prisma.news.findMany({
       orderBy: { published_at: 'desc' },
       take: 5,
+    }),
+    prisma.store.findMany({
+      where: { is_approved: true, lat: { not: null }, lng: { not: null } },
+      select: { id: true, slug: true, store_name: true, category: true, location_area: true, lat: true, lng: true },
     }),
   ]);
 
@@ -151,6 +156,47 @@ export default async function Home() {
               </p>
             )}
           </div>
+        </div>
+      </section>
+      {/* ── まち図鑑マップ ───────────────────────────────────── */}
+      <section className="bg-background border-t-2 border-black py-12 md:py-16 px-4">
+        <div className="popeye-container">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b-2 border-black pb-4 gap-4">
+            <div>
+              <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-subtext mb-1">Map</p>
+              <h2 className="text-2xl md:text-3xl font-mono font-black uppercase tracking-tighter">函館まち図鑑マップ</h2>
+            </div>
+            <Link
+              href="/stores"
+              className="text-xs font-bold border-b-2 border-black hover:opacity-70 transition-opacity pb-1 uppercase tracking-widest"
+            >
+              一覧で見る →
+            </Link>
+          </div>
+
+          {mapStores.length > 0 ? (
+            <div className="w-full h-[480px] md:h-[560px] border-2 border-black overflow-hidden">
+              <StoreMapDynamic
+                stores={mapStores.map(s => ({
+                  id: s.id,
+                  slug: s.slug,
+                  store_name: s.store_name,
+                  category: s.category,
+                  location_area: s.location_area,
+                  lat: s.lat!,
+                  lng: s.lng!,
+                }))}
+              />
+            </div>
+          ) : (
+            <div className="w-full h-48 border-2 border-dashed border-border flex items-center justify-center">
+              <p className="font-mono text-xs text-subtext tracking-widest">掲載店舗が増えるとマップに表示されます</p>
+            </div>
+          )}
+
+          <p className="font-mono text-[10px] text-subtext mt-3 tracking-wide">
+            📍 承認済みのお店がピンで表示されます。クリックで詳細へ。
+          </p>
         </div>
       </section>
     </main>

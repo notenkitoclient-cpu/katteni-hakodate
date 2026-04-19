@@ -46,6 +46,9 @@ model Store {
   vibe_level       Int?
   opening_hours    String?
   
+  lat              Float?
+  lng              Float?
+
   is_approved      Boolean  @default(false)
   share_banner_url String?
   
