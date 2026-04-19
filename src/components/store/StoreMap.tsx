@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import Link from 'next/link';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 // Leaflet のデフォルトアイコン修正（Next.js ビルド対応）
