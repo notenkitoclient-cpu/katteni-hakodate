@@ -35,6 +35,53 @@ export async function approveStore(id: number) {
   revalidatePath('/');
 }
 
+async function postToThreads(news: { title: string; type: string; area: string | null; url: string | null }) {
+  const token  = process.env.THREADS_ACCESS_TOKEN;
+  const userId = process.env.THREADS_USER_ID;
+  if (!token || !userId) return;
+
+  const TYPE_EMOJI: Record<string, string> = {
+    '開店': '🟢', '閉店': '⚫', '工事中': '🟡',
+    'イベント': '🔴', '目撃情報': '🔵', 'その他': '⚪',
+  };
+  const emoji = TYPE_EMOJI[news.type] ?? '📋';
+  const text = `${emoji}【${news.type}】${news.title}\n\n📍 ${news.area ?? '函館市内'}\n\n#函館 #函館情報 #函館開店 #函館閉店 #カッテニハコダテ`;
+
+  const base = `https://graph.threads.net/v1.0/${userId}`;
+  const r1 = await fetch(`${base}/threads`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ media_type: 'TEXT', text, access_token: token }),
+  });
+  const { id: containerId } = await r1.json();
+  if (!containerId) return;
+
+  await new Promise(r => setTimeout(r, 3000));
+  await fetch(`${base}/threads_publish`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ creation_id: containerId, access_token: token }),
+  });
+}
+
+export async function approveNews(id: number) {
+  const news = await prisma.news.update({
+    where: { id },
+    data: { is_approved: true },
+  });
+  revalidatePath('/admin');
+  revalidatePath('/news');
+  revalidatePath('/');
+  await postToThreads(news).catch(() => {});
+}
+
+export async function deleteNews(id: number) {
+  await prisma.news.delete({ where: { id } });
+  revalidatePath('/admin');
+  revalidatePath('/news');
+  revalidatePath('/');
+}
+
 export async function deleteStore(id: number) {
   await prisma.store.delete({ where: { id } });
   revalidatePath('/admin');

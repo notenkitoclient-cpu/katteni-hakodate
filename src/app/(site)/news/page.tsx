@@ -31,6 +31,7 @@ function formatDateFull(d: Date) {
 
 export default async function NewsPage() {
   const news = await prisma.news.findMany({
+    where: { is_approved: true },
     orderBy: { published_at: 'desc' },
     take: 100,
   });

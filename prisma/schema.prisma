@@ -19,6 +19,7 @@ model News {
   reporter     String   @default("編集部")
   published_at DateTime @default(now())
   created_at   DateTime @default(now())
+  is_approved  Boolean  @default(false)
 }
 
 model Store {

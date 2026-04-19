@@ -34,43 +34,25 @@ jobs:
       - name: 依存パッケージをインストール
         run: npm install exa-js --legacy-peer-deps
 
-      - name: リサーチ実行
+      - name: リサーチ実行＆DB保存
         env:
           EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
           DISCORD_ARTICLE_WEBHOOK_URL: ${{ secrets.DISCORD_ARTICLE_WEBHOOK_URL }}
           SITE_URL: ${{ secrets.SITE_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
           RESEARCH_START_DATE: ${{ inputs.start_date }}
         run: node scripts/research.mjs
 
-      - name: 候補ニュースをPRとして作成（要承認）
+      - name: 処理済みURLをmainにコミット
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name  "KatteniHakodate Bot"
           git config user.email "bot@katteni-hakodate.local"
-          mkdir -p src/content/news/
-
-          # 処理済みURLファイルをmainに先にコミット（重複防止のため次回実行前に反映）
           git add src/data/research-processed-urls.json
           if ! git diff --staged --quiet; then
             git commit -m "chore: リサーチ処理済みURL更新 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
             git push origin main
+          else
+            echo "URLリストに変更なし。スキップ。"
           fi
-
-          # ニュース候補をPRブランチへ
-          git add src/content/news/
-          if git diff --staged --quiet; then
-            echo "新規ニュースなし。スキップ。"
-            exit 0
-          fi
-          COUNT=$(git diff --staged --name-only | wc -l | tr -d ' ')
-          BRANCH="news-draft/$(TZ=Asia/Tokyo date +'%Y-%m-%d-%H%M')"
-          git checkout -b "$BRANCH"
-          git commit -m "draft: リサーチ候補 ${COUNT}件 [$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M JST')]"
-          git push origin "$BRANCH"
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "📋 リサーチ候補 $(TZ=Asia/Tokyo date +'%Y-%m-%d'): ${COUNT}件" \
-            --body "$(printf 'リサーチスクリプトが検出したニュース候補です。\n\n不要な記事のファイルを削除してからマージしてください。\nマージ後にThreadsへの自動投稿が行われます。')"
-          echo "✅ PR作成完了: ${COUNT}件"

@@ -300,16 +300,36 @@ async function main() {
     }
 
     const area = extractArea(r.title, r.summary);
-    const slug = saveNewsFile(r.title, type, area, today, r.url, r.summary);
+    const cleanSummary = (r.summary || '').replace(/\s+/g, ' ').trim();
+    const body = (cleanSummary.split('。')[0] || cleanSummary).slice(0, 120);
 
     existingUrls.add(r.url);
-    savedThisRun.push({ slug, title: r.title, type, url: r.url });
+    savedThisRun.push({ title: r.title, type, area, url: r.url, body });
     console.log(`✅ [${type}][${area}] ${r.title.slice(0, 45)}`);
   }
 
   // 処理済みURLをmainブランチ用ファイルに保存（次回実行時の重複防止）
   saveProcessedUrls(existingUrls);
-  console.log(`\n完了: ${savedThisRun.length}件追加 (検索結果${rawResults.length}件中)`);
+  console.log(`\n完了: ${savedThisRun.length}件候補 (検索結果${rawResults.length}件中)`);
+
+  // API経由でDBに保存（未承認として）
+  const siteUrl = process.env.SITE_URL;
+  const ingestSecret = process.env.INGEST_SECRET;
+  if (siteUrl && ingestSecret && savedThisRun.length > 0) {
+    try {
+      const res = await fetch(`${siteUrl}/api/news/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-ingest-secret': ingestSecret },
+        body: JSON.stringify(savedThisRun),
+      });
+      const json = await res.json();
+      console.log(`📥 DB保存: ${json.added}件追加, ${json.skipped}件スキップ`);
+    } catch (e) {
+      console.warn(`⚠️  DB保存エラー: ${e.message}`);
+    }
+  } else {
+    console.log('SITE_URL/INGEST_SECRET未設定 — DB保存をスキップ');
+  }
 
   // Discord通知
   const webhookUrl = process.env.DISCORD_ARTICLE_WEBHOOK_URL;

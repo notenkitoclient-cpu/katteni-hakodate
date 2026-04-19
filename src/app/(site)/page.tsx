@@ -25,6 +25,7 @@ export default async function Home() {
       take: 3,
     }),
     prisma.news.findMany({
+      where: { is_approved: true },
       orderBy: { published_at: 'desc' },
       take: 5,
     }),
