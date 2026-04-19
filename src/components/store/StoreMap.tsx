@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import Link from 'next/link';
 import L from 'leaflet';
 
-// Leaflet のデフォルトアイコン修正（Next.js ビルド対応）
 const icon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -26,42 +25,59 @@ type StorePin = {
   lng: number;
 };
 
-// 函館市中心部
-const HAKODATE_CENTER: [number, number] = [41.7687, 140.7290];
+const HAKODATE_CENTER: [number, number] = [41.7780, 140.7290];
 
 export default function StoreMap({ stores }: { stores: StorePin[] }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // SSR対策：アイコンをクライアント側で設定
     L.Marker.prototype.options.icon = icon;
   }, []);
 
+  // タッチ操作でページスクロールを妨げないようにする
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const prevent = (e: TouchEvent) => { if (e.touches.length === 1) e.stopPropagation(); };
+    el.addEventListener('touchmove', prevent, { passive: true });
+    return () => el.removeEventListener('touchmove', prevent);
+  }, []);
+
   return (
-    <MapContainer
-      center={HAKODATE_CENTER}
-      zoom={13}
-      style={{ height: '100%', width: '100%' }}
-      scrollWheelZoom={false}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {stores.map(store => (
-        <Marker key={store.id} position={[store.lat, store.lng]} icon={icon}>
-          <Popup>
-            <div className="text-sm">
-              <p className="font-bold text-base leading-snug mb-1">{store.store_name}</p>
-              <p className="text-gray-500 text-xs mb-2">{store.category} · {store.location_area}</p>
-              <Link
-                href={`/stores/${store.slug}`}
-                className="text-red-600 font-bold text-xs underline"
-              >
-                詳しく見る →
-              </Link>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    <div ref={wrapperRef} style={{ height: '100%', width: '100%' }}>
+      <MapContainer
+        center={HAKODATE_CENTER}
+        zoom={13}
+        style={{ height: '100%', width: '100%' }}
+        scrollWheelZoom={false}
+        dragging={true}
+        touchZoom={true}
+        doubleClickZoom={true}
+        zoomControl={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          maxZoom={19}
+        />
+        {stores.map(store => (
+          <Marker key={store.id} position={[store.lat, store.lng]} icon={icon}>
+            <Popup>
+              <div style={{ minWidth: 160 }}>
+                <p style={{ fontWeight: 'bold', marginBottom: 4 }}>{store.store_name}</p>
+                <p style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>{store.category} · {store.location_area}</p>
+                <Link
+                  href={`/stores/${store.slug}`}
+                  style={{ color: '#dc2626', fontWeight: 'bold', fontSize: 12 }}
+                >
+                  詳しく見る →
+                </Link>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }
