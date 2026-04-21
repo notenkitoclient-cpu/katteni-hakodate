@@ -12,12 +12,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ added: 0 });
   }
 
-  // 既存URLと重複しないものだけ保存
+  // URLがある場合のみ重複チェック（スクショ由来はurl=nullのため全件保存）
   const existingUrls = new Set(
     (await prisma.news.findMany({ select: { url: true } })).map(n => n.url).filter(Boolean)
   );
 
-  const toInsert = items.filter(item => item.url && !existingUrls.has(item.url));
+  const toInsert = items.filter(item => !item.url || !existingUrls.has(item.url));
 
   await prisma.news.createMany({
     data: toInsert.map(item => ({
