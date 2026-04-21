@@ -1,0 +1,44 @@
+name: Discord スクショ読み取り
+
+on:
+  schedule:
+    # 毎時0分・30分に実行
+    - cron: '0,30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  read:
+    name: Discord画像をClaudeで解析→審査待ちに追加
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 依存パッケージをインストール
+        run: npm install @anthropic-ai/sdk --legacy-peer-deps
+
+      - name: スクショ読み取り実行
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_SCREENSHOT_CHANNEL_ID: ${{ secrets.DISCORD_SCREENSHOT_CHANNEL_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+        run: node scripts/discord-screenshot-reader.mjs
+
+      - name: 処理済みIDをコミット
+        run: |
+          git config user.name  "KatteniHakodate Bot"
+          git config user.email "bot@katteni-hakodate.local"
+          git add src/data/discord-processed-message-ids.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: Discord処理済みメッセージID更新"
+            git push origin main
+          fi
