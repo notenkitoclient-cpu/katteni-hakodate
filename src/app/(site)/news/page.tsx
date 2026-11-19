@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/news' },
   title: '街の呼吸 — 開店・閉店ニュース',
   description: '函館の開店・閉店・イベント情報をリアルタイムで更新。街の今の動きをいち早くお届けします。',
   openGraph: {

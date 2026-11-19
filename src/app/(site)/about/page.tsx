@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/about' },
   title: 'このサイトについて',
   description: 'カッテニハコダテは、函館を勝手に応援するプロジェクトです。誰でも自由に使える、みんなで作る函館まち図鑑。',
   openGraph: {
