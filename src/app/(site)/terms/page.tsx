@@ -1,3 +1,8 @@
+export const metadata = {
+  title: '利用規約',
+  alternates: { canonical: '/terms' },
+};
+
 export default function TermsPage() {
   return (
     <main className="bg-background min-h-screen">

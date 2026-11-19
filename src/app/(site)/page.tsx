@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import StoreCard from '@/components/store/StoreCard';
 import StoreMapDynamic from '@/components/store/StoreMapDynamic';
 
+export const metadata = { alternates: { canonical: '/' } };
+
 export const dynamic = 'force-dynamic';
 
 const TYPE_STYLES: Record<string, string> = {

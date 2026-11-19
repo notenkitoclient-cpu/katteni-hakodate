@@ -2,6 +2,8 @@ import prisma from '@/lib/prisma';
 import StoreDetail from '@/components/store/StoreDetail';
 import { notFound } from 'next/navigation';
 
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function StorePreviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   // プレビューページは is_approved の状態に関わらず表示する（slugを知っている人のみ）

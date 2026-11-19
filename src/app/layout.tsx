@@ -24,9 +24,6 @@ export const metadata: Metadata = {
     description: '誰でも自由に使える、みんなで作る函館のオープンデータ図鑑。',
     images: ['/ogp.png'],
   },
-  alternates: {
-    canonical: 'https://kattenihakodate.com',
-  },
 };
 
 export default function RootLayout({

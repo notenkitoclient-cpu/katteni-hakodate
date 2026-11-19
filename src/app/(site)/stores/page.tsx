@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/stores' },
   title: '函館まち図鑑',
   description: '誰でも自由に使える、みんなで作る函館のオープンデータ図鑑。飲食店、小売、美容など函館の魅力的なお店が集まっています。',
   openGraph: {
