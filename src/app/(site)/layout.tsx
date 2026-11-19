@@ -10,7 +10,7 @@ export default function SiteLayout({
 
       {/* Header */}
       <header className="bg-white border-b-2 border-black sticky top-0 z-50">
-        <div className="popeye-container flex justify-between items-center py-4">
+        <div className="popeye-container flex flex-wrap justify-between items-center gap-y-2 py-4">
           <Link href="/" className="font-serif text-xl md:text-2xl font-black tracking-tighter uppercase whitespace-nowrap">
             Katteni<span className="text-accent">.</span>Hakodate
           </Link>
