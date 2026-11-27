@@ -1,3 +1,4 @@
+import Script from "next/script";
 import type { Metadata } from "next";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
@@ -43,6 +44,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
+      <link rel="stylesheet" href="/analytics-consent.css?v=20261123-2" /><Script id="public-page-analytics" strategy="afterInteractive" src="/analytics.js?v=20261127-1" data-ga="G-C22VWBD0F5" data-origin="https://kattenihakodate.com" data-pages={JSON.stringify({"":"カッテニハコダテ","/":"カッテニハコダテ","/about":"カッテニハコダテ","/about/":"カッテニハコダテ","/news":"カッテニハコダテ","/news/":"カッテニハコダテ","/stores":"カッテニハコダテ","/stores/":"カッテニハコダテ","/stores/-575":"カッテニハコダテ","/stores/-575/":"カッテニハコダテ","/stores/-90":"カッテニハコダテ","/stores/-90/":"カッテニハコダテ","/stores/polar-209":"カッテニハコダテ","/stores/polar-209/":"カッテニハコダテ","/terms":"カッテニハコダテ","/terms/":"カッテニハコダテ"})} data-patterns={JSON.stringify([{"pattern":"^/stores/[^/]{1,300}/?$","title":"カッテニハコダテ"}])} data-consent="katteni-hakodate-ga4-consent-v1" data-privacy="/analytics-privacy.html" />
       </body>
     </html>
   );
